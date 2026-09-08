@@ -140,8 +140,13 @@ plugins:
   # ===== эмиттеры (именно они порождают HTML-страницы) ===================
   - source: "@quartz-community/content-page"
     enabled: true
+  # Титульная страница работы (labNN/index.md) — folder-страница, поэтому под
+  # её текстом плагин выводит список вложенных страниц: он служит содержанием
+  # работы. Служебная строка «в этой папке N элементов» там лишняя.
   - source: "@quartz-community/folder-page"
     enabled: true
+    options:
+      showFolderCount: false
   - source: "@quartz-community/tag-page"
     enabled: true
   - source: "@quartz-community/canvas-page"
@@ -187,9 +192,6 @@ plugins:
     layout:
       position: left
       priority: 20
-      group: toolbar
-      groupOptions:
-        grow: true
   - source: "@quartz-community/spacer"
     enabled: true
     options: {}
@@ -201,18 +203,14 @@ plugins:
   - source: "@quartz-community/darkmode"
     enabled: true
     layout:
-      position: left
-      priority: 30
-      group: toolbar
+      position: header
+      priority: 20
   - source: "@quartz-community/reader-mode"
-    enabled: true
-    layout:
-      position: left
-      priority: 35
-      group: toolbar
+    enabled: false
   - source: "@quartz-community/explorer"
     enabled: true
     options:
+      title: ""
       folderClickBehavior: link
       folderDefaultState: collapsed
       useSavedState: true
@@ -273,27 +271,22 @@ plugins:
     enabled: true
 
 layout:
-  groups:
-    toolbar:
-      priority: 35
-      direction: row
-      gap: 0.5rem
   byPageType:
     content: {}
-    folder:
-      exclude:
-        - reader-mode
-      positions:
-        right: []
+    # Страница лабораторной работы — это content/labNN/index.md, а такой slug
+    # (оканчивается на «/index») матчится типом страницы folder, а не content.
+    # Поэтому правую колонку здесь НЕ очищаем: именно из неё берётся штатное
+    # оглавление Quartz (@quartz-community/table-of-contents), как на титульной
+    # странице. Проводник слева остаётся только под список лабораторных работ.
+    folder: {}
     tag:
-      exclude:
-        - reader-mode
       positions:
         right: []
     canvas: {}
     bases: {}
     "404":
       positions:
+        header: []
         beforeBody: []
         left: []
         right: []
