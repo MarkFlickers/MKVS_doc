@@ -1,0 +1,299 @@
+# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+#
+# Конфигурация Quartz v5 для сайта «МКВС - лабораторные работы».
+# Файл кладётся в КОРЕНЬ клона https://github.com/jackyzha0/quartz (ветка v5),
+# рядом с ним — папка content/ из этого репозитория. См. README.md.
+#
+# Цветовая схема подобрана под оригинальные PDF-пособия:
+#   #0f45c7 — фирменный синий МИЭТ (взят пипеткой из логотипа в PDF)
+#   белый лист, чёрный текст, синие ссылки и акценты.
+# Шрифты — ближайшие к оригиналу аналоги с поддержкой кириллицы:
+#   Century Gothic (заголовки) -> Montserrat
+#   Calibri        (текст)     -> Carlito (метрически совместим с Calibri)
+#   Consolas       (код)       -> JetBrains Mono
+
+configuration:
+  pageTitle: Микроконтроллеры и встраиваемые системы
+  pageTitleSuffix: ""
+  enableSPA: true
+  enablePopovers: true
+  analytics: null
+  locale: ru-RU
+  baseUrl: example.com # TODO: заменить на реальный домен/GitHub Pages URL
+  ignorePatterns:
+    - private
+    - templates
+    - .obsidian
+  theme:
+    fontOrigin: googleFonts
+    cdnCaching: true
+    typography:
+      header: Montserrat
+      body: Carlito
+      code: JetBrains Mono
+    colors:
+      lightMode:
+        light: "#ffffff" # фон страницы — белый лист, как в PDF
+        lightgray: "#e3e6ec" # линейки, границы таблиц
+        gray: "#9aa2b1" # второстепенный текст
+        darkgray: "#1a1a1a" # основной текст
+        dark: "#000000" # заголовки
+        secondary: "#0f45c7" # фирменный синий МИЭТ: ссылки, акценты
+        tertiary: "#3f6fd8" # hover
+        highlight: rgba(15, 69, 199, 0.08)
+        textHighlight: "#fff23688"
+      darkMode:
+        light: "#16181d"
+        lightgray: "#2c3038"
+        gray: "#6a7280"
+        darkgray: "#d8dbe0"
+        dark: "#f2f4f7"
+        secondary: "#7ea2f0"
+        tertiary: "#a8c0f7"
+        highlight: rgba(126, 162, 240, 0.12)
+        textHighlight: "#b3aa0288"
+
+plugins:
+  # ===== обработка markdown ==============================================
+  - source: "@quartz-community/created-modified-date"
+    enabled: true
+    options:
+      defaultDateType: modified
+      priority:
+        - frontmatter
+        - git
+        - filesystem
+    order: 10
+
+  # Подсветка кода. Даёт title="...", showLineNumbers, подсветку строк {1-3}
+  # и штатную кнопку «копировать в буфер» на каждом блоке кода.
+  - source: "@quartz-community/syntax-highlighting"
+    enabled: true
+    options:
+      theme:
+        light: github-light
+        dark: github-dark
+      keepBackground: false
+    order: 20
+
+  - source: "@quartz-community/obsidian-flavored-markdown"
+    enabled: true
+    options:
+      enableInHtmlEmbed: false
+      enableCheckbox: true
+    order: 30
+  - source: "@quartz-community/github-flavored-markdown"
+    enabled: true
+    order: 40
+  - source: "@quartz-community/table-of-contents"
+    enabled: true
+    options:
+      maxDepth: 6
+      minEntries: 0
+    order: 50
+    layout:
+      position: right
+      priority: 30
+  - source: "@quartz-community/crawl-links"
+    enabled: true
+    options:
+      markdownLinkResolution: shortest
+    order: 60
+  - source: "@quartz-community/description"
+    enabled: true
+    order: 70
+  - source: "@quartz-community/latex"
+    enabled: true
+    options:
+      renderEngine: katex
+    order: 80
+
+  # ВНИМАНИЕ: именно этот плагин парсит frontmatter (`title:`, `tags:` и т.д.)
+  # и кладёт его в file.data.frontmatter. Без него заголовки страниц теряются,
+  # а блок `---` рендерится в текст. Отключать нельзя.
+  # hidePropertiesView прячет саму таблицу свойств над текстом (лишний шум
+  # для пособия), оставляя разбор frontmatter работать.
+  - source: "@quartz-community/note-properties"
+    enabled: true
+    options:
+      includeAll: false
+      includedProperties:
+        - description
+        - tags
+        - aliases
+      excludedProperties: []
+      hidePropertiesView: true
+      delimiters: ---
+      language: yaml
+    order: 5
+    layout:
+      position: beforeBody
+      priority: 15
+      display: all
+
+  # ===== фильтры =========================================================
+  - source: "@quartz-community/remove-draft"
+    enabled: true
+  - source: "@quartz-community/explicit-publish"
+    enabled: false
+
+  # ===== эмиттеры (именно они порождают HTML-страницы) ===================
+  - source: "@quartz-community/content-page"
+    enabled: true
+  - source: "@quartz-community/folder-page"
+    enabled: true
+  - source: "@quartz-community/tag-page"
+    enabled: true
+  - source: "@quartz-community/canvas-page"
+    enabled: true
+  - source: "@quartz-community/bases-page"
+    enabled: true
+    options: {}
+    order: 50
+  - source: "@quartz-community/alias-redirects"
+    enabled: true
+  - source: "@quartz-community/content-index"
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: false
+  - source: "@quartz-community/favicon"
+    enabled: true
+  - source: "@quartz-community/og-image"
+    enabled: true
+  - source: "@quartz-community/cname"
+    enabled: true
+  - source: "@quartz-community/unlisted-pages"
+    enabled: true
+    options: {}
+    order: 45
+  - source: "@quartz-community/encrypted-pages"
+    enabled: true
+    options:
+      iterations: 600000
+      passwordField: password
+      unlistWhenEncrypted: false
+      outputPath: static/encryptedContentIndex.json
+    order: 900
+
+  # ===== компоненты страницы ============================================
+  - source: "@quartz-community/page-title"
+    enabled: true
+    layout:
+      position: left
+      priority: 10
+  - source: "@quartz-community/search"
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+      group: toolbar
+      groupOptions:
+        grow: true
+  - source: "@quartz-community/spacer"
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+  - source: "@quartz-community/darkmode"
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+  - source: "@quartz-community/reader-mode"
+    enabled: true
+    layout:
+      position: left
+      priority: 35
+      group: toolbar
+  - source: "@quartz-community/explorer"
+    enabled: true
+    options:
+      folderClickBehavior: link
+      folderDefaultState: collapsed
+      useSavedState: true
+    layout:
+      position: left
+      priority: 50
+
+  - source: "@quartz-community/breadcrumbs"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 5
+      condition: not-index
+  - source: "@quartz-community/article-title"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 10
+  - source: "@quartz-community/content-meta"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+  - source: "@quartz-community/tag-list"
+    enabled: false
+    layout:
+      position: beforeBody
+      priority: 30
+
+  - source: "@quartz-community/backlinks"
+    enabled: true
+    layout:
+      position: right
+      priority: 50
+
+  # Граф связей для линейного учебного курса скорее мешает — выключен.
+  - source: "@quartz-community/graph"
+    enabled: false
+
+  - source: "@quartz-community/footer"
+    enabled: true
+    options:
+      links:
+        Репозиторий: https://github.com/
+    layout:
+      position: footer
+      priority: 50
+
+  - source: "@quartz-community/comments"
+    enabled: false
+  - source: "@quartz-community/recent-notes"
+    enabled: false
+  - source: "@quartz-community/stacked-pages"
+    enabled: false
+
+  # ===== служебные =======================================================
+  - source: "@quartz-community/quartz-fonts"
+    enabled: true
+
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    content: {}
+    folder:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    tag:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    canvas: {}
+    bases: {}
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
