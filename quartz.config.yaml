@@ -19,7 +19,7 @@ configuration:
   enablePopovers: true
   analytics: null
   locale: ru-RU
-  baseUrl: example.com # TODO: заменить на реальный домен/GitHub Pages URL
+  baseUrl: markflickers.github.io/MKVS_doc
   ignorePatterns:
     - private
     - templates
