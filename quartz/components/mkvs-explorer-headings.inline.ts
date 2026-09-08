@@ -13,21 +13,46 @@ function installLabHeadings() {
     if (!tree) continue
 
     function populate() {
-      for (const folder of tree!.querySelectorAll<HTMLElement>(".folder-container[data-folderpath]")) {
+      const currentLab =
+        window.location.pathname.match(/\/(lab\d+)(?:\/|$)/)?.[1] ?? null
+
+      for (const folder of tree!.querySelectorAll<HTMLElement>(
+        ".folder-container[data-folderpath]",
+      )) {
         const path = folder.dataset.folderpath ?? ""
+
+        // Подсвечиваем название текущей лабораторной.
+        folder.classList.toggle(
+          "mkvs-current-lab",
+          currentLab !== null && path === `${currentLab}/index`,
+        )
+
         const headings = outlines[path]
-        const content = folder.nextElementSibling?.querySelector<HTMLElement>("ul.content")
-        if (!headings?.length || !content || content.querySelector(".mkvs-heading")) continue
+        const content =
+          folder.nextElementSibling?.querySelector<HTMLElement>("ul.content")
+
+        if (!headings?.length || !content || content.querySelector(".mkvs-heading")) {
+          continue
+        }
 
         const page = `${base}/${path.replace(/index$/, "")}`
+
+        // h2 становится уровнем 0, h3 — уровнем 1 и т.д.
+        const minDepth = Math.min(...headings.map((heading) => heading.depth))
+
         for (const heading of headings) {
+          const depth = heading.depth - minDepth
+
           const item = document.createElement("li")
           item.className = "mkvs-heading"
-          item.style.setProperty("--heading-depth", String(heading.depth))
+          item.dataset.headingDepth = String(depth)
+          item.style.setProperty("--heading-depth", String(depth))
+
           const link = document.createElement("a")
           link.className = "internal mkvs-heading-link"
           link.href = `${page}#${encodeURIComponent(heading.slug)}`
           link.textContent = heading.text
+
           item.append(link)
           content.append(item)
         }

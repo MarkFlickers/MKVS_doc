@@ -230,23 +230,100 @@ article table {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Оформление дерева Проводника
+// ---------------------------------------------------------------------------
+
+// Вертикальная линия дерева.
+// У Quartz она уже существует — здесь делаем её немного аккуратнее.
+.explorer .folder-outer > ul {
+  margin-left: 0.4rem;
+  padding-left: 0.7rem;
+  border-left: 1px solid var(--lightgray);
+}
+
+
+// ---------------------------------------------------------------------------
+// Название лабораторной работы
+// ---------------------------------------------------------------------------
+
+// Немного воздуха между лабораторными работами.
+.explorer .folder-container[data-folderpath*="/index"],
+.explorer .folder-container[data-folderpath^="lab"] {
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+
+// Открытая в данный момент лабораторная работа.
+.explorer .folder-container.mkvs-current-lab {
+  border-left: 3px solid var(--secondary);
+  padding-left: 0.35rem;
+}
+
+// Название текущей лабораторной чуть сильнее остальных.
+.explorer .folder-container.mkvs-current-lab .folder-title {
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+
+// ---------------------------------------------------------------------------
+// Оглавление внутри лабораторной работы
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Оглавление внутри лабораторной работы
+// ---------------------------------------------------------------------------
+
 .explorer .mkvs-heading {
-  padding-left: calc(0.5rem + var(--heading-depth, 0) * 0.75rem);
+  position: relative;
+
+  padding-left: calc(
+    0.15rem + var(--heading-depth, 0) * 0.9rem
+  );
 }
 
 .explorer .mkvs-heading-link {
   display: block;
-  padding: 0.18rem 0;
-  font-size: 0.88rem;
+
+  padding: 0.16rem 0;
+
+  font-size: 0.87rem;
   font-weight: 400;
   line-height: 1.35;
+
+  color: var(--darkgray);
+
   overflow-wrap: break-word;
 
   background: transparent;
   border-radius: 0;
-  color: var(--darkgray);
 }
 
+
+// Первый уровень:
+// Введение, Цель работы, Порядок выполнения работы...
+.explorer .mkvs-heading[data-heading-depth="0"] > .mkvs-heading-link {
+  font-size: 0.87rem;
+}
+
+
+// Второй уровень:
+// Часть 1, Часть 2...
+.explorer .mkvs-heading[data-heading-depth="1"] > .mkvs-heading-link {
+  font-size: 0.83rem;
+}
+
+
+// Более глубокие уровни.
+.explorer .mkvs-heading[data-heading-depth="2"] > .mkvs-heading-link,
+.explorer .mkvs-heading[data-heading-depth="3"] > .mkvs-heading-link,
+.explorer .mkvs-heading[data-heading-depth="4"] > .mkvs-heading-link {
+  font-size: 0.8rem;
+}
+
+
+// Hover намеренно идёт ПОСЛЕ правил уровней.
 .explorer .mkvs-heading-link:hover {
   color: var(--secondary);
   background: transparent;
