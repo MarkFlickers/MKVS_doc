@@ -328,3 +328,16 @@ article table {
   color: var(--secondary);
   background: transparent;
 }
+
+// Текущий раздел документа, определяемый scroll-spy.
+.explorer .mkvs-heading-link.mkvs-active-heading {
+  color: var(--secondary);
+  font-weight: 600;
+  background: transparent;
+}
+
+// При наведении на уже активный пункт его оформление не меняется.
+.explorer .mkvs-heading-link.mkvs-active-heading:hover {
+  color: var(--secondary);
+  background: transparent;
+}

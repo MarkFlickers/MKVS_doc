@@ -11,6 +11,152 @@ function installLabHeadings() {
   for (const explorer of document.querySelectorAll<HTMLElement>(".explorer")) {
     const tree = explorer.querySelector<HTMLElement>(".explorer-ul")
     if (!tree) continue
+    let scrollSpyInstalled = false
+
+    function installScrollSpy() {
+      if (scrollSpyInstalled) return
+
+      // Ищем оглавление именно открытой лабораторной работы.
+      const currentFolder =
+        tree!.querySelector<HTMLElement>(".folder-container.mkvs-current-lab")
+
+      const content =
+        currentFolder?.nextElementSibling?.querySelector<HTMLElement>("ul.content")
+
+      if (!content) return
+
+      const links = Array.from(
+        content.querySelectorAll<HTMLAnchorElement>(".mkvs-heading-link"),
+      )
+
+      if (links.length === 0) return
+
+      // Связываем ссылки Проводника с реальными заголовками в статье.
+      const entries: Array<{
+        link: HTMLAnchorElement
+        heading: HTMLElement
+      }> = []
+
+      for (const link of links) {
+        const encodedId = new URL(link.href, window.location.href).hash.slice(1)
+        if (!encodedId) continue
+
+        let id: string
+
+        try {
+          id = decodeURIComponent(encodedId)
+        } catch {
+          continue
+        }
+
+        const heading = document.getElementById(id)
+
+        if (heading) {
+          entries.push({ link, heading })
+        }
+      }
+
+      if (entries.length === 0) return
+
+      scrollSpyInstalled = true
+
+      const scroller =
+        explorer.querySelector<HTMLElement>(".explorer-content")
+
+      let activeLink: HTMLAnchorElement | null = null
+      let frame: number | null = null
+
+      function keepVisible(link: HTMLAnchorElement) {
+        if (!scroller) return
+
+        const linkRect = link.getBoundingClientRect()
+        const scrollerRect = scroller.getBoundingClientRect()
+
+        const margin = 24
+
+        if (linkRect.top < scrollerRect.top + margin) {
+          scroller.scrollTop -=
+            scrollerRect.top + margin - linkRect.top
+        } else if (linkRect.bottom > scrollerRect.bottom - margin) {
+          scroller.scrollTop +=
+            linkRect.bottom - (scrollerRect.bottom - margin)
+        }
+      }
+
+      function setActive(next: HTMLAnchorElement | null) {
+        if (next === activeLink) return
+
+        if (activeLink) {
+          activeLink.classList.remove("mkvs-active-heading")
+          activeLink.removeAttribute("aria-current")
+        }
+
+        activeLink = next
+
+        if (activeLink) {
+          activeLink.classList.add("mkvs-active-heading")
+          activeLink.setAttribute("aria-current", "location")
+
+          keepVisible(activeLink)
+        }
+      }
+
+      function update() {
+        frame = null
+
+        // Воображаемая горизонтальная линия в верхней части окна.
+        // Когда заголовок проходит её, он становится текущим.
+        const activationLine = Math.min(
+          160,
+          Math.max(80, window.innerHeight * 0.18),
+        )
+
+        let next = entries[0].link
+
+        for (const entry of entries) {
+          if (entry.heading.getBoundingClientRect().top <= activationLine) {
+            next = entry.link
+          } else {
+            break
+          }
+        }
+
+        // В самом низу страницы гарантированно выделяем последний раздел.
+        const atBottom =
+          window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 2
+
+        if (atBottom) {
+          next = entries[entries.length - 1].link
+        }
+
+        setActive(next)
+      }
+
+      function scheduleUpdate() {
+        if (frame !== null) return
+
+        frame = requestAnimationFrame(update)
+      }
+
+      window.addEventListener("scroll", scheduleUpdate, { passive: true })
+      window.addEventListener("resize", scheduleUpdate)
+      window.addEventListener("hashchange", scheduleUpdate)
+
+      update()
+
+      window.addCleanup(() => {
+        window.removeEventListener("scroll", scheduleUpdate)
+        window.removeEventListener("resize", scheduleUpdate)
+        window.removeEventListener("hashchange", scheduleUpdate)
+
+        if (frame !== null) {
+          cancelAnimationFrame(frame)
+        }
+
+        setActive(null)
+      })
+    }
 
     function populate() {
       const currentLab =
@@ -57,6 +203,8 @@ function installLabHeadings() {
           content.append(item)
         }
       }
+
+      installScrollSpy()
     }
 
     const observer = new MutationObserver(populate)
