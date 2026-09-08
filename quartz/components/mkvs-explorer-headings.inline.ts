@@ -11,6 +11,39 @@ function installLabHeadings() {
   for (const explorer of document.querySelectorAll<HTMLElement>(".explorer")) {
     const tree = explorer.querySelector<HTMLElement>(".explorer-ul")
     if (!tree) continue
+    function updateCollapsedHeadings(content: HTMLElement) {
+      const items = Array.from(
+        content.querySelectorAll<HTMLElement>(":scope > .mkvs-heading"),
+      )
+
+      // Глубины свёрнутых родителей, внутри которых мы сейчас находимся.
+      const collapsedDepths: number[] = []
+
+      for (const item of items) {
+        const depth =
+          Number(item.dataset.headingDepth ?? "0")
+
+        // Если дошли до заголовка того же или более высокого уровня,
+        // предыдущая ветка закончилась.
+        while (
+          collapsedDepths.length > 0 &&
+          depth <= collapsedDepths[collapsedDepths.length - 1]
+        ) {
+          collapsedDepths.pop()
+        }
+
+        const hiddenByParent = collapsedDepths.length > 0
+
+        item.classList.toggle(
+          "mkvs-heading-hidden",
+          hiddenByParent,
+        )
+
+        if (item.classList.contains("mkvs-collapsed")) {
+          collapsedDepths.push(depth)
+        }
+      }
+    }
     let scrollSpyInstalled = false
 
     function installScrollSpy() {
@@ -83,23 +116,88 @@ function installLabHeadings() {
         }
       }
 
+      function renderActivePath() {
+        // Сначала снимаем старую подсветку.
+        for (const entry of entries) {
+          entry.link.classList.remove(
+            "mkvs-active-heading",
+            "mkvs-active-parent",
+          )
+          entry.link.removeAttribute("aria-current")
+        }
+
+        if (!activeLink) return
+
+        activeLink.classList.add("mkvs-active-heading")
+        activeLink.setAttribute("aria-current", "location")
+
+        const activeItem =
+          activeLink.closest<HTMLElement>(".mkvs-heading")
+
+        if (!activeItem) return
+
+        let currentDepth =
+          Number(activeItem.dataset.headingDepth ?? "0")
+
+        // Если сам активный пункт скрыт свёрнутым родителем,
+        // прокручивать Проводник будем к ближайшему видимому родителю.
+        let visibleLink: HTMLAnchorElement | null =
+          activeItem.classList.contains("mkvs-heading-hidden")
+            ? null
+            : activeLink
+
+        let sibling =
+          activeItem.previousElementSibling as HTMLElement | null
+
+        while (sibling && currentDepth > 0) {
+          if (sibling.classList.contains("mkvs-heading")) {
+            const siblingDepth =
+              Number(sibling.dataset.headingDepth ?? "0")
+
+            if (siblingDepth < currentDepth) {
+              const parentLink =
+                sibling.querySelector<HTMLAnchorElement>(
+                  ":scope > .mkvs-heading-link",
+                )
+
+              if (parentLink) {
+                parentLink.classList.add("mkvs-active-parent")
+
+                if (
+                  visibleLink === null &&
+                  !sibling.classList.contains("mkvs-heading-hidden")
+                ) {
+                  visibleLink = parentLink
+                }
+              }
+
+              currentDepth = siblingDepth
+            }
+          }
+
+          sibling = sibling.previousElementSibling as HTMLElement | null
+        }
+
+        if (visibleLink) {
+          keepVisible(visibleLink)
+        }
+      }
+
       function setActive(next: HTMLAnchorElement | null) {
         if (next === activeLink) return
 
-        if (activeLink) {
-          activeLink.classList.remove("mkvs-active-heading")
-          activeLink.removeAttribute("aria-current")
-        }
-
         activeLink = next
-
-        if (activeLink) {
-          activeLink.classList.add("mkvs-active-heading")
-          activeLink.setAttribute("aria-current", "location")
-
-          keepVisible(activeLink)
-        }
+        renderActivePath()
       }
+
+      function handleCollapseChange() {
+        renderActivePath()
+      }
+
+      explorer.addEventListener(
+        "mkvs-heading-collapse",
+        handleCollapseChange,
+      )
 
       function update() {
         frame = null
@@ -150,6 +248,11 @@ function installLabHeadings() {
         window.removeEventListener("resize", scheduleUpdate)
         window.removeEventListener("hashchange", scheduleUpdate)
 
+        explorer.removeEventListener(
+          "mkvs-heading-collapse",
+          handleCollapseChange,
+        )
+
         if (frame !== null) {
           cancelAnimationFrame(frame)
         }
@@ -186,22 +289,79 @@ function installLabHeadings() {
         // h2 становится уровнем 0, h3 — уровнем 1 и т.д.
         const minDepth = Math.min(...headings.map((heading) => heading.depth))
 
-        for (const heading of headings) {
-          const depth = heading.depth - minDepth
+        const depths =
+          headings.map((heading) => heading.depth - minDepth)
+
+        for (let index = 0; index < headings.length; index++) {
+          const heading = headings[index]
+          const depth = depths[index]
+
+          const hasChildren =
+            index + 1 < headings.length &&
+            depths[index + 1] > depth
 
           const item = document.createElement("li")
           item.className = "mkvs-heading"
           item.dataset.headingDepth = String(depth)
           item.style.setProperty("--heading-depth", String(depth))
 
+          if (hasChildren) {
+            item.classList.add("mkvs-heading-parent")
+
+            const toggle = document.createElement("button")
+            toggle.type = "button"
+            toggle.className = "mkvs-heading-toggle"
+            toggle.setAttribute("aria-expanded", "true")
+            toggle.setAttribute(
+              "aria-label",
+              `Свернуть раздел «${heading.text}»`,
+            )
+
+            toggle.addEventListener("click", () => {
+              const collapsed =
+                item.classList.toggle("mkvs-collapsed")
+
+              toggle.setAttribute(
+                "aria-expanded",
+                collapsed ? "false" : "true",
+              )
+
+              toggle.setAttribute(
+                "aria-label",
+                `${collapsed ? "Развернуть" : "Свернуть"} раздел «${heading.text}»`,
+              )
+
+              updateCollapsedHeadings(content)
+
+              // Scroll-spy должен заново определить,
+              // какой из подсвеченных пунктов сейчас видим.
+              explorer.dispatchEvent(
+                new Event("mkvs-heading-collapse"),
+              )
+            })
+
+            item.append(toggle)
+          } else {
+            // Пустое место размером со стрелку:
+            // так ссылки одного уровня остаются выровненными.
+            const spacer = document.createElement("span")
+            spacer.className = "mkvs-heading-toggle-spacer"
+            spacer.setAttribute("aria-hidden", "true")
+
+            item.append(spacer)
+          }
+
           const link = document.createElement("a")
           link.className = "internal mkvs-heading-link"
-          link.href = `${page}#${encodeURIComponent(heading.slug)}`
+          link.href =
+            `${page}#${encodeURIComponent(heading.slug)}`
           link.textContent = heading.text
 
           item.append(link)
           content.append(item)
         }
+
+        updateCollapsedHeadings(content)
       }
 
       installScrollSpy()

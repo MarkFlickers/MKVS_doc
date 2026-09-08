@@ -276,7 +276,10 @@ article table {
 // ---------------------------------------------------------------------------
 
 .explorer .mkvs-heading {
-  position: relative;
+  display: grid;
+  grid-template-columns: 0.9rem minmax(0, 1fr);
+  align-items: start;
+  column-gap: 0.15rem;
 
   padding-left: calc(
     0.15rem + var(--heading-depth, 0) * 0.9rem
@@ -322,6 +325,64 @@ article table {
   font-size: 0.8rem;
 }
 
+// ---------------------------------------------------------------------------
+// Сворачивание подразделов
+// ---------------------------------------------------------------------------
+
+.explorer .mkvs-heading-toggle,
+.explorer .mkvs-heading-toggle-spacer {
+  box-sizing: border-box;
+  width: 0.9rem;
+  height: 1.35rem;
+}
+
+.explorer .mkvs-heading-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin-top: 0.1rem;
+
+  border: 0;
+  background: transparent;
+  color: var(--gray);
+
+  cursor: pointer;
+}
+
+// Рисуем стрелку средствами CSS.
+.explorer .mkvs-heading-toggle::before {
+  content: "";
+
+  width: 0.35rem;
+  height: 0.35rem;
+
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+
+  // Стрелка вниз.
+  transform: rotate(45deg);
+
+  transition: transform 0.15s ease;
+}
+
+// В свёрнутом состоянии стрелка смотрит вправо.
+.explorer
+  .mkvs-heading.mkvs-collapsed
+  > .mkvs-heading-toggle::before {
+  transform: rotate(-45deg);
+}
+
+.explorer .mkvs-heading-toggle:hover {
+  color: var(--secondary);
+}
+
+// Важно: .mkvs-heading имеет display:grid,
+// поэтому одного HTML-атрибута hidden здесь было бы недостаточно.
+.explorer .mkvs-heading.mkvs-heading-hidden {
+  display: none;
+}
 
 // Hover намеренно идёт ПОСЛЕ правил уровней.
 .explorer .mkvs-heading-link:hover {
@@ -329,10 +390,17 @@ article table {
   background: transparent;
 }
 
-// Текущий раздел документа, определяемый scroll-spy.
-.explorer .mkvs-heading-link.mkvs-active-heading {
+// Родитель активного раздела.
+.explorer .mkvs-heading-link.mkvs-active-parent {
   color: var(--secondary);
   font-weight: 600;
+  background: transparent;
+}
+
+// Непосредственно текущий раздел.
+.explorer .mkvs-heading-link.mkvs-active-heading {
+  color: var(--secondary);
+  font-weight: 700;
   background: transparent;
 }
 
