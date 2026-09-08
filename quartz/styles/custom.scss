@@ -1,3 +1,244 @@
-@use "./variables.scss" as *;
+// Кастомные стили сайта МКВС.
+// Копируется (или симлинкуется) в quartz/styles/custom.scss клона Quartz.
+// Задача — приблизить вид страниц к оригинальным PDF-пособиям.
+//
+// Переменные Quartz, доступные здесь: --light, --lightgray, --gray,
+// --darkgray, --dark, --secondary, --tertiary, --highlight, --textHighlight,
+// --headerFont, --bodyFont, --codeFont.
 
-// put your custom CSS here!
+// ---------------------------------------------------------------------------
+// 1. Полоса ширины «листа A4» и типографика основного текста
+// ---------------------------------------------------------------------------
+
+article {
+  // В PDF полоса набора ~17 см при 21 см ширины листа.
+  line-height: 1.55;
+  text-align: left;
+
+  p {
+    margin: 0.6rem 0;
+  }
+
+  // Заголовки частей («Часть 1. …») — как в пособии: слева, полужирные.
+  h2,
+  h3 {
+    font-weight: 700;
+    margin-top: 2rem;
+  }
+
+  // Подписи к рисункам: «*Рисунок 1 – …*» идёт отдельным абзацем курсивом.
+  p > em:only-child {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    color: var(--darkgray);
+    font-size: 0.92em;
+    margin-top: -0.4rem;
+  }
+
+  img {
+    display: block;
+    margin: 1rem auto 0.2rem;
+    border: 1px solid var(--lightgray);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2. Блоки кода: заголовок-«шапка» с именем файла и кнопкой копирования
+// ---------------------------------------------------------------------------
+// Плагин @quartz-community/syntax-highlighting:
+//   * рендерит <figure> с <figcaption> из title="..." ;
+//   * скриптом clipboard.inline.ts вставляет <button class="clipboard-button">
+//     первым потомком <pre>.
+// Два нюанса, из-за которых стили ниже выглядят именно так:
+//   1. Собственный clipboard.scss плагина в npm-сборку не попадает — весь вид
+//      кнопки описываем здесь.
+//   2. Базовый стиль Quartz задаёт pre{position:relative}, из-за чего кнопка
+//      липнет к углу кода. Возвращаем pre{position:static}, тогда её
+//      containing block — <figure>, и кнопка попадает в шапку блока.
+// Итог: шапка вида «lib/dynlist/dynlist.c            [копировать]».
+
+figure[data-rehype-pretty-code-figure] {
+  position: relative;
+  margin: 1rem 0 1.4rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+  overflow: hidden;
+
+  figcaption[data-rehype-pretty-code-title] {
+    font-family: var(--codeFont);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    padding: 0.5rem 3rem 0.5rem 0.8rem; // справа — место под кнопку
+    background: var(--lightgray);
+    color: var(--darkgray);
+  }
+
+  pre {
+    position: static; // см. п.2 выше
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  button.clipboard-button {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.4rem;
+    z-index: 1;
+    display: flex;
+    padding: 0.3rem;
+    color: var(--darkgray);
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+
+    & > svg {
+      fill: currentColor;
+    }
+
+    &:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    &:focus {
+      outline: 0;
+      border-color: var(--secondary);
+    }
+  }
+
+  // Блок кода без title: шапки нет, кнопка ложится на первую строку —
+  // отодвигаем код, чтобы она ничего не перекрывала.
+  &:not(:has(figcaption)) pre {
+    padding-top: 1.6rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. Callout'ы = пиктограммы «обозначений» из пособия
+// ---------------------------------------------------------------------------
+// Соответствие пиктограмм PDF и типов callout, используемых в текстах.
+// Семь пиктограмм — семь разных типов, чтобы каждую можно было подменить
+// своей иконкой. [!important] НЕ использовать: в Quartz это синоним [!tip].
+//   ! в облачке          -> [!warning]   «Важная информация»
+//   скрепка              -> [!note]      «Важное примечание»
+//   дом с Wi-Fi          -> [!todo]      «Выполнить при подготовке к ЛР»
+//   планшет с карандашом -> [!abstract]  «Сделать запись в конспект»
+//   чертёж               -> [!info]      «Изучить документ при подготовке»
+//   клавиатура           -> [!example]   «Перепечатать текст программы»
+//   стрелка              -> [!tip]       «Скопировать через буфер обмена»
+//
+.callout {
+  border-radius: 4px;
+}
+
+// Клавиатура — ручной ввод; два листа — копирование через буфер обмена.
+// Векторные маски наследуют цвет темы и остаются различимыми при печати.
+.callout[data-callout="example"] {
+  --callout-icon: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"%3E%3Crect x="2" y="5" width="20" height="14" rx="2"/%3E%3Cpath d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10"/%3E%3C/svg%3E');
+}
+
+.callout[data-callout="tip"] {
+  --callout-icon: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linejoin="round"%3E%3Crect x="8" y="8" width="13" height="13" rx="2"/%3E%3Cpath d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/%3E%3C/svg%3E');
+}
+
+// ---------------------------------------------------------------------------
+// 4. Таблицы (таблица параметров platformio.ini и т.п.)
+// ---------------------------------------------------------------------------
+
+article table {
+  font-size: 0.9rem;
+
+  th {
+    background: var(--lightgray);
+    text-align: left;
+  }
+
+  td,
+  th {
+    vertical-align: top;
+    border: 1px solid var(--lightgray);
+    padding: 0.4rem 0.55rem;
+  }
+
+  code {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Печать: страница должна выводиться близко к исходному PDF
+// ---------------------------------------------------------------------------
+
+@media print {
+  .sidebar,
+  .page > #quartz-body > .left,
+  .page > #quartz-body > .right,
+  footer {
+    display: none !important;
+  }
+
+  article {
+    max-width: 100%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Название сайта и заголовки работ в Проводнике
+// ---------------------------------------------------------------------------
+
+// Расширяем только левую колонку; мобильная компоновка остаётся одноколоночной.
+@media (min-width: 801px) {
+  .page > #quartz-body > .sidebar.left {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 801px) and (max-width: 1200px) {
+  .page > #quartz-body {
+    grid-template-columns: 380px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1201px) {
+  .page {
+    max-width: 1560px;
+  }
+
+  .page > #quartz-body {
+    grid-template-columns: 380px minmax(0, 1fr) 320px;
+  }
+}
+
+.page-title,
+.page-title a {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+@media (max-width: 800px) {
+  .page-title {
+    font-size: clamp(1rem, 4vw, 1.75rem);
+    min-width: 0;
+  }
+}
+
+.explorer .mkvs-heading {
+  padding-left: calc(0.5rem + var(--heading-depth, 0) * 0.75rem);
+}
+
+.explorer .mkvs-heading-link {
+  display: block;
+  padding: 0.2rem 0;
+  font-size: 0.88rem;
+  font-weight: 400;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
