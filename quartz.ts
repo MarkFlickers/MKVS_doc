@@ -6,6 +6,7 @@ import SearchPreview from "./quartz/components/MkvsSearchPreview"
 import SidebarToggle from "./quartz/components/MkvsSidebarToggle"
 import Glossary from "./quartz/components/MkvsGlossary"
 import GlossaryBack from "./quartz/components/MkvsGlossaryBack"
+import MobileBar from "./quartz/components/MkvsMobileBar"
 
 const config = await loadQuartzConfig()
 export default config
@@ -41,6 +42,12 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
   // afterBody — он присутствует во всех раскладках.
   if (!pageLayout.afterBody?.includes(Glossary)) {
     pageLayout.afterBody = [...(pageLayout.afterBody ?? []), Glossary]
+  }
+
+  // Сборка верхней панели на телефоне. Скрипту тоже нужна любая страница,
+  // поэтому компонент живёт рядом с глоссарием — в afterBody.
+  if (!pageLayout.afterBody?.includes(MobileBar)) {
+    pageLayout.afterBody = [...(pageLayout.afterBody ?? []), MobileBar]
   }
 }
 

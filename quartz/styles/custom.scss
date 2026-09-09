@@ -878,3 +878,179 @@ article.glossary-list ul {
   color: var(--tertiary);
   border-color: var(--secondary);
 }
+
+// ---------------------------------------------------------------------------
+// 12. Телефон: закреплённая верхняя панель
+// ---------------------------------------------------------------------------
+// На узком экране левая колонка Quartz превращается в строку над текстом. Здесь
+// она закрепляется у верхнего края окна и собирает все четыре кнопки:
+//
+//   [☰ Проводник]  ···  [тема] [поиск] [оглавление]
+//
+// Переключатель темы и оглавление приезжают сюда из других мест разметки —
+// узлы переносит mkvs-mobile-bar.inline.ts, см. MkvsMobileBar.tsx.
+
+@media (max-width: 800px) {
+  // Селектор длиннее штатного намеренно: плагин Проводника задаёт этой же
+  // колонке position: sticky, а стили плагинов подключаются после index.css и
+  // при равной специфичности побеждают. :root добавляет вес, ничего не меняя.
+  :root .page > #quartz-body > .sidebar.left:has(.explorer) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    // Выше выезжающего дерева Проводника (.explorer-content, z-index 100),
+    // чтобы «гамбургер» оставался нажимаемым и при открытом дереве.
+    z-index: 101;
+
+    box-sizing: border-box;
+    height: 3rem;
+    margin: 0;
+    padding: 0 1rem;
+    gap: 0.6rem;
+    align-items: center;
+
+    background: var(--light);
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  // Колонка ушла из потока — её место в сетке освободилось, и текст встал бы
+  // под панель. Возвращаем отступ странице; scroll-padding нужен, чтобы
+  // переход по якорю не прятал заголовок под панелью.
+  .page > #quartz-body {
+    padding-top: 4rem;
+  }
+
+  html {
+    scroll-padding-top: 4rem;
+  }
+
+  // Панель над текстом (кнопка «Назад» глоссария) прижимается уже под верхней.
+  // Отступы держит сама кнопка: переключатель темы уехал наверх, и на всех
+  // страницах, кроме статей глоссария, панель пустая — её поля были бы
+  // ничем не занятой полосой над текстом.
+  .page > #quartz-body header {
+    top: 3.4rem;
+    margin: 0;
+  }
+
+  .page > #quartz-body header .mkvs-glossary-back {
+    margin: 0.6rem 0;
+  }
+
+  // Название сайта в панели не помещается и не нужно: на главную ведут
+  // «хлебные крошки» и Проводник.
+  .page > #quartz-body > .sidebar.left > .page-title {
+    display: none;
+  }
+
+  // Порядок кнопок. Распорка (.spacer, order 0) остаётся между Проводником и
+  // остальными и разводит их по краям панели.
+  .page > #quartz-body > .sidebar.left > .darkmode {
+    order: 1;
+  }
+
+  .page > #quartz-body > .sidebar.left > .search {
+    order: 2;
+  }
+
+  .page > #quartz-body > .sidebar.left > .toc {
+    order: 3;
+  }
+
+  // --- кнопки панели --------------------------------------------------------
+
+  // Все три правые кнопки — одного размера, удобного для пальца.
+  .page > #quartz-body > .sidebar.left > .darkmode,
+  .page > #quartz-body > .sidebar.left > .search > .search-button,
+  .page > #quartz-body > .sidebar.left > .toc > .toc-header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  // Иконку плагин позиционирует абсолютно и центрирует только по вертикали.
+  .page > #quartz-body > .sidebar.left > .darkmode svg {
+    left: calc(50% - 10px);
+  }
+
+  // Поиск в панели — только лупа: подпись «Поиск» съела бы всю строку.
+  .page > #quartz-body > .sidebar.left > .search {
+    min-width: 0;
+    max-width: none;
+    flex: 0 0 auto;
+  }
+
+  .page > #quartz-body > .sidebar.left > .search > .search-button > p {
+    display: none;
+  }
+
+  // Рамка кнопки поиска в панели лишняя: рядом стоят такие же по размеру
+  // кнопки темы и оглавления, и они рисуются одной иконкой.
+  .page > #quartz-body > .sidebar.left > .search > .search-button {
+    border: none;
+  }
+
+  .page > #quartz-body > .sidebar.left > .search > .search-button svg {
+    margin: 0;
+  }
+
+  // --- оглавление -----------------------------------------------------------
+
+  // Штатный .toc — колонка с заголовком и списком, свёрнутое состояние он
+  // изображает сжатием по высоте. В панели это кнопка со списком-выпадашкой,
+  // поэтому и раскладку, и способ скрытия задаём заново.
+  .page > #quartz-body > .sidebar.left > .toc {
+    position: static;
+    display: block;
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .page > #quartz-body > .sidebar.left > .toc > .toc-header > h3,
+  .page > #quartz-body > .sidebar.left > .toc > .toc-header > .fold {
+    display: none;
+  }
+
+  // Иконка-«список» вместо заголовка «Оглавление». Рисуется маской, чтобы
+  // цвет брался из темы и не пришлось вставлять svg скриптом.
+  .page > #quartz-body > .sidebar.left > .toc > .toc-header::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    background-color: var(--darkgray);
+    $toc-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'/%3E%3C/svg%3E");
+    -webkit-mask: $toc-icon center / contain no-repeat;
+    mask: $toc-icon center / contain no-repeat;
+  }
+
+  // Список выпадает из-под панели: containing block — сама панель (она
+  // position: fixed), поэтому top отсчитывается от её верхнего края.
+  .page > #quartz-body > .sidebar.left > .toc > .toc-content {
+    position: absolute;
+    top: 3rem;
+    left: 0;
+    right: 0;
+    z-index: 100;
+
+    box-sizing: border-box;
+    max-height: calc(100dvh - 4.5rem);
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.8rem 1rem 1rem;
+
+    background: var(--light);
+    border-bottom: 1px solid var(--lightgray);
+    box-shadow: 0 8px 16px rgb(0 0 0 / 12%);
+  }
+
+  .page > #quartz-body > .sidebar.left > .toc > .toc-content.collapsed {
+    display: none;
+  }
+}
