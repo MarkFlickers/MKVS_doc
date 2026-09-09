@@ -8,6 +8,7 @@ import SidebarToggle from "./quartz/components/MkvsSidebarToggle"
 import Glossary from "./quartz/components/MkvsGlossary"
 import GlossaryBack from "./quartz/components/MkvsGlossaryBack"
 import MobileBar from "./quartz/components/MkvsMobileBar"
+import PrevNext from "./quartz/components/MkvsPrevNext"
 
 const config = await loadQuartzConfig()
 export default config
@@ -37,6 +38,13 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
   // Сворачивание разделов и подсветка текущего раздела в оглавлении.
   if (pageLayout.right?.length && !pageLayout.right.includes(TocCollapse)) {
     pageLayout.right = [...pageLayout.right, TocCollapse]
+  }
+
+  // Кнопки «Предыдущее/Следующее» — первыми под текстом страницы, до
+  // компонентов-невидимок ниже. Раскладка afterBody выводит их сразу за
+  // разделительной чертой в подвале статьи (components/frames/DefaultFrame.tsx).
+  if (!pageLayout.afterBody?.includes(PrevNext)) {
+    pageLayout.afterBody = [PrevNext, ...(pageLayout.afterBody ?? [])]
   }
 
   // Подсказки к терминам глоссария. Скрипт нужен в теле любой страницы, а не

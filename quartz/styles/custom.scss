@@ -1331,3 +1331,132 @@ article.glossary-list ul {
     text-decoration: underline;
   }
 }
+
+// ---------------------------------------------------------------------------
+// 16. Кнопки «Предыдущее / Следующее»
+// ---------------------------------------------------------------------------
+// Компонент MkvsPrevNext.tsx выводится первым в afterBody, то есть в подвале
+// статьи — сразу под разделительной чертой, которую рисует раскладка
+// (components/frames/DefaultFrame.tsx). Порядок страниц — тот же, что в
+// Проводнике, см. комментарий в самом компоненте.
+//
+// Раскладка — сетка из двух колонок на любой ширине экрана: «предыдущее»
+// слева, «следующее» справа. Колонки заданы явно, а не через
+// justify-content: space-between, по двум причинам: одинокая кнопка
+// «Следующее» на первой странице цепочки иначе прижалась бы к левому краю, а
+// две кнопки получились бы разной высоты.
+//
+// На телефоне кнопки НЕ встают друг под друга: пара «назад-вперёд» читается
+// как пара, только когда стоит в строку. Названия разделов в пособии длинные,
+// поэтому вместо сужения колонок им разрешён перенос на любое число строк —
+// кнопка становится выше, но название остаётся целым.
+
+.mkvs-prevnext {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  margin: 1.5rem 0 0.5rem;
+}
+
+.mkvs-prevnext-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  padding: 0.7rem 0.9rem;
+
+  text-decoration: none;
+  color: var(--secondary);
+
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  // Базовые стили Quartz подсвечивают фон ссылки при наведении и красят её
+  // в --tertiary; на плашке нужен ещё и заметный контур.
+  &:hover,
+  &:focus-visible {
+    border-color: var(--secondary);
+    background-color: var(--highlight);
+  }
+}
+
+// Каждая кнопка закреплена за своей колонкой: пропуск соседа не сдвигает ту,
+// что осталась.
+.mkvs-prevnext-prev {
+  grid-column: 1;
+}
+
+.mkvs-prevnext-next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.mkvs-prevnext-arrow {
+  flex: none;
+}
+
+// flex: 1 обязателен: без него блок с подписью и названием сжимается по
+// содержимому, и в кнопке «Следующее» текст со стрелкой сбиваются к левому
+// краю плашки вместо правого.
+.mkvs-prevnext-text {
+  flex: 1;
+  min-width: 0; // без этого длинное название распирает колонку сетки
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.mkvs-prevnext-next .mkvs-prevnext-text {
+  align-items: flex-end;
+}
+
+.mkvs-prevnext-label {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: var(--gray);
+}
+
+.mkvs-prevnext-title {
+  font-family: var(--headerFont);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+
+  // В узкой колонке на телефоне длинное слово («Микроконтроллеры») шире
+  // колонки, и без переноса внутри слова страница поехала бы вбок.
+  overflow-wrap: break-word;
+}
+
+// Телефон: колонки те же две, но плашки ужимаются — иначе на каждое название
+// остаётся по полтора слова в строке.
+@media (max-width: 800px) {
+  .mkvs-prevnext {
+    gap: 0.5rem;
+  }
+
+  .mkvs-prevnext-item {
+    gap: 0.4rem;
+    padding: 0.55rem 0.6rem;
+  }
+
+  .mkvs-prevnext-label {
+    font-size: 0.75rem;
+  }
+
+  .mkvs-prevnext-title {
+    font-size: 0.85rem;
+  }
+}
+
+// В печатной версии переходы по сайту бессмысленны.
+@media print {
+  .mkvs-prevnext {
+    display: none;
+  }
+}
