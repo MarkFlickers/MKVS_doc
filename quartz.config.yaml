@@ -254,7 +254,7 @@ plugins:
     enabled: true
     options:
       links:
-        Репозиторий: https://github.com/
+        Репозиторий: https://github.com/MarkFlickers/MKVS_doc
     layout:
       position: footer
       priority: 50
