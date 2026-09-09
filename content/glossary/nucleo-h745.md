@@ -17,5 +17,5 @@ tags:
 - разъём **USB OTG**, который в лабораторных работах подключать не следует.
 
 Общее описание платы и порядок работы с ней — в документе
-`UM2408 - nucleo-h745.pdf` (Board User Manual), электрическая схема — в
-`MB1363-stm32h745zi.pdf`.
+[UM2408](docs/um2408-nucleo-h745.pdf) (Board User Manual), электрическая схема — в
+[MB1363](docs/mb1363-nucleo-h745zi-schematic.pdf).

@@ -48,8 +48,8 @@ tags:
 ## Литература и внешние ресурсы
 
 > [!info] Изучить документы во время подготовки к лабораторной работе
-> 1. `RM0399 - stm32h745.pdf` (папка Docs), разделы 12 и 9.7.42.
-> 2. `UM2408 - nucleo-h745.pdf` (папка Docs), разделы 1, 6.1, 6.6, 6.7, 6.9–6.11.
+> 1. [RM0399](docs/rm0399-stm32h745.pdf) — разделы [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) и [9.7.42 RCC_AHB4ENR](docs/rm0399-stm32h745.pdf#page=492).
+> 2. [UM2408](docs/um2408-nucleo-h745.pdf) — разделы [1 Features](docs/um2408-nucleo-h745.pdf#page=7), [6.1 Nucleo-144 board layout](docs/um2408-nucleo-h745.pdf#page=13), [6.6 LEDs](docs/um2408-nucleo-h745.pdf#page=27), [6.7 Push-buttons](docs/um2408-nucleo-h745.pdf#page=28), [6.9–6.11](docs/um2408-nucleo-h745.pdf#page=28).
 > 3. STM32. Процесс компиляции и сборки прошивки.
 > 4. Don't Repeat Yourself: как правильно использовать принцип DRY в разработке ПО.
 > 5. «The GNU linker».
