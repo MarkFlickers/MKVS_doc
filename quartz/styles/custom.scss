@@ -1178,3 +1178,75 @@ article.glossary-list ul {
     border-radius: 4px;
   }
 }
+
+// ---------------------------------------------------------------------------
+// 15. Кнопка «Скачать файлы работы»
+// ---------------------------------------------------------------------------
+// На титульной странице каждой работы есть ссылка на архив с файлами для
+// проекта (content/labNN/resources/*.zip, собирается tools/pack-resources.ps1).
+// В markdown это обычная ссылка <a class="mkvs-download">, поэтому отдельного
+// компонента нет — весь вид задаётся здесь.
+//
+// В разметке у ссылки стоят три атрибута, без которых архив не скачивается,
+// а «открывается»:
+//   download          — браузер сохраняет файл, а не уходит с сайта;
+//   data-router-ignore — SPA-роутер (spa.inline.ts) не перехватывает щелчок;
+//   data-no-popover    — всплывающая подсказка не тянет архив при наведении.
+
+.mkvs-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+
+  margin: 1rem 0;
+  padding: 0.6rem 1.1rem;
+
+  font-family: var(--headerFont);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+
+  color: var(--light);
+  background-color: var(--secondary);
+  border-radius: 6px;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+
+  // Стрелка «вниз к полке» — тем же приёмом, что и пиктограммы callout'ов:
+  // векторная маска красится currentColor и остаётся чёткой при печати.
+  &::before {
+    content: "";
+    flex: none;
+    width: 1.15em;
+    height: 1.15em;
+
+    background-color: currentColor;
+    mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M12 3v12"/%3E%3Cpath d="m7 10 5 5 5-5"/%3E%3Cpath d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/%3E%3C/svg%3E')
+      center / contain no-repeat;
+  }
+
+  // Базовые стили Quartz красят ссылки в --secondary и подсвечивают фон при
+  // наведении — на плашке это выглядело бы как пропадающий текст.
+  &:hover,
+  &:focus-visible {
+    color: var(--light);
+    background-color: var(--tertiary);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// В печатной версии плашка ни к чему: остаётся подчёркнутая подпись.
+@media print {
+  .mkvs-download {
+    padding: 0;
+    color: var(--dark);
+    background: none;
+    text-decoration: underline;
+  }
+}

@@ -53,6 +53,16 @@ PlatformIO и VS Code – это свободно распространяемы
    - ответить на теоретические вопросы и вопросы по представленному решению;
    - выполнить дополнительное практическое задание по теме работы.
 
+## Файлы к работе
+
+Заготовки, которые понадобятся в проекте, собраны в архиве. Документы к работе скачивать не нужно: они открываются прямо в браузере на странице [[docs/index\|Документация]].
+
+<a class="mkvs-download" href="lab01/resources/mkvs-26-lr1-resources.zip" download data-router-ignore data-no-popover="true">Скачать файлы работы — ZIP, 7 КБ</a>
+
+В архиве:
+
+- `misra/` — аддон MISRA для [[glossary/cppcheck\|Cppcheck]]: настройка `misra.json` и тексты правил `misra-rules.txt`. Понадобится в задании 2.
+
 ## Литература и внешние ресурсы
 
 > [!info] Изучить документы во время подготовки к лабораторной работе
@@ -61,9 +71,9 @@ PlatformIO и VS Code – это свободно распространяемы
 > 3. А. Волконский. Основные структуры данных.
 > 4. Doxygen. Documenting the code.
 > 5. DevDocs: API Documentation Browser.
-> 6. Roberto Bagnara. The MISRA C Coding Standard: A Key Enabler for the Development of Safety-and Security-Critical Embedded Software // Resource: “On_the_MISRA_C_Coding_Standard”
+> 6. Roberto Bagnara. [The MISRA C Coding Standard: A Key Enabler for the Development of Safety- and Security-Critical Embedded Software](docs/on-the-misra-c-coding-standard.pdf).
 > 7. Георгий Грибков. Что такое MISRA и как её готовить.
 > 8. 10 правил, которые позволяют NASA писать миллионы строк кода с минимальными ошибками
-> 9. MISRA C:2012 Guidelines // Resource: MISRA-C-2012_Guidelines.pdf
-> 10. Руководство Cppcheck Manual. // Resource: “Сppcheck manual.pdf”
+> 9. [MISRA C:2012 Guidelines](docs/misra-c-2012-guidelines.pdf).
+> 10. [Руководство Cppcheck Manual](docs/cppcheck-manual.pdf).
 > 11. Unity — начало работы.
