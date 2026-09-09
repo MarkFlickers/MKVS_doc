@@ -37,24 +37,33 @@ year: 2026
 > [!abstract] Сделать запись в конспект
 > 8. Определите и запишите в конспект версию PlatformIO, используя терминал:
 >
-> > [!example] Ввести команду вручную
-> > ```shell
-> > pio system info
-> > ```
+> <div class="mkvs-retype">
+>
+> ```shell
+> pio system info
+> ```
+>
+> </div>
 
 9. Ознакомьтесь со списком установленных пакетов в PlatformIO:
 
-> [!example] Ввести команду вручную
-> ```shell
-> pio pkg list -g
-> ```
+<div class="mkvs-retype">
+
+```shell
+pio pkg list -g
+```
+
+</div>
 
 10. Выведите список плат, поддерживаемых установленными платформами:
 
-> [!example] Ввести команду вручную
-> ```shell
-> pio boards --installed
-> ```
+<div class="mkvs-retype">
+
+```shell
+pio boards --installed
+```
+
+</div>
 
 ## Часть 2. Создание проекта PlatformIO
 
@@ -79,10 +88,13 @@ year: 2026
 
    4.1. Выполните команду в терминале PlatformIO:
 
-> [!example] Ввести команду вручную
-> ```shell
-> pio project init
-> ```
+<div class="mkvs-retype">
+
+```shell
+pio project init
+```
+
+</div>
 
    4.2. Убедитесь во вкладке Explorer основной панели, что в корневой папке проекта создан файл `platformio.ini`.
 
@@ -129,23 +141,26 @@ year: 2026
 
 2. Добавьте в файл проекта `platformio.ini` окружение для сборки программы helloworld на компьютере (среда native). Отредактируйте файл `platformio.ini` в соответствии с листингом 1.
 
-> [!example] Текст программы рекомендуется перепечатать
-> **Листинг 1: platformio.ini**
->
-> ```ini title="platformio.ini" showLineNumbers
-> [platformio] ; глобальные параметры
-> description = "Hello World Example"
->
-> [env]
-> platform = native ; ПО для хост-компьютера
-> build_flags = -O0
->   -std=c11 ; стандарт С11
->   -Wall ; вывод всех предупреждений компилятора
->
-> [env:helloworld] ; окружение для программы hello world
-> build_type = debug ; включить символы отладки
-> build_src_filter = +<helloworld/*.c> ; папка с исходными кодами /src/helloworld
-> ```
+**Листинг 1: platformio.ini**
+
+<div class="mkvs-retype">
+
+```ini title="platformio.ini" showLineNumbers
+[platformio] ; глобальные параметры
+description = "Hello World Example"
+
+[env]
+platform = native ; ПО для хост-компьютера
+build_flags = -O0
+  -std=c11 ; стандарт С11
+  -Wall ; вывод всех предупреждений компилятора
+
+[env:helloworld] ; окружение для программы hello world
+build_type = debug ; включить символы отладки
+build_src_filter = +<helloworld/*.c> ; папка с исходными кодами /src/helloworld
+```
+
+</div>
 
 3. Сохраните введённый в файл `platformio.ini` текст, нажав CTRL+S.
 
@@ -195,16 +210,19 @@ year: 2026
 
    1.2. Введите текст программы, которая выводит приветствие.
 
-> [!example] Текст программы рекомендуется перепечатать
-> **Листинг 2: src/helloworld/helloworld.c**
->
-> ```c title="src/helloworld/helloworld.c" showLineNumbers
-> #include <stdio.h>
->
-> int main() {
->     puts(u8"\nПривет МИЭТ!");
-> }
-> ```
+**Листинг 2: src/helloworld/helloworld.c**
+
+<div class="mkvs-retype">
+
+```c title="src/helloworld/helloworld.c" showLineNumbers
+#include <stdio.h>
+
+int main() {
+    puts(u8"\nПривет МИЭТ!");
+}
+```
+
+</div>
 
 2. Выполните сборку и запуск программы с помощью интерфейса командной строки PlatformIO.
 
@@ -224,10 +242,13 @@ year: 2026
 
    2.6. Запустите программу:
 
-> [!example] Ввести команду вручную
-> ```shell
-> pio run -e helloworld -t exec
-> ```
+<div class="mkvs-retype">
+
+```shell
+pio run -e helloworld -t exec
+```
+
+</div>
 
    Убедитесь, что программа выводит строку приветствия.
 
@@ -263,199 +284,200 @@ year: 2026
 
    2.1. Создайте в папке `lib` директорию `dynlist` с файлами `dynlist.h` (заголовочный файл библиотеки) и `dynlist.c` (файл реализации), затем скопируйте в них приведённый ниже код.
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 3: lib/dynlist/dynlist.h**
->
-> ```c title="lib/dynlist/dynlist.h" showLineNumbers
-> #pragma once
->
-> #ifdef __cplusplus
-> extern "C" {
-> #endif
->
-> typedef struct DynlistDescriptor DynlistDescriptor;
-> typedef struct DynlistNode DynlistNode;
-> typedef struct DynlistDescriptor *Dynlist;
-> typedef void (*dynlist_pval_func_t)(void *val);
->
-> __attribute__((warn_unused_result)) Dynlist dynlist_new(dynlist_pval_func_t clean_val_func);
-> void dynlist_free(Dynlist plist);
-> void dynlist_append(Dynlist list, void *value);
-> void dynlist_prepend(Dynlist list, void *value);
-> void dynlist_foreach(Dynlist list, dynlist_pval_func_t do_func);
-> struct DynlistNode *dynlist_begin(Dynlist list);
-> struct DynlistNode *dynlist_next(struct DynlistNode *node);
-> void *dynlist_value(struct DynlistNode *node);
->
-> #ifdef __cplusplus
-> }
-> #endif
-> ```
+**Листинг 3: lib/dynlist/dynlist.h**
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 4: lib/dynlist/dynlist.c**
->
-> ```c title="lib/dynlist/dynlist.c" showLineNumbers
-> #include "dynlist.h"
-> #include <stdlib.h>
->
-> /* ======== Закрытые структуры и функции библиотеки ======================*/
->
-> struct DynlistNode {
->     void *value;
->     DynlistNode *next;
-> };
->
-> struct DynlistDescriptor {
->     DynlistNode *head;
->     dynlist_pval_func_t clean_value_cb;
-> };
->
-> /**
->  * @brief Создать и вернуть узел списка
->  * @param val - указатель на элемент
->  * @return Указатель на узел списка или NULL (ошибка памяти) */
-> static DynlistNode *make_new_node(void *val) {
->     DynlistNode *node = (DynlistNode *)malloc(sizeof(DynlistNode));
->     node->value = val;
->     node->next = NULL;
->     return node;
-> }
->
-> /**
->  * @brief Вставка цепочки узлов после узла @a pos
->  * @param pos - указатель на узел, после которого будет вставлена цепочка
->  * @param items - вставляемая цепочка узлов
->  * @note допускается указывать NULL для параметров pos и items
->  * @return первый узел полученной цепочки узлов */
-> static DynlistNode *insert_nodes(DynlistNode *pos, DynlistNode *items) {
->     if (!items)
->         return pos;
->     if (!pos)
->         return items;
->     DynlistNode *tail = pos->next;
->     pos->next = items;
->     while (items->next) {
->         items = items->next;
->     }
->     items->next = tail;
->     return pos;
-> }
->
-> /* ======== Открытые функции библиотеки ==================================*/
->
-> /**
->  * @brief Создать и вернуть новый пустой список
->  * @param free_val_func - указатель на функцию освобождения ресурсов элемента,
->  * может быть NULL
->  * @return Дескриптор списка или NULL (ошибка памяти)
->  * @note В списке хранятся указатели на элементы. Если передаётся ненулевой указатель на @a
->  free_val_func, то в @a dynlist_free освобождаются ресурсы хранимых элементов */
-> Dynlist dynlist_new(dynlist_pval_func_t free_val_func) {
->     Dynlist list = (DynlistDescriptor *)calloc(1, sizeof(DynlistDescriptor));
->     if (list)
->         list->clean_value_cb = free_val_func;
->     return list;
->     list = NULL; // для демонстрации работы cppcheck
-> }
->
-> /**
->  * @brief Освободить ресурсы, занимаемые списком
->  * @param list - список */
-> void dynlist_free(Dynlist list) {
->     if (list) {
->         DynlistNode *node = list->head;
->         while (node) {
->             DynlistNode *next = node->next;
->             if (list->clean_value_cb) {
->                 list->clean_value_cb(node->value);
->             }
->             free(node);
->             node = next;
->         }
->         free(list);
->     }
-> }
->
-> /**
->  * @brief Обойти список и применить функцию к каждому элементу
->  * @param list - указатель на список (начало)
->  * @param do_func - функция обработки */
-> void dynlist_foreach(Dynlist list, dynlist_pval_func_t do_func) {
->     if (do_func && list && list->head) {
->         DynlistNode *node = list->head;
->         while (node) {
->             do_func(node->value);
->             node = node->next;
->         }
->     }
-> }
->
-> /**
->  * @brief Добавить элемент в конец списка
->  * @param list - список
->  * @param value - указатель на элемент */
-> void dynlist_append(Dynlist list, void *value) {
->     if (!list)
->         return;
->     if (!list->head) {
->         list->head = insert_nodes(list->head, make_new_node(value));
->     } else {
->         DynlistNode *tail = list->head;
->         while (tail->next) {
->             tail = tail->next;
->         }
->         insert_nodes(tail, make_new_node(value));
->     }
-> }
->
-> /**
->  * @brief Добавить элемент в начало списка
->  * @param list - список
->  * @param value - указатель на элемент */
-> void dynlist_prepend(Dynlist list, void *value) {
->     if (list) {
->         DynlistNode *new_head = make_new_node(value);
->         insert_nodes(new_head, list->head);
->         list->head = new_head;
->     }
-> }
->
-> /**
->  * @brief Получить указатель на первый узел (итератор) списка
->  * @return NULL, если список пустой или не существует, либо указатель на первый узел */
-> struct DynlistNode *dynlist_begin(Dynlist list) { return list ? list->head : NULL; }
->
-> /**
->  * @brief Получить указатель на следующий узел (итератор) списка
->  * @return NULL, если достигнут конец списка */
-> struct DynlistNode *dynlist_next(struct DynlistNode *node) { return node?node->next:NULL;}
->
-> /** @brief Получить указатель на значение, хранимое в узле списка */
-> void *dynlist_value(struct DynlistNode *node) { return node ? node->value : NULL; }
-> ```
+```c title="lib/dynlist/dynlist.h" showLineNumbers
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct DynlistDescriptor DynlistDescriptor;
+typedef struct DynlistNode DynlistNode;
+typedef struct DynlistDescriptor *Dynlist;
+typedef void (*dynlist_pval_func_t)(void *val);
+
+__attribute__((warn_unused_result)) Dynlist dynlist_new(dynlist_pval_func_t clean_val_func);
+void dynlist_free(Dynlist plist);
+void dynlist_append(Dynlist list, void *value);
+void dynlist_prepend(Dynlist list, void *value);
+void dynlist_foreach(Dynlist list, dynlist_pval_func_t do_func);
+struct DynlistNode *dynlist_begin(Dynlist list);
+struct DynlistNode *dynlist_next(struct DynlistNode *node);
+void *dynlist_value(struct DynlistNode *node);
+
+#ifdef __cplusplus
+}
+#endif
+```
+
+**Листинг 4: lib/dynlist/dynlist.c**
+
+```c title="lib/dynlist/dynlist.c" showLineNumbers
+#include "dynlist.h"
+#include <stdlib.h>
+
+/* ======== Закрытые структуры и функции библиотеки ======================*/
+
+struct DynlistNode {
+    void *value;
+    DynlistNode *next;
+};
+
+struct DynlistDescriptor {
+    DynlistNode *head;
+    dynlist_pval_func_t clean_value_cb;
+};
+
+/**
+ * @brief Создать и вернуть узел списка
+ * @param val - указатель на элемент
+ * @return Указатель на узел списка или NULL (ошибка памяти) */
+static DynlistNode *make_new_node(void *val) {
+    DynlistNode *node = (DynlistNode *)malloc(sizeof(DynlistNode));
+    node->value = val;
+    node->next = NULL;
+    return node;
+}
+
+/**
+ * @brief Вставка цепочки узлов после узла @a pos
+ * @param pos - указатель на узел, после которого будет вставлена цепочка
+ * @param items - вставляемая цепочка узлов
+ * @note допускается указывать NULL для параметров pos и items
+ * @return первый узел полученной цепочки узлов */
+static DynlistNode *insert_nodes(DynlistNode *pos, DynlistNode *items) {
+    if (!items)
+        return pos;
+    if (!pos)
+        return items;
+    DynlistNode *tail = pos->next;
+    pos->next = items;
+    while (items->next) {
+        items = items->next;
+    }
+    items->next = tail;
+    return pos;
+}
+
+/* ======== Открытые функции библиотеки ==================================*/
+
+/**
+ * @brief Создать и вернуть новый пустой список
+ * @param free_val_func - указатель на функцию освобождения ресурсов элемента,
+ * может быть NULL
+ * @return Дескриптор списка или NULL (ошибка памяти)
+ * @note В списке хранятся указатели на элементы. Если передаётся ненулевой указатель на @a
+ free_val_func, то в @a dynlist_free освобождаются ресурсы хранимых элементов */
+Dynlist dynlist_new(dynlist_pval_func_t free_val_func) {
+    Dynlist list = (DynlistDescriptor *)calloc(1, sizeof(DynlistDescriptor));
+    if (list)
+        list->clean_value_cb = free_val_func;
+    return list;
+    list = NULL; // для демонстрации работы cppcheck
+}
+
+/**
+ * @brief Освободить ресурсы, занимаемые списком
+ * @param list - список */
+void dynlist_free(Dynlist list) {
+    if (list) {
+        DynlistNode *node = list->head;
+        while (node) {
+            DynlistNode *next = node->next;
+            if (list->clean_value_cb) {
+                list->clean_value_cb(node->value);
+            }
+            free(node);
+            node = next;
+        }
+        free(list);
+    }
+}
+
+/**
+ * @brief Обойти список и применить функцию к каждому элементу
+ * @param list - указатель на список (начало)
+ * @param do_func - функция обработки */
+void dynlist_foreach(Dynlist list, dynlist_pval_func_t do_func) {
+    if (do_func && list && list->head) {
+        DynlistNode *node = list->head;
+        while (node) {
+            do_func(node->value);
+            node = node->next;
+        }
+    }
+}
+
+/**
+ * @brief Добавить элемент в конец списка
+ * @param list - список
+ * @param value - указатель на элемент */
+void dynlist_append(Dynlist list, void *value) {
+    if (!list)
+        return;
+    if (!list->head) {
+        list->head = insert_nodes(list->head, make_new_node(value));
+    } else {
+        DynlistNode *tail = list->head;
+        while (tail->next) {
+            tail = tail->next;
+        }
+        insert_nodes(tail, make_new_node(value));
+    }
+}
+
+/**
+ * @brief Добавить элемент в начало списка
+ * @param list - список
+ * @param value - указатель на элемент */
+void dynlist_prepend(Dynlist list, void *value) {
+    if (list) {
+        DynlistNode *new_head = make_new_node(value);
+        insert_nodes(new_head, list->head);
+        list->head = new_head;
+    }
+}
+
+/**
+ * @brief Получить указатель на первый узел (итератор) списка
+ * @return NULL, если список пустой или не существует, либо указатель на первый узел */
+struct DynlistNode *dynlist_begin(Dynlist list) { return list ? list->head : NULL; }
+
+/**
+ * @brief Получить указатель на следующий узел (итератор) списка
+ * @return NULL, если достигнут конец списка */
+struct DynlistNode *dynlist_next(struct DynlistNode *node) { return node?node->next:NULL;}
+
+/** @brief Получить указатель на значение, хранимое в узле списка */
+void *dynlist_value(struct DynlistNode *node) { return node ? node->value : NULL; }
+```
 
    2.2. Измените файл `helloworld.c` таким образом, чтобы в нём использовалась библиотека динамического списка:
 
-> [!example] Текст программы рекомендуется перепечатать
-> **Листинг 5: src/helloworld/helloworld.c**
->
-> ```c title="src/helloworld/helloworld.c" showLineNumbers
-> #include <dynlist.h>
-> #include <stdio.h>
->
-> static void handle_item_puts(void *val) {
->     puts((const char *)val);
-> }
->
-> int main() {
->     Dynlist list = dynlist_new(NULL);
->     dynlist_append(list, u8"Привет МИЭТ!");
->     dynlist_prepend(list, u8"Сказал студент: ");
->     dynlist_foreach(list, handle_item_puts);
->     dynlist_free(list);
-> }
-> ```
+**Листинг 5: src/helloworld/helloworld.c**
+
+<div class="mkvs-retype">
+
+```c title="src/helloworld/helloworld.c" showLineNumbers
+#include <dynlist.h>
+#include <stdio.h>
+
+static void handle_item_puts(void *val) {
+    puts((const char *)val);
+}
+
+int main() {
+    Dynlist list = dynlist_new(NULL);
+    dynlist_append(list, u8"Привет МИЭТ!");
+    dynlist_prepend(list, u8"Сказал студент: ");
+    dynlist_foreach(list, handle_item_puts);
+    dynlist_free(list);
+}
+```
+
+</div>
 
    2.3. Выполните сборку программы helloworld в [[glossary/verbose\|режиме подробного вывода]] (verbose mode). Убедитесь, что при этом компилируются файлы библиотеки dynlist.
 
@@ -536,85 +558,84 @@ year: 2026
 
    Так как тест будет выполняться на хост-компьютере, разместите исходный код теста (файл `test_dynlist.c`) в папке `test/native/test_dynlist`.
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 6: test/native/test_dynlist/test_dynlist.c**
->
-> ```c title="test/native/test_dynlist/test_dynlist.c" showLineNumbers
-> #include <unity.h>
-> #include <dynlist.h>
-> #include <string.h>
->
-> /*======= Фиксированные данные для тестирования (фиктуры) =========================*/
-> #define FIXTURE_SIZE 3
-> const int fixture_data_init[FIXTURE_SIZE] = {1, 2, 3};
-> int fixture_data[FIXTURE_SIZE];
-> Dynlist list;
-> void clean_func(void *val) { *(int *)val = 0; }
-> static void incrementor(void *val) { *(int *)val += 1; }
-> /*===================================================================================*/
->
-> void setUp(void) {
->     memcpy(fixture_data, fixture_data_init, sizeof(fixture_data));
->     list = dynlist_new(clean_func);
-> }
->
-> void tearDown(void) { dynlist_free(list); }
->
-> void test_dynlist_new_created_empty(void) { TEST_ASSERT_NULL(dynlist_begin(list)); }
->
-> void test_dynlist_free_called_clean_callback(void) {
->     for (int i = 0; i < FIXTURE_SIZE; i++) {
->         dynlist_append(list, &fixture_data[i]);
->     }
->     dynlist_free(list);
->     list = NULL; // предотвратить повторное удаление в tearDown()
->     TEST_ASSERT_EACH_EQUAL_INT(0, fixture_data, FIXTURE_SIZE);
-> }
->
-> void test_dynlist_append_data_in_place(void) {
->     // Помещаем данные в список
->     for (int i = 0; i < FIXTURE_SIZE; i++) {
->         dynlist_append(list, &fixture_data[i]);
->     }
->     // Выбираем данные из списка в массив actual_data
->     int actual_data[FIXTURE_SIZE] = {0};
->     DynlistNode *node = dynlist_begin(list);
->     int index = 0;
->     while (node != NULL) {
->         TEST_ASSERT_TRUE_MESSAGE(index < FIXTURE_SIZE, "List has more elements, than expected");
->         actual_data[index++] = *(int *)dynlist_value(node);
->         node = dynlist_next(node);
->     }
->     // Сравниваем
->     TEST_ASSERT_EQUAL_INT_ARRAY(fixture_data, actual_data, FIXTURE_SIZE);
-> }
->
-> void test_dynlist_foreach_called(void) {
->     // Помещаем данные в список
->     for (int i = 0; i < FIXTURE_SIZE; i++) {
->         dynlist_append(list, &fixture_data[i]);
->     }
->     // Вызов
->     dynlist_foreach(list, incrementor);
->     // Проверка
->     DynlistNode *node = dynlist_begin(list);
->     for (int i = 0; i < FIXTURE_SIZE; i++) {
->         TEST_ASSERT_NOT_NULL_MESSAGE(node, "List is shorter, than expected");
->         incrementor(&fixture_data[i]);
->         TEST_ASSERT_EQUAL_INT(fixture_data[i], *(int *)dynlist_value(node));
->         node = dynlist_next(node);
->     }
-> }
->
-> int main(void) {
->     UNITY_BEGIN();
->     RUN_TEST(test_dynlist_new_created_empty);
->     RUN_TEST(test_dynlist_free_called_clean_callback);
->     RUN_TEST(test_dynlist_append_data_in_place);
->     RUN_TEST(test_dynlist_foreach_called);
->     return UNITY_END();
-> }
-> ```
+**Листинг 6: test/native/test_dynlist/test_dynlist.c**
+
+```c title="test/native/test_dynlist/test_dynlist.c" showLineNumbers
+#include <unity.h>
+#include <dynlist.h>
+#include <string.h>
+
+/*======= Фиксированные данные для тестирования (фиктуры) =========================*/
+#define FIXTURE_SIZE 3
+const int fixture_data_init[FIXTURE_SIZE] = {1, 2, 3};
+int fixture_data[FIXTURE_SIZE];
+Dynlist list;
+void clean_func(void *val) { *(int *)val = 0; }
+static void incrementor(void *val) { *(int *)val += 1; }
+/*===================================================================================*/
+
+void setUp(void) {
+    memcpy(fixture_data, fixture_data_init, sizeof(fixture_data));
+    list = dynlist_new(clean_func);
+}
+
+void tearDown(void) { dynlist_free(list); }
+
+void test_dynlist_new_created_empty(void) { TEST_ASSERT_NULL(dynlist_begin(list)); }
+
+void test_dynlist_free_called_clean_callback(void) {
+    for (int i = 0; i < FIXTURE_SIZE; i++) {
+        dynlist_append(list, &fixture_data[i]);
+    }
+    dynlist_free(list);
+    list = NULL; // предотвратить повторное удаление в tearDown()
+    TEST_ASSERT_EACH_EQUAL_INT(0, fixture_data, FIXTURE_SIZE);
+}
+
+void test_dynlist_append_data_in_place(void) {
+    // Помещаем данные в список
+    for (int i = 0; i < FIXTURE_SIZE; i++) {
+        dynlist_append(list, &fixture_data[i]);
+    }
+    // Выбираем данные из списка в массив actual_data
+    int actual_data[FIXTURE_SIZE] = {0};
+    DynlistNode *node = dynlist_begin(list);
+    int index = 0;
+    while (node != NULL) {
+        TEST_ASSERT_TRUE_MESSAGE(index < FIXTURE_SIZE, "List has more elements, than expected");
+        actual_data[index++] = *(int *)dynlist_value(node);
+        node = dynlist_next(node);
+    }
+    // Сравниваем
+    TEST_ASSERT_EQUAL_INT_ARRAY(fixture_data, actual_data, FIXTURE_SIZE);
+}
+
+void test_dynlist_foreach_called(void) {
+    // Помещаем данные в список
+    for (int i = 0; i < FIXTURE_SIZE; i++) {
+        dynlist_append(list, &fixture_data[i]);
+    }
+    // Вызов
+    dynlist_foreach(list, incrementor);
+    // Проверка
+    DynlistNode *node = dynlist_begin(list);
+    for (int i = 0; i < FIXTURE_SIZE; i++) {
+        TEST_ASSERT_NOT_NULL_MESSAGE(node, "List is shorter, than expected");
+        incrementor(&fixture_data[i]);
+        TEST_ASSERT_EQUAL_INT(fixture_data[i], *(int *)dynlist_value(node));
+        node = dynlist_next(node);
+    }
+}
+
+int main(void) {
+    UNITY_BEGIN();
+    RUN_TEST(test_dynlist_new_created_empty);
+    RUN_TEST(test_dynlist_free_called_clean_callback);
+    RUN_TEST(test_dynlist_append_data_in_place);
+    RUN_TEST(test_dynlist_foreach_called);
+    return UNITY_END();
+}
+```
 
 > [!note] Важное примечание
 > Обратите внимание, что имена файлов с исходными кодами тестов могут быть произвольными, однако должны начинаться с префикса «test_».
@@ -658,15 +679,14 @@ year: 2026
 
    Добавьте в конфигурацию окружения параметр `test_framework = custom`. Затем в папке `test` проекта создайте файл с именем `test_custom_runner.py` и вставьте в него следующие строки:
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 7: test/test_custom_runner.py**
->
-> ```python title="test/test_custom_runner.py" showLineNumbers
-> from platformio.public import UnityTestRunner
->
-> class CustomTestRunner(UnityTestRunner):
->     EXTRA_LIB_DEPS = None  # Ignore "throwtheswitch/Unity" package
-> ```
+**Листинг 7: test/test_custom_runner.py**
+
+```python title="test/test_custom_runner.py" showLineNumbers
+from platformio.public import UnityTestRunner
+
+class CustomTestRunner(UnityTestRunner):
+    EXTRA_LIB_DEPS = None  # Ignore "throwtheswitch/Unity" package
+```
 
 2. Запустите тест для окружения helloworld и просмотрите отчет:
 
@@ -684,10 +704,13 @@ year: 2026
 
    Добавьте в окружение `[env:helloworld]` параметр:
 
-> [!example] Перепечатать параметры конфигурации
-> ```ini
-> debug_test = native/test_dynlist
-> ```
+<div class="mkvs-retype">
+
+```ini
+debug_test = native/test_dynlist
+```
+
+</div>
 
 4. Нажмите F5 для запуска отладчика. В соответствии с параметрами выбранного окружения сборки PlatformIO выполнит сборку программы с отладочными символами, загрузит программу на целевое устройство и запустит программу и средства отладки.
 
@@ -796,25 +819,31 @@ year: 2026
 
    4.1. Добавьте в файл проекта `platformio.ini` следующие параметры к окружению `[helloworld]`:
 
-> [!example] Перепечатать параметры конфигурации
-> ```ini title="platformio.ini"
-> check_tool = cppcheck
-> check_flags = cppcheck:--enable=all
->   --suppress=missingIncludeSystem
-> check_severity = low, medium, high
-> check_src_filters =
->   +<src/helloworld/*.c>
->   +<lib/dynlist/*.c>
-> ```
+<div class="mkvs-retype">
+
+```ini title="platformio.ini"
+check_tool = cppcheck
+check_flags = cppcheck:--enable=all
+  --suppress=missingIncludeSystem
+check_severity = low, medium, high
+check_src_filters =
+  +<src/helloworld/*.c>
+  +<lib/dynlist/*.c>
+```
+
+</div>
 
    С помощью ключа `check_src_filters` задаётся список файлов с исходными кодами, которые должны быть проанализированы. С помощью ключа `check_flags` параметры передаются утилите cppcheck. Описание возможных параметров конфигурации cppcheck приведено в документации [8].
 
    4.2. Запустите статический анализатор. Для этого в консоль PlatformIO введите команду:
 
-> [!example] Ввести команду вручную
-> ```shell
-> pio check -e helloworld
-> ```
+<div class="mkvs-retype">
+
+```shell
+pio check -e helloworld
+```
+
+</div>
 
    4.3. Результат анализа выводится в терминал. Исправьте проблемы, найденные статическим анализатором.
 

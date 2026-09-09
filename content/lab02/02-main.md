@@ -11,10 +11,13 @@ year: 2026
 
 1. В среде PlatformIO + VS Code создайте проект для отладочной платы [[glossary/nucleo-h745\|ST Nucleo H745ZI-Q]] и [[glossary/framework\|фреймворка]] CMSIS. Для этого можно воспользоваться командой:
 
-> [!example] Ввести команду вручную
-> ```shell
-> pio project init -b nucleo_h745zi_q
-> ```
+<div class="mkvs-retype">
+
+```shell
+pio project init -b nucleo_h745zi_q
+```
+
+</div>
 
    После создания проекта может потребоваться активация расширения [[glossary/platformio\|PlatformIO]]. Для этого можно использовать команду `Developer: Restart Window`.
 
@@ -36,85 +39,89 @@ year: 2026
 
    2.2. Включите в сборку проекта скопированные системные файлы вместо «автоматического» набора. Для этого в файле проекта `platformio.ini` создайте общее окружение `[env]` и определите в нём специальные параметры. Также добавьте частное окружение для программы мигания светодиодом, которая будет состоять из одного файла `hello_led.c` (см. листинг 1).
 
-> [!example] Текст программы рекомендуется перепечатать
-> **Листинг 1: platformio.ini**
->
-> ```ini title="platformio.ini" showLineNumbers
-> [env]
-> platform = ststm32
-> board = nucleo_h745zi_q
-> framework = cmsis
-> build_flags = -std=c11 -Wall -Wextra -D CORE_CM7
-> board_build.ldscript = $PROJECT_DIR/system/h745cm7_flash.ld
-> board_build.cmsis.startup_file = broken_path
-> board_build.cmsis.system_file = broken_path
->
-> [env:hello_led]
-> build_type = debug
-> build_src_filter = +<$PROJECT_DIR/system/*.c>
->                    +<$PROJECT_DIR/system/*.s>
->                    +<*>
-> ```
+**Листинг 1: platformio.ini**
+
+<div class="mkvs-retype">
+
+```ini title="platformio.ini" showLineNumbers
+[env]
+platform = ststm32
+board = nucleo_h745zi_q
+framework = cmsis
+build_flags = -std=c11 -Wall -Wextra -D CORE_CM7
+board_build.ldscript = $PROJECT_DIR/system/h745cm7_flash.ld
+board_build.cmsis.startup_file = broken_path
+board_build.cmsis.system_file = broken_path
+
+[env:hello_led]
+build_type = debug
+build_src_filter = +<$PROJECT_DIR/system/*.c>
+                   +<$PROJECT_DIR/system/*.s>
+                   +<*>
+```
+
+</div>
 
 3. Создайте в папке `src` файл `hello_led.c` и введите текст программы, которая мигает жёлтым светодиодом отладочной платы. Светодиод подключён к выводу PE1.
 
-> [!example] Текст программы рекомендуется перепечатать
-> **Листинг 2: src/hello_led.c**
->
-> ```c title="src/hello_led.c" showLineNumbers
-> #include <stm32h7xx.h>  // основной заголовочный файл CMSIS для МК серии H7
-> #include <myled.h>
->
-> // директива отключает оптимизацию кода компилятором для этой функции
-> __attribute__((optimize("-O0")))
-> static void delay(int ms) {
->     volatile int counter = SystemCoreClock / 1000 / 6 * ms ;
->     while (counter > 0) counter -= 1;
-> }
->
-> int main() {
->     myled_enable();     // инициализация вывода светодиода
->     while(1){
->         myled_toggle(); // переключение «вкл <-> откл»
->         delay(500);     // пауза между переключениями
->     };
-> }
-> ```
+**Листинг 2: src/hello_led.c**
+
+<div class="mkvs-retype">
+
+```c title="src/hello_led.c" showLineNumbers
+#include <stm32h7xx.h>  // основной заголовочный файл CMSIS для МК серии H7
+#include <myled.h>
+
+// директива отключает оптимизацию кода компилятором для этой функции
+__attribute__((optimize("-O0")))
+static void delay(int ms) {
+    volatile int counter = SystemCoreClock / 1000 / 6 * ms ;
+    while (counter > 0) counter -= 1;
+}
+
+int main() {
+    myled_enable();     // инициализация вывода светодиода
+    while(1){
+        myled_toggle(); // переключение «вкл <-> откл»
+        delay(500);     // пауза между переключениями
+    };
+}
+```
+
+</div>
 
 4. Используемые в программе функции `myled_enable()` и `myled_toggle()` реализованы в виде библиотеки. Добавьте файлы `myled.h` и `myled.c` в папку `lib/myled`.
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 3: lib/myled/myled.h**
->
-> ```c title="lib/myled/myled.h" showLineNumbers
-> #pragma once
-> void myled_enable();
-> void myled_toggle();
-> void myled_disable();
-> ```
+**Листинг 3: lib/myled/myled.h**
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 4: lib/myled/myled.c**
->
-> ```c title="lib/myled/myled.c" showLineNumbers
-> #include "myled.h"
-> #include <stm32h7xx.h>
->
-> void myled_enable() {
->     RCC->AHB4ENR |= RCC_AHB4ENR_GPIOEEN;    // включаем тактирование GPIOE
->     GPIOE->MODER &= ~GPIO_MODER_MODE1_Msk;  // включаем режим "output" ...
->     GPIOE->MODER |= GPIO_MODER_MODE1_0;     // ... для pin 1
-> }
->
-> void myled_toggle() {
->     GPIOE->ODR ^= 2; // "исключающее или" с единицей меняет 0->1 и 1->0
-> }
->
-> void myled_disable() {
->     GPIOE->MODER &= ~GPIO_MODER_MODE1_Msk;  // включаем режим "analog" ...
->     GPIOE->MODER |= GPIO_MODER_MODE1_0 | GPIO_MODER_MODE1_1;  // ... для pin 1
-> }
-> ```
+```c title="lib/myled/myled.h" showLineNumbers
+#pragma once
+void myled_enable();
+void myled_toggle();
+void myled_disable();
+```
+
+**Листинг 4: lib/myled/myled.c**
+
+```c title="lib/myled/myled.c" showLineNumbers
+#include "myled.h"
+#include <stm32h7xx.h>
+
+void myled_enable() {
+    RCC->AHB4ENR |= RCC_AHB4ENR_GPIOEEN;    // включаем тактирование GPIOE
+    GPIOE->MODER &= ~GPIO_MODER_MODE1_Msk;  // включаем режим "output" ...
+    GPIOE->MODER |= GPIO_MODER_MODE1_0;     // ... для pin 1
+}
+
+void myled_toggle() {
+    GPIOE->ODR ^= 2; // "исключающее или" с единицей меняет 0->1 и 1->0
+}
+
+void myled_disable() {
+    GPIOE->MODER &= ~GPIO_MODER_MODE1_Msk;  // включаем режим "analog" ...
+    GPIOE->MODER |= GPIO_MODER_MODE1_0 | GPIO_MODER_MODE1_1;  // ... для pin 1
+}
+```
 
 ## Часть 2. Анализ программы
 
@@ -266,26 +273,35 @@ year: 2026
 
    5.1. Подключите заголовочные файлы:
 
-> [!example] Текст программы рекомендуется перепечатать
-> ```c
-> #include <stdio.h>
-> #include <vterm.h>
-> ```
+<div class="mkvs-retype">
+
+```c
+#include <stdio.h>
+#include <vterm.h>
+```
+
+</div>
 
    5.2. Добавьте следующие строки в основной цикл программы:
 
-> [!example] Текст программы рекомендуется перепечатать
-> ```c
-> static int counter = 0;
-> printf("\r%s %d %s", "Светодиод был переключен", counter++, "раз(а)");
-> ```
+<div class="mkvs-retype">
+
+```c
+static int counter = 0;
+printf("\r%s %d %s", "Светодиод был переключен", counter++, "раз(а)");
+```
+
+</div>
 
    А перед основным циклом добавьте вызов функции инициализации:
 
-> [!example] Текст программы рекомендуется перепечатать
-> ```c
-> vterm_init(115200);
-> ```
+<div class="mkvs-retype">
+
+```c
+vterm_init(115200);
+```
+
+</div>
 
 6. Выполните сборку программы. Убедитесь в отсутствии ошибок. Загрузите программу в МК.
 
@@ -293,11 +309,14 @@ year: 2026
 
    Добавьте в общее окружение `[env]` параметры с указанием скорости приёма данных хост-компьютером:
 
-> [!example] Перепечатать параметры конфигурации
-> ```ini title="platformio.ini"
-> monitor_speed = 115200
-> test_speed = 115200
-> ```
+<div class="mkvs-retype">
+
+```ini title="platformio.ini"
+monitor_speed = 115200
+test_speed = 115200
+```
+
+</div>
 
 8. Запустите Serial Monitor.
 
@@ -317,59 +336,57 @@ year: 2026
 
    Создайте в папке `test` директорию `target` и поместите в неё файлы конфигурации Unity.
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 5: test/target/unity_config.h**
->
-> ```c title="test/target/unity_config.h" showLineNumbers
-> #ifndef UNITY_CONFIG_H
-> #define UNITY_CONFIG_H
-> #ifdef __cplusplus
-> extern "C" {
-> #endif
->
-> void unity_output_start();
-> void unity_output_char(char);
->
-> #define UNITY_OUTPUT_CHAR(a) unity_output_char(a)
-> #define UNITY_OUTPUT_START() unity_output_start()
->
-> // Другие макроопределения, которые можно изменить при необходимости
-> // #define UNITY_OUTPUT_CHAR_HEADER_DECLARATION
-> // #define UNITY_OUTPUT_FLUSH()
-> // #define UNITY_OUTPUT_FLUSH_HEADER_DECLARATION
-> // #define UNITY_OUTPUT_COMPLETE()
->
-> #ifdef __cplusplus
-> }
-> #endif /* extern "C" */
-> #endif /* UNITY_CONFIG_H */
-> ```
+**Листинг 5: test/target/unity_config.h**
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 6: test/target/unity_config.c**
->
-> ```c title="test/target/unity_config.c" showLineNumbers
-> #include "unity_config.h"
-> #include <stdio.h>
-> #include <stm32h7xx.h>
-> #include <vterm.h>
->
-> // Блокирующая задержка с помощью счётчика DWT (Data Watchpoint and Trace unit)
-> static void delay(int ms) {
->   uint32_t cycles = SystemCoreClock / 1000 * ms;
->   DWT->CTRL |= 1;
->   DWT->CYCCNT = 0;
->   while (DWT->CYCCNT < cycles)
->     __asm("nop");
-> }
->
-> void unity_output_start() {
->   vterm_init(115200);
->   delay(1000); // задержка для подготовки к приёму данных хост-компьютером
-> }
->
-> void unity_output_char(char ch) { putchar(ch); }
-> ```
+```c title="test/target/unity_config.h" showLineNumbers
+#ifndef UNITY_CONFIG_H
+#define UNITY_CONFIG_H
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void unity_output_start();
+void unity_output_char(char);
+
+#define UNITY_OUTPUT_CHAR(a) unity_output_char(a)
+#define UNITY_OUTPUT_START() unity_output_start()
+
+// Другие макроопределения, которые можно изменить при необходимости
+// #define UNITY_OUTPUT_CHAR_HEADER_DECLARATION
+// #define UNITY_OUTPUT_FLUSH()
+// #define UNITY_OUTPUT_FLUSH_HEADER_DECLARATION
+// #define UNITY_OUTPUT_COMPLETE()
+
+#ifdef __cplusplus
+}
+#endif /* extern "C" */
+#endif /* UNITY_CONFIG_H */
+```
+
+**Листинг 6: test/target/unity_config.c**
+
+```c title="test/target/unity_config.c" showLineNumbers
+#include "unity_config.h"
+#include <stdio.h>
+#include <stm32h7xx.h>
+#include <vterm.h>
+
+// Блокирующая задержка с помощью счётчика DWT (Data Watchpoint and Trace unit)
+static void delay(int ms) {
+  uint32_t cycles = SystemCoreClock / 1000 * ms;
+  DWT->CTRL |= 1;
+  DWT->CYCCNT = 0;
+  while (DWT->CYCCNT < cycles)
+    __asm("nop");
+}
+
+void unity_output_start() {
+  vterm_init(115200);
+  delay(1000); // задержка для подготовки к приёму данных хост-компьютером
+}
+
+void unity_output_char(char ch) { putchar(ch); }
+```
 
 2. Проанализируйте код конфигурационных файлов.
 
@@ -381,50 +398,52 @@ year: 2026
 
 3. Создайте тест для функции смены состояния светодиода `myled_toggle()`. Для этого создайте файл теста и вставьте в него код приведённого ниже листинга. Выполните анализ вставленного кода тестовой программы.
 
-> [!tip] Текст программы рекомендуется скопировать с помощью буфера обмена
-> **Листинг 7: test/target/test_myled/myled_toggle.c**
->
-> ```c title="test/target/test_myled/myled_toggle.c" showLineNumbers
-> #include <stm32h7xx.h>
-> #include <myled.h>
-> #include <unity.h>
->
-> void setUp() {
->     myled_enable();
-> }
->
-> void tearDown() {
->     myled_disable();
-> }
->
-> void test_myled_toggle() {
->   uint32_t state[3] = {0};
->   state[0]  = GPIOE->ODR & GPIO_ODR_OD1;
->   myled_toggle();
->   state[1] = GPIOE->ODR & GPIO_ODR_OD1;
->   TEST_ASSERT_NOT_EQUAL_UINT32_MESSAGE(state[0], state[1],
->                             "led state not changed after toggle once");
->   myled_toggle();
->   state[2] = GPIOE->ODR & GPIO_ODR_OD1;
->   TEST_ASSERT_EQUAL_UINT32_MESSAGE(state[0], state[2],
->                             "led state changed after toggle twice");
-> }
->
-> int main() {
->   UNITY_BEGIN();
->   RUN_TEST(test_myled_toggle);
->   return UNITY_END();
-> }
-> ```
+**Листинг 7: test/target/test_myled/myled_toggle.c**
+
+```c title="test/target/test_myled/myled_toggle.c" showLineNumbers
+#include <stm32h7xx.h>
+#include <myled.h>
+#include <unity.h>
+
+void setUp() {
+    myled_enable();
+}
+
+void tearDown() {
+    myled_disable();
+}
+
+void test_myled_toggle() {
+  uint32_t state[3] = {0};
+  state[0]  = GPIOE->ODR & GPIO_ODR_OD1;
+  myled_toggle();
+  state[1] = GPIOE->ODR & GPIO_ODR_OD1;
+  TEST_ASSERT_NOT_EQUAL_UINT32_MESSAGE(state[0], state[1],
+                            "led state not changed after toggle once");
+  myled_toggle();
+  state[2] = GPIOE->ODR & GPIO_ODR_OD1;
+  TEST_ASSERT_EQUAL_UINT32_MESSAGE(state[0], state[2],
+                            "led state changed after toggle twice");
+}
+
+int main() {
+  UNITY_BEGIN();
+  RUN_TEST(test_myled_toggle);
+  return UNITY_END();
+}
+```
 
 4. Перед запуском теста:
 
    4.1. Добавьте в файл проекта параметр:
 
-> [!example] Перепечатать параметры конфигурации
-> ```ini title="platformio.ini"
-> test_framework = custom
-> ```
+<div class="mkvs-retype">
+
+```ini title="platformio.ini"
+test_framework = custom
+```
+
+</div>
 
    4.2. Поместите файл `test_custom_runner.py` в папку `test`.
 

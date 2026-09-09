@@ -11,21 +11,24 @@ year: 2026
 
 Библиотека для управления красным, жёлтым и зелёным светодиодами должна иметь следующий программный интерфейс:
 
-> [!example] Текст программы рекомендуется перепечатать
-> ```c
-> typedef enum {
->     led_green = 1,
->     led_yellow = 2,
->     led_red = 4,
->     led_all = 1|2|4
-> } led_t;
->
-> void led_enable(led_t led);  // включает тактирование блока GPIO
-> void led_toggle(led_t led);
-> void led_on(led_t led);
-> void led_off(led_t led);
-> void led_disable(led_t led); // переводит вывод в режим Analog
-> ```
+<div class="mkvs-retype">
+
+```c
+typedef enum {
+    led_green = 1,
+    led_yellow = 2,
+    led_red = 4,
+    led_all = 1|2|4
+} led_t;
+
+void led_enable(led_t led);  // включает тактирование блока GPIO
+void led_toggle(led_t led);
+void led_on(led_t led);
+void led_off(led_t led);
+void led_disable(led_t led); // переводит вывод в режим Analog
+```
+
+</div>
 
 **Задание выполняется парами.**
 
