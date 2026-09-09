@@ -483,7 +483,8 @@ article table {
 // раньше ссылка была строчной, и между строками оставались непрокликаемые
 // промежутки.
 .explorer .explorer-content ul li > a.mkvs-nav-current,
-.explorer .folder-container div > a.mkvs-nav-current {
+.explorer .folder-container div > a.mkvs-nav-current,
+.explorer > .explorer-content > .mkvs-explorer-home > a.mkvs-nav-current {
   color: var(--secondary);
   font-weight: 700;
   opacity: 1;
@@ -1090,5 +1091,90 @@ article.glossary-list ul {
   // последние строки.
   .page > #quartz-body > .sidebar.right ul.overflow.gradient-active {
     mask-image: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 14. Телефон: выезжающее дерево Проводника
+// ---------------------------------------------------------------------------
+// Плагин раскрывает дерево во всю ширину экрана и БЕЗ боковых полей:
+//
+//   .explorer .explorer-content { width: 100vw; padding: 4rem 0 2rem 0 }
+//
+// Стрелка сворачивания идёт первым элементом строки, поэтому упирается прямо в
+// край дисплея — целиться в неё неудобно, а на экранах со скруглёнными углами
+// она ещё и попадает в срез. Возвращаем поля по той же сетке, что у верхней
+// панели (у неё padding: 0 1rem), чтобы дерево вставало с ней вровень.
+//
+// Вторая беда той же стрелки — размер: в разметке это svg 12x12, вчетверо
+// меньше рекомендованных для пальца 44px. Растим область нажатия полями
+// самого svg, а отрицательными полями возвращаем иконку на место — визуально
+// не меняется ничего, но промахнуться уже трудно. box-sizing задаём явно:
+// ширину svg берёт из атрибута width="12", и при border-box поля съели бы её
+// целиком, а иконка схлопнулась бы в точку.
+
+@media (max-width: 800px) {
+  // :root — только ради веса селектора: плагин задаёт этому же узлу
+  // padding: 4rem 0 2rem с такой же специфичностью, а его стили подключаются
+  // после index.css и при равенстве побеждают (см. предупреждение в п. 7).
+  :root .explorer > .explorer-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .explorer .folder-container > svg.folder-icon {
+    box-sizing: content-box;
+    width: 12px;
+    height: 12px;
+    padding: 16px;
+
+    // Слева область нажатия уходит под поле панели, к самому краю экрана:
+    // мимо стрелки уже не промахнёшься. Справа сохраняем штатный зазор до
+    // названия в 5px, снизу гасим поле полностью.
+    margin-left: -16px;
+    margin-right: -11px;
+    margin-bottom: -16px;
+    // Выравнивание по первой строке названия (см. п. 7) за вычетом поля.
+    margin-top: calc(
+      -16px + 0.2rem + (var(--mkvs-nav-lab-size) * var(--mkvs-nav-leading) - 12px) / 2
+    );
+  }
+}
+
+// --- ссылка на титульную страницу -------------------------------------------
+// Разметку добавляет mkvs-explorer-home.inline.ts: в дереве Проводника корневой
+// content/index.md не показывается, а на телефоне название сайта убрано из
+// верхней панели, и вернуться на титульную было неоткуда.
+//
+// На широком экране ссылка не нужна: там над деревом стоит название сайта и
+// ведёт ровно туда же.
+.explorer > .explorer-content > .mkvs-explorer-home {
+  display: none;
+}
+
+@media (max-width: 800px) {
+  .explorer > .explorer-content > .mkvs-explorer-home {
+    display: block;
+    margin-bottom: var(--mkvs-nav-lab-gap);
+    padding-bottom: var(--mkvs-nav-lab-gap);
+
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  .explorer > .explorer-content > .mkvs-explorer-home > a {
+    display: block;
+
+    // Текст вровень с названиями работ: у них слева стрелка (12px) со своим
+    // отступом (5px), а сама плашка добавляет 0.4rem из --mkvs-nav-pad.
+    padding: var(--mkvs-nav-pad);
+    padding-left: calc(0.4rem + 17px);
+
+    font-family: var(--headerFont);
+    font-size: var(--mkvs-nav-lab-size);
+    font-weight: 600;
+    line-height: var(--mkvs-nav-leading);
+    color: var(--secondary);
+
+    border-radius: 4px;
   }
 }

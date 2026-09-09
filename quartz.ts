@@ -2,6 +2,7 @@ import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/conf
 import { PageTypeDispatcher } from "./quartz/plugins/pageTypes/dispatcher"
 import TocCollapse from "./quartz/components/MkvsTocCollapse"
 import ExplorerNav from "./quartz/components/MkvsExplorerNav"
+import ExplorerHome from "./quartz/components/MkvsExplorerHome"
 import SearchPreview from "./quartz/components/MkvsSearchPreview"
 import SidebarToggle from "./quartz/components/MkvsSidebarToggle"
 import Glossary from "./quartz/components/MkvsGlossary"
@@ -26,10 +27,11 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
     pageLayout.header = [SidebarToggle, ...pageLayout.header, GlossaryBack]
   }
 
-  // Подсветка текущей страницы и её родителей в Проводнике и центрирование
-  // найденного фрагмента в превью поиска — обе надстройки к левой колонке.
+  // Подсветка текущей страницы и её родителей в Проводнике, ссылка на
+  // титульную страницу первой строкой дерева и центрирование найденного
+  // фрагмента в превью поиска — надстройки к левой колонке.
   if (pageLayout.left?.length && !pageLayout.left.includes(ExplorerNav)) {
-    pageLayout.left = [...pageLayout.left, ExplorerNav, SearchPreview]
+    pageLayout.left = [...pageLayout.left, ExplorerNav, ExplorerHome, SearchPreview]
   }
 
   // Сворачивание разделов и подсветка текущего раздела в оглавлении.
