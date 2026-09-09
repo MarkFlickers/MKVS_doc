@@ -164,7 +164,33 @@ function installGlossary() {
   })
 }
 
+// Кнопка «Назад» над статьёй глоссария (разметка — MkvsGlossaryBack.tsx).
+// Показываем её только тогда, когда возвращаться действительно есть куда:
+// depth в состоянии записи истории ведёт SPA-роутер (spa.inline.ts) и считает
+// переходы от точки входа на сайт. На странице, открытой по прямой ссылке или
+// из поисковика, depth нет — кнопка остаётся скрытой.
+//
+// Дальше всё делает history.back(): роутер сам восстановит позицию прокрутки
+// на предыдущей странице, поэтому читатель возвращается ровно к тому месту,
+// откуда ушёл за определением.
+function installGlossaryBack() {
+  const box = document.querySelector<HTMLElement>(".mkvs-glossary-back")
+  const button = box?.querySelector("button")
+  if (!box || !button) return
+
+  const depth = (history.state as { depth?: number } | null)?.depth ?? 0
+  if (depth <= 0) return
+
+  // Скрыта обёртка целиком: пустая, она всё равно занимала бы в панели строку.
+  box.hidden = false
+
+  const onClick = () => history.back()
+  button.addEventListener("click", onClick)
+  window.addCleanup(() => button.removeEventListener("click", onClick))
+}
+
 document.addEventListener("nav", installGlossary)
+document.addEventListener("nav", installGlossaryBack)
 
 // Строка ниже нужна только компилятору — как и в mkvs-search-preview.inline.ts.
 // Загрузчик inline-script-loader (quartz/cli/handlers.js) вырезает её перед

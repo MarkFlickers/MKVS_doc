@@ -318,9 +318,39 @@ article table {
   left: calc(50% - 10px);
 }
 
+// Кнопка сворачивания левой колонки: тот же размер и фон, что у кнопки темы,
+// иконка — штатный «гамбургер» Quartz.
+.page > #quartz-body header .mkvs-sidebar-toggle {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+
+  cursor: pointer;
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+  background: var(--light);
+  color: var(--darkgray);
+}
+
+.page > #quartz-body header .mkvs-sidebar-toggle:hover {
+  color: var(--secondary);
+}
+
 @media (max-width: 800px) {
   .page > #quartz-body header {
     margin: 1rem 0;
+  }
+
+  // На узком экране левая колонка — верхняя панель, и сворачивает её штатная
+  // кнопка Quartz (.mobile-explorer) в самой панели. Вторая такая же кнопка в
+  // верхней панели текста была бы дублем и всё равно не работала бы: правила
+  // data-left-sidebar живут только в @media (min-width: 801px).
+  .page > #quartz-body header .mkvs-sidebar-toggle {
+    display: none;
   }
 }
 
@@ -332,9 +362,10 @@ article table {
 // подключается в <head> РАНЬШЕ стилей плагинов, поэтому при равной
 // специфичности побеждает плагин. Селекторы ниже намеренно длиннее штатных.
 
-// Заголовок «Проводник» не нужен: дерево работ говорит за себя, а сворачивать
-// его целиком теперь можно кнопкой в верхней панели. Мобильный «гамбургер»
-// (.mobile-explorer) не трогаем — на телефоне дерево скрыто за ним.
+// Заголовок «Проводник» вместе со штатной кнопкой-«ёлочкой» (.desktop-explorer)
+// не нужен: дерево работ говорит за себя, а сворачивают его «гамбургером» —
+// на ПК это .mkvs-sidebar-toggle в верхней панели (см. п.6), на телефоне —
+// штатная кнопка Quartz .mobile-explorer в самой панели. Её не трогаем.
 .page .explorer button.desktop-explorer {
   display: none;
 }
@@ -787,4 +818,63 @@ article.glossary-list ul {
   li {
     break-inside: avoid;
   }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Кнопка «Назад» на статье глоссария
+// ---------------------------------------------------------------------------
+// Разметку даёт MkvsGlossaryBack.tsx — компонент верхней панели (header),
+// стоящий последним. Показывает кнопку mkvs-glossary.inline.ts, и только если
+// переход на статью был сделан внутри сайта.
+//
+// Панель закреплена у верхнего края окна (см. п.6), поэтому кнопка доступна в
+// любой момент чтения — листать вверх не нужно.
+
+// Панель переводится в многострочную раскладку: обёртка кнопки занимает всю
+// ширину и потому переносится на вторую строку — ровно под кнопку Проводника
+// (справа на первой строке остаётся переключатель темы). Вертикальный зазор
+// между строками даёт тот же gap, что и между кнопками.
+.page > #quartz-body header {
+  flex-wrap: wrap;
+}
+
+.page > #quartz-body header .mkvs-glossary-back {
+  flex-basis: 100%;
+
+  // Обёртка растянута на всю ширину колонки текста, а под закреплённой панелью
+  // проезжает статья: без этого прозрачная полоса перехватывала бы клики и
+  // выделение текста. Правило header > * возвращает pointer-events всем прямым
+  // потомкам панели, поэтому здесь их снимаем повторно — и отдаём самой кнопке.
+  pointer-events: none;
+}
+
+.page > #quartz-body header .mkvs-glossary-back[hidden] {
+  display: none;
+}
+
+.page > #quartz-body header .mkvs-glossary-back > button {
+  pointer-events: auto;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2rem;
+  padding: 0 0.7rem 0 0.5rem;
+
+  font-family: var(--bodyFont);
+  font-size: 0.9rem;
+  line-height: 1;
+
+  cursor: pointer;
+  color: var(--secondary);
+  // Фон обязателен непрозрачный — под закреплённой панелью проезжает текст.
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+}
+
+.page > #quartz-body header .mkvs-glossary-back > button:hover {
+  color: var(--tertiary);
+  border-color: var(--secondary);
 }

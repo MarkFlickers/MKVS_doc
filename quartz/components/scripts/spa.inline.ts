@@ -43,6 +43,30 @@ function notifyNav(url: FullSlug) {
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
 
+// Состояние записи истории, которое ведёт роутер:
+//   scroll — позиция прокрутки страницы в момент ухода с неё;
+//   depth  — сколько переходов сделано внутри сайта от точки входа.
+//
+// Зачем scroll: содержимое страницы при переходе «назад» подгружается
+// асинхронно, и штатное восстановление прокрутки браузер успевает выполнить по
+// ещё не заменённому (обычно более короткому) документу — позиция обрезается,
+// и предыдущая страница открывается сначала. Поэтому после подстановки нового
+// содержимого возвращаем прокрутку сами.
+//
+// Зачем depth: по нему кнопка «Назад» на странице глоссария понимает, есть ли
+// куда возвращаться, — на странице, открытой по прямой ссылке, её быть не должно.
+type SpaHistoryState = { depth?: number; scroll?: number }
+
+const historyState = (): SpaHistoryState => (history.state as SpaHistoryState) ?? {}
+
+function saveScroll() {
+  history.replaceState({ ...historyState(), scroll: window.scrollY }, "")
+}
+
+function pushEntry(url: URL) {
+  history.pushState({ depth: (historyState().depth ?? 0) + 1, scroll: 0 }, "", url)
+}
+
 function startLoading() {
   document.querySelector(".navigation-progress")?.remove()
   const loadingBar = document.createElement("div")
@@ -64,9 +88,15 @@ function stopLoading() {
 
 let isNavigating = false
 let p: DOMParser
-async function _navigate(url: URL, isBack: boolean = false) {
+async function _navigate(url: URL, isBack: boolean = false, scroll: number = 0) {
   isNavigating = true
   startLoading()
+
+  // Пока текущая запись истории ещё активна, запоминаем, где читатель
+  // остановился: назад он должен вернуться на это же место.
+  if (!isBack) {
+    saveScroll()
+  }
   p = p || new DOMParser()
   const contents = await fetchCanonical(url)
     .then((res) => {
@@ -118,6 +148,11 @@ async function _navigate(url: URL, isBack: boolean = false) {
     } else {
       window.scrollTo({ top: 0 })
     }
+  } else {
+    // Второй заход через requestAnimationFrame — на случай, если высота
+    // страницы к этому моменту ещё не пересчитана и прокрутка обрезалась.
+    window.scrollTo({ top: scroll })
+    requestAnimationFrame(() => window.scrollTo({ top: scroll }))
   }
 
   // now, patch head, re-executing scripts
@@ -129,18 +164,18 @@ async function _navigate(url: URL, isBack: boolean = false) {
   // delay setting the url until now
   // at this point everything is loaded so changing the url should resolve to the correct addresses
   if (!isBack) {
-    history.pushState({}, "", url)
+    pushEntry(url)
   }
 
   notifyNav(getFullSlug(window))
   delete announcer.dataset.persist
 }
 
-async function navigate(url: URL, isBack: boolean = false) {
+async function navigate(url: URL, isBack: boolean = false, scroll: number = 0) {
   if (isNavigating) return
   isNavigating = true
   try {
-    await _navigate(url, isBack)
+    await _navigate(url, isBack, scroll)
   } catch (e) {
     console.error(e)
     window.location.assign(url)
@@ -161,9 +196,10 @@ function createRouter() {
       event.preventDefault()
 
       if (isSamePage(url) && url.hash) {
+        saveScroll()
         const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
         el?.scrollIntoView()
-        history.pushState({}, "", url)
+        pushEntry(url)
         return
       }
 
@@ -173,7 +209,11 @@ function createRouter() {
     window.addEventListener("popstate", (event) => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
-      navigate(new URL(window.location.toString()), true)
+      navigate(
+        new URL(window.location.toString()),
+        true,
+        (event.state as SpaHistoryState)?.scroll ?? 0,
+      )
       return
     })
   }

@@ -5,19 +5,24 @@ import ExplorerNav from "./quartz/components/MkvsExplorerNav"
 import SearchPreview from "./quartz/components/MkvsSearchPreview"
 import SidebarToggle from "./quartz/components/MkvsSidebarToggle"
 import Glossary from "./quartz/components/MkvsGlossary"
+import GlossaryBack from "./quartz/components/MkvsGlossaryBack"
 
 const config = await loadQuartzConfig()
 export default config
 export const layout = await loadQuartzLayout()
 
-// Штатные компоненты Quartz дополняются тремя своими надстройками.
+// Штатные компоненты Quartz дополняются своими надстройками.
 // Все они ничего не меняют в самих плагинах — только добавляют поведение
 // поверх готовой разметки, чтобы обновление плагинов ничего не ломало.
 for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)]) {
   // Кнопка сворачивания левой колонки — первой в верхней панели,
   // левее переключателя темы (он приходит из конфига с priority 20).
+  //
+  // Следом, последней в разметке, — кнопка «Назад» статьи глоссария: в панели
+  // она уходит на отдельную строку под кнопку Проводника. На остальных
+  // страницах компонент ничего не рисует.
   if (pageLayout.header?.length && !pageLayout.header.includes(SidebarToggle)) {
-    pageLayout.header = [SidebarToggle, ...pageLayout.header]
+    pageLayout.header = [SidebarToggle, ...pageLayout.header, GlossaryBack]
   }
 
   // Подсветка текущей страницы и её родителей в Проводнике и центрирование

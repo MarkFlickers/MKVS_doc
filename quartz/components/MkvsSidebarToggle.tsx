@@ -2,9 +2,15 @@ import type { QuartzComponent } from "./types"
 import script from "./mkvs-sidebar-toggle.inline"
 import prescript from "./mkvs-sidebar-state.inline"
 
-// Кнопка сворачивания левой колонки — в верхней панели области текста,
+// Кнопка сворачивания левой колонки для ПК — в верхней панели области текста,
 // рядом с переключателем темы. Держать её в самой колонке нельзя: после
 // сворачивания она уехала бы вместе с колонкой.
+//
+// Иконка — тот же «гамбургер» (lucide-menu), что у штатной кнопки Проводника
+// в Quartz (.mobile-explorer). На узком экране эта кнопка скрыта (см.
+// custom.scss): там колонка превращается в верхнюю панель, и Проводник
+// сворачивает штатная кнопка Quartz. Итого на любой ширине пользователь видит
+// ровно один «гамбургер» и он всегда работает.
 //
 // Состояние хранится атрибутом data-left-sidebar на <html> (его же читает
 // раскладка в custom.scss) и запоминается в localStorage. Атрибут ставится
@@ -29,10 +35,12 @@ const SidebarToggle: QuartzComponent = () => (
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
+      class="lucide-menu"
       aria-hidden="true"
     >
-      <polyline points="11 17 6 12 11 7" />
-      <polyline points="18 17 13 12 18 7" />
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="18" y2="18" />
     </svg>
   </button>
 )
