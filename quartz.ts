@@ -4,6 +4,7 @@ import TocCollapse from "./quartz/components/MkvsTocCollapse"
 import ExplorerNav from "./quartz/components/MkvsExplorerNav"
 import SearchPreview from "./quartz/components/MkvsSearchPreview"
 import SidebarToggle from "./quartz/components/MkvsSidebarToggle"
+import Glossary from "./quartz/components/MkvsGlossary"
 
 const config = await loadQuartzConfig()
 export default config
@@ -28,6 +29,13 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
   // Сворачивание разделов и подсветка текущего раздела в оглавлении.
   if (pageLayout.right?.length && !pageLayout.right.includes(TocCollapse)) {
     pageLayout.right = [...pageLayout.right, TocCollapse]
+  }
+
+  // Подсказки к терминам глоссария. Скрипт нужен в теле любой страницы, а не
+  // только там, где есть боковые колонки, поэтому компонент добавляется в
+  // afterBody — он присутствует во всех раскладках.
+  if (!pageLayout.afterBody?.includes(Glossary)) {
+    pageLayout.afterBody = [...(pageLayout.afterBody ?? []), Glossary]
   }
 }
 
