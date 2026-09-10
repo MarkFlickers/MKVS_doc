@@ -1,4 +1,7 @@
 import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/config-loader"
+import { readFileSync } from "fs"
+import { join } from "path"
+import type { QuartzComponent } from "./quartz/components/types"
 import { PageTypeDispatcher } from "./quartz/plugins/pageTypes/dispatcher"
 import TocCollapse from "./quartz/components/MkvsTocCollapse"
 import ExplorerNav from "./quartz/components/MkvsExplorerNav"
@@ -59,6 +62,102 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
   if (!pageLayout.afterBody?.includes(MobileBar)) {
     pageLayout.afterBody = [...(pageLayout.afterBody ?? []), MobileBar]
   }
+}
+
+// Плагины Quartz зашивают мобильную границу 800px прямо в свой CSS, а он
+// приезжает из npm уже собранным — переменной, которую можно было бы
+// подкрутить, там нет. Из-за этого низкий, но широкий экран (телефон в
+// альбомной ориентации — примерно 890x400) не получал ни выезжающего дерева
+// Проводника, ни мобильного окна поиска: по ширине он «планшет».
+//
+// Сайт же считает такой экран компактным (custom.scss, п.6 — граница по
+// ширине ИЛИ по высоте). Приводим CSS плагинов к тому же условию: подменяем
+// в нём ровно ту строку, которой записан мобильный @media-запрос.
+//
+// Запросов два: «мобильный» и обратный ему (в CSS поиска им отключается
+// колонка предпросмотра). Переводить нужно оба, иначе на низком экране окно
+// поиска собралось бы из половинок двух разных раскладок.
+//
+// Замена намеренно узкая — по точному совпадению целиком. Если плагин
+// обновится и запишет запрос иначе, ничего не сломается: подмена просто не
+// найдёт что менять, компактный режим на низком экране потеряет выезжающее
+// дерево, и об этом скажет предупреждение ниже.
+const PLUGIN_MOBILE = "@media all and (max-width: 800px)"
+const PLUGIN_NOT_MOBILE = "@media all and not (max-width: 800px)"
+
+// Числа границ здесь НЕ повторяются, а читаются из самих стилей: иначе правка
+// в custom.scss молча разошлась бы с CSS плагинов, и низкий экран вёл бы себя
+// по-разному в разных его частях.
+function breakpoint(styles: string, name: string): string {
+  const prefix = "$" + name + ":"
+  const line = styles.split(/\r?\n/).find((row) => row.startsWith(prefix))
+  const value = line?.slice(prefix.length).trim().replace(";", "")
+
+  if (!value) {
+    throw new Error(
+      `[mkvs] В quartz/styles/custom.scss нет границы раскладки ${prefix.slice(0, -1)}. ` +
+        "Её читает quartz.ts, чтобы перевести CSS плагинов на то же условие, " +
+        "что и стили сайта (см. п.6 custom.scss). Верните переменную или " +
+        "поправьте имя здесь.",
+    )
+  }
+
+  return value
+}
+
+// Путь от корня сайта, а не от этого файла: перед запуском конфиг
+// перекладывается в quartz/.quartz-cache/transpiled-build.mjs, и относительные
+// пути «от себя» ведут не туда. Сборка Quartz и так работает от корня — по
+// нему же находится и папка content.
+const stylesPath = join(process.cwd(), "quartz", "styles", "custom.scss")
+const customStyles = readFileSync(stylesPath, "utf8")
+
+const narrow = breakpoint(customStyles, "mkvs-narrow")
+const short = breakpoint(customStyles, "mkvs-short")
+
+// Граница задана «включительно», поэтому обратное условие начинается со
+// следующего пикселя — ровно как $columns в custom.scss.
+const next = (value: string) => `${Number.parseInt(value, 10) + 1}px`
+
+const SITE_COMPACT = `@media (max-width: ${narrow}), (max-height: ${short})`
+const SITE_COLUMNS = `@media (min-width: ${next(narrow)}) and (min-height: ${next(short)})`
+
+let patchedCss = 0
+
+function useCompactBreakpoint(component: QuartzComponent) {
+  const css = component.css
+  if (css === undefined) return
+
+  const patch = (text: string) => {
+    if (!text.includes(PLUGIN_MOBILE) && !text.includes(PLUGIN_NOT_MOBILE)) return text
+    patchedCss++
+    return text.replaceAll(PLUGIN_NOT_MOBILE, SITE_COLUMNS).replaceAll(PLUGIN_MOBILE, SITE_COMPACT)
+  }
+
+  component.css = typeof css === "string" ? patch(css) : css.map(patch)
+}
+
+for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)]) {
+  for (const component of [
+    pageLayout.head,
+    pageLayout.pageBody,
+    ...(pageLayout.header ?? []),
+    ...(pageLayout.beforeBody ?? []),
+    ...(pageLayout.afterBody ?? []),
+    ...(pageLayout.left ?? []),
+    ...(pageLayout.right ?? []),
+    ...(pageLayout.footer ?? []),
+  ]) {
+    if (component) useCompactBreakpoint(component)
+  }
+}
+
+if (patchedCss === 0) {
+  console.warn(
+    "[mkvs] Мобильный @media-запрос в CSS плагинов не найден — компактный режим " +
+      "на низком экране останется без выезжающего дерева Проводника. " +
+      "Сверьте PLUGIN_MOBILE в quartz.ts с тем, что отдают плагины.",
+  )
 }
 
 // loadQuartzConfig() уже создал диспетчер по YAML-раскладке. Подменяем его,

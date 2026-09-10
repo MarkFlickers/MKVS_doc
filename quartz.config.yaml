@@ -7,10 +7,16 @@
 # Цветовая схема подобрана под оригинальные PDF-пособия:
 #   #0f45c7 — фирменный синий МИЭТ (взят пипеткой из логотипа в PDF)
 #   белый лист, чёрный текст, синие ссылки и акценты.
-# Шрифты — ближайшие к оригиналу аналоги с поддержкой кириллицы:
-#   Century Gothic (заголовки) -> Montserrat
-#   Calibri        (текст)     -> Carlito (метрически совместим с Calibri)
-#   Consolas       (код)       -> JetBrains Mono
+# Шрифты — суперсемья PT от ParaType плюс JetBrains Mono на код:
+#   заголовки -> PT Serif
+#   текст     -> PT Sans
+#   код       -> JetBrains Mono
+# Отказ от пары Montserrat/Carlito (аналогов Century Gothic и Calibri из PDF)
+# сознательный. У Montserrat кириллица рисовалась отдельно от латиницы и
+# заметно шире неё, поэтому в смешанных заголовках вида «Часть 5. Создание и
+# запуск приложения для Native-платформы» ширина букв на стыке скачет. У PT
+# наоборот: кириллица первична, латиницу подгоняли под неё. Засечки в
+# заголовках заодно делают вкладку браузера узнаваемой.
 
 configuration:
   pageTitle: Микроконтроллеры и встраиваемые системы
@@ -27,10 +33,24 @@ configuration:
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
+    # Веса указаны явно, и это не косметика. Quartz по умолчанию просит для
+    # body веса [400, 600], а Google Fonts молча выбрасывает вес, которого у
+    # семейства нет, и отдаёт остальное. У PT Sans (как и у прежнего Carlito)
+    # есть только 400 и 700 — с дефолтом на сайт приезжал бы один вес 400, а
+    # весь полужирный браузер дорисовывал бы сам, обводя контур. Вес 600,
+    # который просит проводник слева, по правилам подбора корректно ляжет
+    # на 700.
     typography:
-      header: Montserrat
-      body: Carlito
-      code: JetBrains Mono
+      header:
+        name: PT Serif
+        weights: [400, 700]
+      body:
+        name: PT Sans
+        weights: [400, 700]
+        includeItalic: true # подписи «Рисунок 1 – …» набраны курсивом
+      code:
+        name: JetBrains Mono
+        weights: [400, 700]
     colors:
       lightMode:
         light: "#ffffff" # фон страницы — белый лист, как в PDF
@@ -267,8 +287,23 @@ plugins:
     enabled: false
 
   # ===== служебные =======================================================
+  # Плагин мостит систему шрифтов Obsidian (--h1-font … --h6-font) на систему
+  # Quartz (--headerFont, --bodyFont, --codeFont). Шрифты сайту даёт ядро из
+  # configuration.theme.typography выше, поэтому плагину нужно запретить
+  # грузить свои: без options он подставляет собственные дефолты (Schibsted
+  # Grotesk, Source Sans Pro, IBM Plex Mono) и вешает в <head> вторую таблицу
+  # стилей Google Fonts с тремя семействами, которые на сайте не используются.
+  # fontOrigin: local — «шрифты уже есть, ничего не подключать».
+  # Имена дублируют typography, чтобы переменные плагина не разошлись с
+  # ядром, если он всё же успеет выставить свои.
   - source: "@quartz-community/quartz-fonts"
     enabled: true
+    options:
+      fontOrigin: local
+      useThemeFonts: false
+      header: PT Serif
+      body: PT Sans
+      code: JetBrains Mono
 
 layout:
   byPageType:
