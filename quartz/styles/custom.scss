@@ -442,6 +442,15 @@ $narrow: "(max-width: #{$mkvs-narrow})";
     padding-right: 1.5rem;
     min-width: 0;
   }
+
+  // Плагин поиска ограничивает свою строку 14rem (224px) — она рассчитана на
+  // штатную колонку Quartz. В колонке на 380px такая строка обрывается
+  // заметно левее названий работ под ней. Ограничение снимаем: ширину задаёт
+  // колонка. Селектор тяжёлый намеренно — CSS плагинов подключается ПОСЛЕ
+  // index.css, и правило .search { max-width: 14rem } перебило бы простое.
+  .page > #quartz-body > .sidebar.left > .search {
+    max-width: none;
+  }
 }
 
 @media #{$columns-2} {
@@ -1054,18 +1063,150 @@ li.mkvs-toc-collapsed > .mkvs-toc-toggle::before {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Превью поиска
+// 9. Поиск: карточка результата и превью
 // ---------------------------------------------------------------------------
+// Разметку строит плагин @quartz-community/search, поведение дополняет
+// mkvs-search.inline.ts. Здесь — только оформление того, что он добавляет, и
+// две правки к самому плагину.
+//
+// Про вес селекторов. CSS плагинов подключается ПОСЛЕ index.css (см. порядок
+// <link> в собранной странице), поэтому правила равного веса перебить нельзя.
+// Там, где спорим с плагином, в селектор добавлен #quartz-body: окно поиска
+// хоть и position: fixed, но лежит в левой колонке внутри него.
 
-// Плагин поиска прокручивает превью к найденному фрагменту, суммируя
-// offsetTop по цепочке offsetParent до .preview-container. Без этого правила
-// контейнер не позиционирован, offsetParent его проскакивает, цепочка
-// упирается в .search-container (position: fixed), в смещение попадает высота
-// строки поиска — и превью прокручивается слишком далеко, фрагмент уходит
-// выше видимой области. Центрирование делает mkvs-search-preview.inline.ts,
-// но арифметику плагина нужно вылечить в любом случае.
+// Плагин прокручивает превью к найденному фрагменту, суммируя offsetTop по
+// цепочке offsetParent до .preview-container. Без этого правила контейнер не
+// позиционирован, offsetParent его проскакивает, цепочка упирается в
+// .search-container (position: fixed), в смещение попадает высота строки
+// поиска — и превью прокручивается слишком далеко, фрагмент уходит выше
+// видимой области. Центрирование делает mkvs-search.inline.ts, но арифметику
+// плагина нужно вылечить в любом случае.
 .search .search-layout > .preview-container {
   position: relative;
+}
+
+// Панель «‹ 3 / 12 ›» висит над правым верхним углом превью.
+.search .search-layout {
+  position: relative;
+}
+
+// --- карточка результата ----------------------------------------------------
+
+// Строка над названием: слева путь до страницы, справа число совпадений.
+// Без неё результат вида «2. Основная часть» не говорит, к какой работе он
+// относится, а число совпадений не говорит, сколько их всего в файле.
+.search .search-layout .result-card > .mkvs-result-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.15rem;
+  font-size: 0.8em;
+  color: var(--gray);
+}
+
+// Названия работ длинные («Лабораторная работа 02. CMSIS. Семихостинг…»),
+// колонка результатов узкая: путь обрезается многоточием, целиком его
+// показывает подсказка браузера (title у элемента ставит скрипт).
+.search .search-layout .result-card > .mkvs-result-meta > .mkvs-result-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search .search-layout .result-card > .mkvs-result-meta > .mkvs-result-count {
+  flex: 0 0 auto;
+  color: var(--secondary);
+}
+
+// Фрагмент с найденным словом плагин на широком экране прячет совсем — при
+// включённом превью он считает его лишним. Но превью показывает только одну
+// карточку, ту, что под курсором, а список из одних заголовков не даёт
+// сравнить результаты между собой. Возвращаем фрагмент на место.
+//
+// Целиком он не нужен и вреден: плагин отдаёт окно в 60 слов, в узкой колонке
+// это десяток строк, и на экран помещается одна карточка вместо списка.
+// Оставляем три строки — этого хватает, чтобы понять, о чём нашлось, а
+// подробности читатель смотрит в превью справа.
+@media #{$columns} {
+  #quartz-body .search .search-layout[data-preview] .result-card > p.card-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+}
+
+// --- панель совпадений ------------------------------------------------------
+
+.search .search-layout > .mkvs-match-bar {
+  position: absolute;
+  top: 0.6rem;
+  right: 1.6rem; // правее — полоса прокрутки превью
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem 0.3rem;
+
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(27, 33, 48, 0.08);
+
+  font-size: 0.85rem;
+  color: var(--darkgray);
+}
+
+.search .search-layout > .mkvs-match-bar > .mkvs-match-count {
+  min-width: 3.5em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.search .search-layout > .mkvs-match-bar > .mkvs-match-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--darkgray);
+  cursor: pointer;
+}
+
+.search .search-layout > .mkvs-match-bar > .mkvs-match-step:hover:not(:disabled) {
+  background: var(--lightgray);
+  color: var(--secondary);
+}
+
+// Крайние совпадения списка: кнопка гаснет, а не листает по кругу — так видно,
+// что дальше в эту сторону ничего нет.
+.search .search-layout > .mkvs-match-bar > .mkvs-match-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+// Компактный режим: превью нет вовсе (CSS плагина скрывает его колонку),
+// листать нечего.
+@media #{$compact} {
+  .search .search-layout > .mkvs-match-bar {
+    display: none;
+  }
+}
+
+// Активное совпадение — то, на которое встанет страница после перехода.
+// Остальные подсвечены штатным светлым фоном плагина.
+#quartz-body .search .search-layout .highlight.mkvs-match-active {
+  background: color-mix(in srgb, var(--tertiary) 85%, rgba(255, 255, 255, 0));
+  box-shadow: 0 0 0 2px var(--secondary);
 }
 
 // ---------------------------------------------------------------------------
