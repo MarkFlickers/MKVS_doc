@@ -19,7 +19,8 @@
 //   1) в карточку добавляется путь («Лабораторная работа 02») и число
 //      совпадений в файле;
 //   2) над превью появляется панель «‹ 3 / 12 ›»: активное совпадение
-//      подсвечено ярче, стрелки и Alt+↑/↓ листают совпадения;
+//      подсвечено ярче, стрелки и Alt+↑/↓ листают совпадения по кругу, а
+//      выбранное совпадение держится, пока не сменится запрос;
 //   3) при переходе запоминается номер активного совпадения, и на открытой
 //      странице подсветка ставится именно на него.
 //
@@ -237,6 +238,17 @@ type Preview = { slug: string; matches: HTMLElement[]; index: number }
 
 const previews = new WeakMap<HTMLElement, Preview>()
 
+// Совпадение, выбранное читателем вручную, — по одному на страницу. Превью
+// пересобирается всякий раз, когда выделение в списке уходит на другую
+// карточку и возвращается обратно, и без этой памяти оно каждый раз
+// открывалось бы на первом совпадении. Запрос хранится рядом: сменился он —
+// сменился и набор совпадений, и старый номер ничего не значит.
+const chosen = new Map<string, { term: string; index: number }>()
+
+function inputOf(layout: HTMLElement): HTMLInputElement | null {
+  return layout.closest(".search")?.querySelector<HTMLInputElement>(".search-bar") ?? null
+}
+
 const CHEVRON_UP = "m5 15 7-7 7 7"
 const CHEVRON_DOWN = "m5 9 7 7 7-7"
 
@@ -314,18 +326,30 @@ function showMatch(layout: HTMLElement, index: number, scroll: boolean) {
     label.textContent = `${state.index + 1} / ${total}`
     label.setAttribute("aria-label", `Совпадение ${state.index + 1} из ${total}`)
   }
-  const prev = bar.querySelector<HTMLButtonElement>(".mkvs-match-prev")
-  const next = bar.querySelector<HTMLButtonElement>(".mkvs-match-next")
-  if (prev) prev.disabled = state.index === 0
-  if (next) next.disabled = state.index === total - 1
 
   if (scroll) center(container, target)
 }
 
+// Выбор читателя: тот же переход к совпадению, но с запоминанием. Всё, что
+// делается «само» (первый показ превью, восстановление после пересборки),
+// идёт мимо — иначе память о выборе перезаписывалась бы служебными вызовами.
+function choose(layout: HTMLElement, index: number, scroll: boolean) {
+  showMatch(layout, index, scroll)
+
+  const state = previews.get(layout)
+  const input = inputOf(layout)
+  if (!state || !state.slug || !input) return
+  chosen.set(state.slug, { term: termOf(input), index: state.index })
+}
+
+// Перебор идёт по кругу: с последнего совпадения вперёд — на первое, с
+// первого назад — на последнее.
 function step(layout: HTMLElement, delta: number) {
   const state = previews.get(layout)
   if (!state) return
-  showMatch(layout, state.index + delta, true)
+  const total = state.matches.length
+  if (total === 0) return
+  choose(layout, (state.index + delta + total) % total, true)
 }
 
 function rebuild(layout: HTMLElement) {
@@ -345,11 +369,20 @@ function rebuild(layout: HTMLElement) {
   // Стартовое совпадение — самое длинное, как и у плагина: для запроса из
   // нескольких слов это фраза целиком, а не первое попавшееся слово. Для
   // запроса из одного слова все совпадения одной длины, и это просто первое.
-  let best = 0
+  let start = 0
   for (let i = 1; i < matches.length; i++) {
-    if (matches[i].textContent!.length > matches[best].textContent!.length) best = i
+    if (matches[i].textContent!.length > matches[start].textContent!.length) start = i
   }
-  showMatch(layout, best, true)
+
+  // Но если по этой странице читатель уже выбирал совпадение сам, возвращаемся
+  // к его выбору, а не к началу.
+  const input = inputOf(layout)
+  const saved = chosen.get(focused?.id ?? "")
+  if (input && saved && saved.term === termOf(input) && saved.index < matches.length) {
+    start = saved.index
+  }
+
+  showMatch(layout, start, true)
 }
 
 function installPreview(layout: HTMLElement) {
@@ -432,9 +465,32 @@ function installPreview(layout: HTMLElement) {
     const state = previews.get(layout)
     if (!mark || !state) return
     const index = state.matches.indexOf(mark)
-    if (index !== -1) showMatch(layout, index, false)
+    if (index !== -1) choose(layout, index, false)
   }
   layout.addEventListener("click", onClick)
+
+  // Наведение на карточку, которая и так выделена, до плагина не доводим.
+  //
+  // Его обработчик mouseover безусловно перезапускает отрисовку превью — он
+  // не проверяет, изменилось ли выделение. А превью он собирает заново:
+  // очищает колонку, заново вставляет страницу и прокручивает её к своему
+  // совпадению. Для читателя это выглядит так: выбрал нужное вхождение,
+  // повёл мышь к названию файла, чтобы щёлкнуть по нему, — и превью
+  // вернулось к началу вместе с выбором.
+  //
+  // Гасим событие на фазе перехвата: слушатель плагина висит на списке
+  // результатов, то есть ниже по дереву. Условие узкое — превью уже
+  // построено и показывает именно эту карточку, — поэтому случай, когда
+  // отрисовка не удалась, ничего не теряет: там наведение сработает как
+  // прежде.
+  const onMouseOver = (event: MouseEvent) => {
+    const card = (event.target as HTMLElement | null)?.closest<HTMLElement>(".result-card")
+    if (!card || !card.classList.contains("focus")) return
+    if (previews.get(layout)?.slug !== card.id) return
+    if (!layout.querySelector(".preview-inner")) return
+    event.stopPropagation()
+  }
+  layout.addEventListener("mouseover", onMouseOver, true)
 
   // Кнопки не должны забирать фокус у строки поиска: читатель листает
   // совпадения и продолжает править запрос.
@@ -449,6 +505,7 @@ function installPreview(layout: HTMLElement) {
     layout.removeEventListener("wheel", onUserScroll)
     layout.removeEventListener("touchmove", onUserScroll)
     layout.removeEventListener("click", onClick)
+    layout.removeEventListener("mouseover", onMouseOver, true)
     bar.removeEventListener("mousedown", onMouseDown)
     if (pending !== null) cancelAnimationFrame(pending)
     delete layout.dataset.mkvsSearch
