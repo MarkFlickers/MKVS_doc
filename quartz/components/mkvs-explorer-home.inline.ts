@@ -11,6 +11,8 @@
 // Скрипт добавляет ссылку в начало .explorer-content. На широком экране она
 // скрыта стилями, чтобы не дублировать название сайта (custom.scss, п. 14).
 
+import { basePath, onHomePage } from "./scripts/mkvs-path"
+
 const HOME_CLASS = "mkvs-explorer-home"
 const HOME_LABEL = "Микроконтроллеры и встраиваемые системы"
 
@@ -18,20 +20,6 @@ const HOME_LABEL = "Микроконтроллеры и встраиваемые
 // подкаталоге, поэтому «/» без базового пути увёл бы на чужую страницу.
 function homeHref(base: string): string {
   return `${base}/`
-}
-
-// Открыта ли сейчас титульная страница.
-function onHomePage(base: string): boolean {
-  let value = window.location.pathname
-  try {
-    value = decodeURIComponent(value)
-  } catch {
-    // Некорректно закодированный адрес сравниваем как есть.
-  }
-  if (base && value.startsWith(base)) value = value.slice(base.length)
-  value = value.replace(/\.html?$/, "")
-  value = value.replace(/^\/+|\/+$/g, "")
-  return value === "" || value === "index"
 }
 
 function buildHome(base: string): HTMLElement {
@@ -47,7 +35,7 @@ function buildHome(base: string): HTMLElement {
 }
 
 function syncExplorerHome() {
-  const base = (document.body.dataset.basepath ?? "").replace(/\/+$/, "")
+  const base = basePath()
 
   for (const content of document.querySelectorAll<HTMLElement>(".explorer > .explorer-content")) {
     let item = content.querySelector<HTMLElement>(`:scope > .${HOME_CLASS}`)

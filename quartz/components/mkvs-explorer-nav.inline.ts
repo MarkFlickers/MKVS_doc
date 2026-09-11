@@ -10,25 +10,11 @@
 //   .mkvs-nav-parent  — контейнер каждой папки-родителя выше по дереву.
 // Оформление — в custom.scss.
 
-// Приводит адрес к виду «lab01/01-main»: без базового пути сайта, без
-// расширения, без хвостового /index и без слэшей по краям.
-function normalize(pathname: string, base: string): string {
-  let value = pathname
-  try {
-    value = decodeURIComponent(value)
-  } catch {
-    // Некорректно закодированный адрес сравниваем как есть.
-  }
-  if (base && value.startsWith(base)) value = value.slice(base.length)
-  value = value.replace(/\.html?$/, "")
-  value = value.replace(/^\/+|\/+$/g, "")
-  value = value.replace(/(?:^|\/)index$/, "")
-  return value
-}
+import { basePath, normalizePath } from "./scripts/mkvs-path"
 
 function markExplorerNav() {
-  const base = (document.body.dataset.basepath ?? "").replace(/\/+$/, "")
-  const here = normalize(window.location.pathname, base)
+  const base = basePath()
+  const here = normalizePath(window.location.pathname, base)
 
   for (const explorer of document.querySelectorAll<HTMLElement>(".explorer")) {
     const tree = explorer.querySelector<HTMLElement>(".explorer-ul")
@@ -44,7 +30,7 @@ function markExplorerNav() {
 
     if (!current) {
       for (const link of tree.querySelectorAll<HTMLAnchorElement>("a.folder-button")) {
-        if (normalize(new URL(link.href, window.location.href).pathname, base) === here) {
+        if (normalizePath(new URL(link.href, window.location.href).pathname, base) === here) {
           current = link
           break
         }
