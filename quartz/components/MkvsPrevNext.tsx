@@ -35,14 +35,19 @@ const NEXT_LABEL = "Следующее"
 const GLOSSARY_PREFIX = "glossary/"
 const GLOSSARY_INDEX = "glossary/index"
 
-interface ChainEntry {
+export interface ChainEntry {
   slug: FullSlug
   title: string
 }
 
 // Сортировка узлов дерева — копия sortFn по умолчанию из
 // @quartz-community/explorer (node_modules/.../explorer/dist/index.js).
-function compareNodes(
+//
+// Копия, а не импорт: плагин свои defaultOptions не экспортирует. Чтобы
+// расхождение не осталось незамеченным, MkvsPrevNext.test.ts достаёт
+// настоящую sortFn из разметки Проводника (плагин кладёт её исходник
+// в data-data-fns) и сверяет с этой.
+export function compareNodes(
   a: FileTrieNode<BuildTimeTrieData>,
   b: FileTrieNode<BuildTimeTrieData>,
 ): number {
@@ -55,7 +60,7 @@ function compareNodes(
   return a.isFolder ? -1 : 1
 }
 
-function buildChain(allFiles: QuartzPluginData[]): ChainEntry[] {
+export function buildChain(allFiles: QuartzPluginData[]): ChainEntry[] {
   const trie = new FileTrieNode<BuildTimeTrieData>([])
   for (const file of allFiles) {
     // filePath нет у виртуальных страниц (страницы тегов, 404): их порождает
