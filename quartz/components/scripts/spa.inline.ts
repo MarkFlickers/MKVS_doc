@@ -1,6 +1,11 @@
+// ВНИМАНИЕ: в этом файле upstream есть своя правка — восстановление позиции
+// прокрутки при переходе «назад» и глубина переходов. Вся логика лежит в
+// ./mkvs-spa-history, здесь только вызовы. При конфликте после `git rebase
+// upstream/v5` см. README.md, раздел «Связь с upstream».
 import micromorph from "micromorph"
 import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { fetchCanonical } from "./util"
+import { pushEntry, restoreScroll, saveScroll, scrollOf } from "./mkvs-spa-history"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -42,30 +47,6 @@ function notifyNav(url: FullSlug) {
 
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
 window.addCleanup = (fn) => cleanupFns.add(fn)
-
-// Состояние записи истории, которое ведёт роутер:
-//   scroll — позиция прокрутки страницы в момент ухода с неё;
-//   depth  — сколько переходов сделано внутри сайта от точки входа.
-//
-// Зачем scroll: содержимое страницы при переходе «назад» подгружается
-// асинхронно, и штатное восстановление прокрутки браузер успевает выполнить по
-// ещё не заменённому (обычно более короткому) документу — позиция обрезается,
-// и предыдущая страница открывается сначала. Поэтому после подстановки нового
-// содержимого возвращаем прокрутку сами.
-//
-// Зачем depth: по нему кнопка «Назад» на странице глоссария понимает, есть ли
-// куда возвращаться, — на странице, открытой по прямой ссылке, её быть не должно.
-type SpaHistoryState = { depth?: number; scroll?: number }
-
-const historyState = (): SpaHistoryState => (history.state as SpaHistoryState) ?? {}
-
-function saveScroll() {
-  history.replaceState({ ...historyState(), scroll: window.scrollY }, "")
-}
-
-function pushEntry(url: URL) {
-  history.pushState({ depth: (historyState().depth ?? 0) + 1, scroll: 0 }, "", url)
-}
 
 function startLoading() {
   document.querySelector(".navigation-progress")?.remove()
@@ -149,10 +130,7 @@ async function _navigate(url: URL, isBack: boolean = false, scroll: number = 0) 
       window.scrollTo({ top: 0 })
     }
   } else {
-    // Второй заход через requestAnimationFrame — на случай, если высота
-    // страницы к этому моменту ещё не пересчитана и прокрутка обрезалась.
-    window.scrollTo({ top: scroll })
-    requestAnimationFrame(() => window.scrollTo({ top: scroll }))
+    restoreScroll(scroll)
   }
 
   // now, patch head, re-executing scripts
@@ -209,11 +187,7 @@ function createRouter() {
     window.addEventListener("popstate", (event) => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
-      navigate(
-        new URL(window.location.toString()),
-        true,
-        (event.state as SpaHistoryState)?.scroll ?? 0,
-      )
+      navigate(new URL(window.location.toString()), true, scrollOf(event.state))
       return
     })
   }
