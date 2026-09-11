@@ -68,6 +68,12 @@ export function buildChain(allFiles: QuartzPluginData[]): ChainEntry[] {
     // В цепочке чтения им не место, а FileTrieNode.insert на таком файле ещё и
     // споткнулся бы о filePath.split("/").
     if (!file.frontmatter || !file.slug || !file.filePath) continue
+    // Страницы с unlisted: true Проводник не показывает — их нет в
+    // contentIndex.json, из которого он строит дерево (плагин
+    // @quartz-community/unlisted-pages). Значит, им не место и в цепочке:
+    // иначе кнопка «Следующее» вела бы на служебную страницу, которой в
+    // дереве слева нет. Сейчас такая одна — content/_shared/defence.md.
+    if (file.unlisted === true) continue
     trie.add({
       ...file,
       slug: file.slug,

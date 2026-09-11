@@ -127,6 +127,7 @@ function chainByExplorerOrder(files: QuartzPluginData[]): string[] {
   const trie = new FileTrieNode<BuildTimeTrieData>([])
   for (const item of files) {
     if (!item.frontmatter || !item.slug || !item.filePath) continue
+    if (item.unlisted === true) continue
     trie.add({
       ...item,
       slug: item.slug,
@@ -167,6 +168,9 @@ const CONTENT: QuartzPluginData[] = [
   file("glossary/gpio", "GPIO"),
   file("glossary/cmsis", "CMSIS"),
   file("docs/index", "Документация"),
+  // Служебная страница с общими фрагментами: собирается, но в Проводнике
+  // её нет.
+  { ...file("_shared/defence", "Общие фрагменты пособий"), unlisted: true },
 ]
 
 // Цепочка одними slug'ами: FullSlug — брендированный тип, и сравнивать его
@@ -193,6 +197,11 @@ describe("buildChain", () => {
     const at = (slug: string) => slugs.indexOf(slug)
     assert.ok(at("lab01/01-main") < at("lab01/02-task-1"))
     assert.ok(at("lab01/02-task-1") < at("lab01/10-extra"))
+  })
+
+  test("страницы unlisted в цепочку не входят", () => {
+    // Иначе кнопка «Следующее» вела бы на страницу, которой в дереве слева нет.
+    assert.ok(!chainSlugs(CONTENT).includes("_shared/defence"))
   })
 
   test("виртуальные страницы без filePath пропускаются", () => {
