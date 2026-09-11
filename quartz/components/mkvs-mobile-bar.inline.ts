@@ -133,22 +133,30 @@ function installMobileBar() {
     window.addCleanup(() => toc.removeEventListener("click", onClick))
   }
 
-  window.addCleanup(restore)
+  // Поворот экрана и смена размеров окна: режим меняется без навигации. Слушаем
+  // resize, а не matchMedia, именно потому, что границы известны только CSS.
+  let pending: number | null = null
+  const onResize = () => {
+    if (pending !== null) return
+    pending = requestAnimationFrame(() => {
+      pending = null
+      sync()
+    })
+  }
+  window.addEventListener("resize", onResize)
+
+  // Слушатель снимается вместе со всеми остальными — как требует общее
+  // правило файла. Раньше он вешался на уровне модуля и не снимался никогда:
+  // вреда не было (после restore() массив managed пуст, и sync() ничего не делал),
+  // но исключение из правила приходилось каждый раз объяснять заново.
+  window.addCleanup(() => {
+    window.removeEventListener("resize", onResize)
+    if (pending !== null) cancelAnimationFrame(pending)
+    restore()
+  })
 }
 
 document.addEventListener("nav", installMobileBar)
-
-// Поворот экрана и смена размеров окна: режим меняется без навигации. Слушаем
-// resize, а не matchMedia, именно потому, что границы известны только CSS.
-let pending = false
-window.addEventListener("resize", () => {
-  if (pending) return
-  pending = true
-  requestAnimationFrame(() => {
-    pending = false
-    sync()
-  })
-})
 
 // Про строку ниже — README.md, раздел «Инлайн-скрипты».
 export default ""
