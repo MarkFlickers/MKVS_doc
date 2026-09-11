@@ -166,7 +166,7 @@ function plural(count: number): string {
 // «lab02/02-main» -> ["lab02/index"]: цепочка страниц-родителей. Для самой
 // страницы работы (labNN/index) родитель — корень сайта, и путь не нужен:
 // название сайта уже стоит над Проводником.
-function ancestorsOf(slug: string): string[] {
+function parentSlugs(slug: string): string[] {
   const parts = slug.split("/")
   parts.pop()
   if (slug.endsWith("/index")) parts.pop()
@@ -181,7 +181,7 @@ function ancestorsOf(slug: string): string[] {
 async function pathOf(slug: string): Promise<string> {
   const index = await fetchData
   const titles = index as unknown as Record<string, { title?: string } | undefined>
-  return ancestorsOf(slug)
+  return parentSlugs(slug)
     .map((parent, depth) => titles[parent]?.title ?? parent.split("/")[depth])
     .join(" › ")
 }
