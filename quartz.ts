@@ -123,16 +123,32 @@ const next = (value: string) => `${Number.parseInt(value, 10) + 1}px`
 const SITE_COMPACT = `@media (max-width: ${narrow}), (max-height: ${short})`
 const SITE_COLUMNS = `@media (min-width: ${next(narrow)}) and (min-height: ${next(short)})`
 
-let patchedCss = 0
+// Счётчик ведётся ПО КАЖДОМУ запросу отдельно. Общий счётчик молчал бы в
+// самом опасном случае: upstream переписал один запрос из двух, подмена
+// применилась наполовину, и окно поиска на низком экране собралось бы из
+// половинок двух разных раскладок.
+const patched = new Map<string, number>([
+  [PLUGIN_MOBILE, 0],
+  [PLUGIN_NOT_MOBILE, 0],
+])
 
 function useCompactBreakpoint(component: QuartzComponent) {
   const css = component.css
   if (css === undefined) return
 
   const patch = (text: string) => {
-    if (!text.includes(PLUGIN_MOBILE) && !text.includes(PLUGIN_NOT_MOBILE)) return text
-    patchedCss++
-    return text.replaceAll(PLUGIN_NOT_MOBILE, SITE_COLUMNS).replaceAll(PLUGIN_MOBILE, SITE_COMPACT)
+    let result = text
+    for (const [query, replacement] of [
+      // Порядок важен: обратный запрос переводим первым, чтобы подмена не
+      // зависела от того, окажется ли один запрос подстрокой другого.
+      [PLUGIN_NOT_MOBILE, SITE_COLUMNS],
+      [PLUGIN_MOBILE, SITE_COMPACT],
+    ] as const) {
+      if (!result.includes(query)) continue
+      patched.set(query, (patched.get(query) ?? 0) + 1)
+      result = result.replaceAll(query, replacement)
+    }
+    return result
   }
 
   component.css = typeof css === "string" ? patch(css) : css.map(patch)
@@ -153,11 +169,13 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
   }
 }
 
-if (patchedCss === 0) {
+for (const [query, count] of patched) {
+  if (count > 0) continue
   console.warn(
-    "[mkvs] Мобильный @media-запрос в CSS плагинов не найден — компактный режим " +
-      "на низком экране останется без выезжающего дерева Проводника. " +
-      "Сверьте PLUGIN_MOBILE в quartz.ts с тем, что отдают плагины.",
+    `[mkvs] Запрос «${query}» в CSS плагинов не найден — компактный режим ` +
+      "на низком экране соберётся не полностью (выезжающее дерево Проводника, " +
+      "мобильное окно поиска). Сверьте PLUGIN_MOBILE/PLUGIN_NOT_MOBILE в " +
+      "quartz.ts с тем, что отдают плагины.",
   )
 }
 
