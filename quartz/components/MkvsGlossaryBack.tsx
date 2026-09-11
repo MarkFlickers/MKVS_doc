@@ -1,4 +1,5 @@
 import type { QuartzComponent, QuartzComponentProps } from "./types"
+import script from "./mkvs-glossary-back.inline"
 
 // Кнопка «Назад» на статье глоссария.
 //
@@ -15,9 +16,9 @@ import type { QuartzComponent, QuartzComponentProps } from "./types"
 // панели отдельную строку — под кнопкой Проводника (см. custom.scss).
 //
 // Кнопка выводится только на статьях глоссария (не на указателе терминов) и
-// скрыта до тех пор, пока mkvs-glossary.inline.ts не убедится, что переход был
-// сделан внутри сайта: на странице, открытой по прямой ссылке, возвращаться
-// некуда.
+// скрыта до тех пор, пока скрипт не убедится, что переход был сделан внутри
+// сайта: на странице, открытой по прямой ссылке, возвращаться некуда.
+// Сам скрипт — mkvs-glossary-back.inline.ts.
 const GlossaryBack: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
   const slug = fileData.slug ?? ""
   if (!slug.startsWith("glossary/") || slug === "glossary/index") return null
@@ -47,4 +48,5 @@ const GlossaryBack: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
 }
 
 GlossaryBack.displayName = "MkvsGlossaryBack"
+GlossaryBack.afterDOMLoaded = script
 export default GlossaryBack
