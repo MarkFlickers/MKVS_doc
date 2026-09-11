@@ -1,4 +1,4 @@
-import type { QuartzComponent } from "./types"
+import { scriptOnly } from "./mkvs-shared"
 import script from "./mkvs-explorer-nav.inline"
 
 // Проводник Quartz помечает классом active только файловые узлы. Страница
@@ -6,8 +6,4 @@ import script from "./mkvs-explorer-nav.inline"
 // папка, и подсветки не получает; родительские папки не подсвечиваются
 // вообще. Компонент приносит скрипт, который отмечает текущую страницу и всю
 // цепочку её родителей — как в книжной навигации.
-const ExplorerNav: QuartzComponent = () => null
-
-ExplorerNav.displayName = "MkvsExplorerNav"
-ExplorerNav.afterDOMLoaded = script
-export default ExplorerNav
+export default scriptOnly("MkvsExplorerNav", script)

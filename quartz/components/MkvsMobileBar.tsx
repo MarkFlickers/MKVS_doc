@@ -1,4 +1,4 @@
-import type { QuartzComponent } from "./types"
+import { scriptOnly } from "./mkvs-shared"
 import script from "./mkvs-mobile-bar.inline"
 
 // Раскладка элементов управления по режиму экрана: верхняя панель телефона и
@@ -26,8 +26,4 @@ import script from "./mkvs-mobile-bar.inline"
 //
 // Закрепление панели и вид кнопок — в custom.scss, п.8.1 (кнопка оглавления)
 // и п.12 (панель).
-const MobileBar: QuartzComponent = () => null
-
-MobileBar.displayName = "MkvsMobileBar"
-MobileBar.afterDOMLoaded = script
-export default MobileBar
+export default scriptOnly("MkvsMobileBar", script)

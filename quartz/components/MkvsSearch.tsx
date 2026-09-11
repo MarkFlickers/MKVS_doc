@@ -1,4 +1,4 @@
-import type { QuartzComponent } from "./types"
+import { scriptOnly } from "./mkvs-shared"
 import script from "./mkvs-search.inline"
 
 // Надстройка над плагином @quartz-community/search. Плагин ищет по странице
@@ -7,8 +7,4 @@ import script from "./mkvs-search.inline"
 // к первому из них. Компонент приносит скрипт, который добавляет в карточку
 // путь и счётчик, даёт листать совпадения в превью и открывает страницу на том
 // совпадении, которое читатель смотрел. Подробности — в mkvs-search.inline.ts.
-const Search: QuartzComponent = () => null
-
-Search.displayName = "MkvsSearch"
-Search.afterDOMLoaded = script
-export default Search
+export default scriptOnly("MkvsSearch", script)
