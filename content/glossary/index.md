@@ -39,6 +39,7 @@ tags:
 - [[glossary/linker\|Компоновщик]]
 - [[glossary/sections\|Секции программы]]
 - [[glossary/linker-script\|Скрипт компоновщика]]
+- [[glossary/weak-symbol\|Слабый символ]]
 - [[glossary/isr-vector\|Таблица векторов прерываний]]
 
 
@@ -67,11 +68,13 @@ tags:
 
 ## Микроконтроллер и отладочная плата
 
+- [[glossary/axi-sram\|AXI-SRAM]]
 - [[glossary/cmsis\|CMSIS]]
 - [[glossary/cortex-m\|Cortex-M]]
 - [[glossary/dwt\|DWT]]
 - [[glossary/gpio\|GPIO]]
 - [[glossary/hse\|HSE, HSI, CSI]]
+- [[glossary/msp\|MSP]]
 - [[glossary/nucleo-h745\|NUCLEO-H745ZI-Q]]
 - [[glossary/push-pull\|Push-Pull и Open Drain]]
 - [[glossary/rcc\|RCC]]
@@ -79,7 +82,32 @@ tags:
 - [[glossary/stm32h745\|STM32H745ZI-Q]]
 - [[glossary/system-core-clock\|SystemCoreClock]]
 - [[glossary/usart\|USART]]
+- [[glossary/hal-ll\|Библиотеки HAL и LL]]
+
+
+## Таймеры и многозадачность
+
+- [[glossary/cooperative-scheduler\|Кооперативный планировщик]]
+- [[glossary/software-timer\|Программный таймер]]
+- [[glossary/profiling\|Профилирование]]
+- [[glossary/sleep-mode\|Режимы сна и инструкции WFI, WFE]]
+- [[glossary/systick\|Системный таймер SysTick]]
+- [[glossary/iwdg\|Сторожевой таймер IWDG]]
 - [[glossary/superloop\|Суперцикл]]
+
+
+## Исключения, прерывания и загрузка
+
+- [[glossary/isr\|ISR]]
+- [[glossary/nvic\|NVIC]]
+- [[glossary/scb\|SCB]]
+- [[glossary/priority-grouping\|Группировка приоритетов]]
+- [[glossary/bootloader\|Загрузчик]]
+- [[glossary/exception\|Исключение]]
+- [[glossary/fault\|Исключения ошибок]]
+- [[glossary/exception-frame\|Кадр исключения]]
+- [[glossary/interrupt-masking\|Маскирование прерываний]]
+- [[glossary/interrupt\|Прерывание]]
 
 
 ## Семихостинг и ввод-вывод
@@ -98,10 +126,13 @@ tags:
 
 | Сокращение | Расшифровка | Перевод |
 | --- | --- | --- |
+| AHB | Advanced High-performance Bus | высокопроизводительная шина семейства AMBA |
 | API | Application Programming Interface | программный интерфейс |
+| AXI | Advanced eXtensible Interface | высокопроизводительная шина семейства AMBA |
 | CDC | Communication Device Class | класс коммуникационных устройств (USB) |
 | CLI | Command Line Interface | интерфейс командной строки |
 | [[glossary/cmsis\|CMSIS]] | Cortex Microcontroller Software Interface Standard | стандарт программного интерфейса микроконтроллеров Cortex-M |
+| CRC | Cyclic Redundancy Check | циклический избыточный код (контрольная сумма) |
 | DRY | Don't Repeat Yourself | «не повторяйся» — принцип разработки |
 | DSP | Digital Signal Processing | цифровая обработка сигналов |
 | [[glossary/dwt\|DWT]] | Data Watchpoint and Trace | блок точек останова по данным и трассировки |
@@ -109,16 +140,31 @@ tags:
 | [[glossary/gcc\|GCC]] | GNU Compiler Collection | набор компиляторов GNU |
 | [[glossary/gdb\|GDB]] | GNU Debugger | отладчик GNU |
 | [[glossary/gpio\|GPIO]] | General-Purpose Input/Output | порты ввода-вывода общего назначения |
+| [[glossary/hal-ll\|HAL]] | Hardware Abstraction Layer | библиотека аппаратной абстракции STM32Cube |
+| HCLK | AHB Clock | тактовый сигнал шины AHB и процессорного ядра |
 | [[glossary/hse\|HSE]] | High Speed External | внешний высокочастотный генератор тактовых импульсов |
 | [[glossary/hse\|HSI]] | High Speed Internal | внутренний высокочастотный генератор тактовых импульсов |
 | IDE | Integrated Development Environment | интегрированная среда разработки |
+| [[glossary/isr\|ISR]] | Interrupt Service Routine | функция-обработчик прерывания |
+| [[glossary/iwdg\|IWDG]] | Independent Watchdog | независимый сторожевой таймер |
 | KISS | Keep It Simple, Stupid | «делай проще» — принцип разработки |
+| [[glossary/hal-ll\|LL]] | Low-Layer | низкоуровневая библиотека STM32Cube |
+| LR | Link Register | регистр связи (хранит адрес возврата) |
+| LSI | Low Speed Internal | внутренний низкочастотный генератор тактовых импульсов |
 | [[glossary/misra-c\|MISRA]] | Motor Industry Software Reliability Association | объединение, выпустившее стандарт MISRA C |
+| MPU | Memory Protection Unit | блок защиты памяти |
+| [[glossary/msp\|MSP]] | Main Stack Pointer | основной указатель стека |
+| NMI | Non-Maskable Interrupt | немаскируемое прерывание |
 | NN | Neural Network | нейронная сеть |
+| [[glossary/nvic\|NVIC]] | Nested Vectored Interrupt Controller | контроллер вложенных векторных прерываний |
+| PC | Program Counter | счётчик команд |
+| PSR | Program Status Register | регистр состояния программы |
 | RAM | Random Access Memory | оперативная память |
 | [[glossary/rcc\|RCC]] | Reset and Clock Control | блок сброса и тактирования |
 | RTOS | Real-Time Operating System | операционная система реального времени (ОСРВ) |
 | [[glossary/rtt\|RTT]] | Real Time Transfer | обмен данными с хост-компьютером через буферы в ОЗУ |
+| [[glossary/scb\|SCB]] | System Control Block | блок управления системой |
+| SDK | Software Development Kit | комплект средств разработки |
 | SIMD | Single Instruction, Multiple Data | «одна инструкция — много данных» |
 | SP | Stack Pointer | указатель стека |
 | SRAM | Static Random Access Memory | статическая оперативная память |
@@ -130,3 +176,4 @@ tags:
 | [[glossary/ub\|UB]] | Undefined Behavior | неопределённое поведение |
 | [[glossary/usart\|USART]] | Universal Synchronous/Asynchronous Receiver-Transmitter | универсальный синхронно-асинхронный приёмопередатчик |
 | USB | Universal Serial Bus | универсальная последовательная шина |
+| VTOR | Vector Table Offset Register | регистр адреса таблицы векторов прерываний |

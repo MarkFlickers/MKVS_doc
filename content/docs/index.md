@@ -20,9 +20,9 @@ tags:
 
 Архитектура микроконтроллера, карта памяти, описание всех периферийных блоков и их регистров. Основной документ при программировании периферии: именно здесь смотрят назначение битовых полей.
 
-Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578)
+Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047)
 
-Применяется в: [[lab02/index\|ЛР2]]
+Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]]
 
 > [!warning] Документ имеет большой размер
 > Его веб-версия может долго открываться.<br>
@@ -50,7 +50,9 @@ tags:
 
 Программная модель ядра Cortex-M7: регистры, система команд, режимы работы, системные периферийные блоки ядра (NVIC, SysTick, MPU).
 
-Быстрый переход: [2 The Cortex-M7 processor](docs/pm0253-cortex-m7.pdf#page=19) · [3 The Cortex-M7 instruction set](docs/pm0253-cortex-m7.pdf#page=52) · [4 Cortex-M7 peripherals](docs/pm0253-cortex-m7.pdf#page=183)
+Быстрый переход: [2 The Cortex-M7 processor](docs/pm0253-cortex-m7.pdf#page=19) · [2.4 Exception model](docs/pm0253-cortex-m7.pdf#page=39) · [2.5 Fault handling](docs/pm0253-cortex-m7.pdf#page=47) · [2.6 Power management](docs/pm0253-cortex-m7.pdf#page=50) · [3 The Cortex-M7 instruction set](docs/pm0253-cortex-m7.pdf#page=52) · [3.2 CMSIS functions](docs/pm0253-cortex-m7.pdf#page=62) · [4 Cortex-M7 peripherals](docs/pm0253-cortex-m7.pdf#page=183) · [4.2 NVIC](docs/pm0253-cortex-m7.pdf#page=184) · [4.3 System control block](docs/pm0253-cortex-m7.pdf#page=192) · [4.4 System timer, SysTick](docs/pm0253-cortex-m7.pdf#page=212)
+
+Применяется в: [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]]
 
 ### PM0214 — Programming Manual, Cortex-M4
 
@@ -60,6 +62,14 @@ tags:
 
 Быстрый переход: [2 The Cortex-M4 processor](docs/pm0214-cortex-m4.pdf#page=17) · [3 The STM32 Cortex-M4 instruction set](docs/pm0214-cortex-m4.pdf#page=50) · [4 Core peripherals](docs/pm0214-cortex-m4.pdf#page=193)
 
+### Cortex-M Exception Handling — статья в двух частях
+
+[Часть 1](docs/cortex-m-exception-handling-part1.pdf) · 9 с. · 0,2 МБ · [часть 2](docs/cortex-m-exception-handling-part2.pdf) · 7 с. · 0,1 МБ
+
+Статья Ivan Cibrario Bertolotti с сайта EmbeddedRelated.com: как ядро [[glossary/cortex-m\|Cortex-M]] принимает запрос [[glossary/exception\|исключения]] (часть 1) и что происходит после его принятия — сохранение [[glossary/exception-frame\|кадра исключения]], вытеснение, возврат из обработчика (часть 2). Читается как связное дополнение к сухим формулировкам PM0253.
+
+Применяется в: [[lab03/index\|ЛР3]]
+
 ## Отладочная плата NUCLEO-H745ZI-Q
 
 ### UM2408 — Board User Manual
@@ -68,9 +78,9 @@ tags:
 
 Описание отладочной платы: разъёмы, перемычки, светодиоды, кнопки, схемы питания и тактирования. Отвечает на вопросы «какой вывод к чему подключён» и «в каком положении должна стоять перемычка».
 
-Быстрый переход: [1 Features](docs/um2408-nucleo-h745.pdf#page=7) · [5 Quick start](docs/um2408-nucleo-h745.pdf#page=11) · [6 Hardware layout and configuration](docs/um2408-nucleo-h745.pdf#page=12) · [6.4.8 Internal SMPS / LDO Configuration](docs/um2408-nucleo-h745.pdf#page=23) · [6.6 LEDs](docs/um2408-nucleo-h745.pdf#page=27) · [6.9 OSC clock](docs/um2408-nucleo-h745.pdf#page=28) · [6.10 USART communication](docs/um2408-nucleo-h745.pdf#page=29)
+Быстрый переход: [1 Features](docs/um2408-nucleo-h745.pdf#page=7) · [5 Quick start](docs/um2408-nucleo-h745.pdf#page=11) · [6 Hardware layout and configuration](docs/um2408-nucleo-h745.pdf#page=12) · [6.4.8 Internal SMPS / LDO Configuration](docs/um2408-nucleo-h745.pdf#page=23) · [6.6 LEDs](docs/um2408-nucleo-h745.pdf#page=27) · [6.7 Push-buttons](docs/um2408-nucleo-h745.pdf#page=28) · [6.9 OSC clock](docs/um2408-nucleo-h745.pdf#page=28) · [6.10 USART communication](docs/um2408-nucleo-h745.pdf#page=29)
 
-Применяется в: [[lab02/index\|ЛР2]]
+Применяется в: [[lab02/index\|ЛР2]] · [[lab04/index\|ЛР4]]
 
 ### MB1363 — электрическая схема платы
 
@@ -100,7 +110,9 @@ tags:
 
 Справочник по функциям библиотек HAL и Low-Layer из пакета STM32CubeH7: назначение, параметры и возвращаемые значения каждой функции.
 
-Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15)
+Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15) · [5 Overview of low-layer drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=45) · [110 LL GPIO](docs/um2217-stm32h7-ll-drivers.pdf#page=2712) · [114 LL IWDG](docs/um2217-stm32h7-ll-drivers.pdf#page=3046)
+
+Применяется в: [[lab04/index\|ЛР4]]
 
 ### AN5033 — примеры STM32Cube для STM32H7
 
