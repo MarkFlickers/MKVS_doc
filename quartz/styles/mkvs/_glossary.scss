@@ -1,0 +1,284 @@
+// ---------------------------------------------------------------------------
+// 10. Термины глоссария: подчёркивание и всплывающие подсказки
+// ---------------------------------------------------------------------------
+// Термины размечены обычными ссылками [[glossary/…]]. Скрипт
+// mkvs-glossary.inline.ts вешает на них класс .glossary-term и показывает
+// подсказку одного из двух видов:
+//
+//   .glossary-hint     — строка-аннотация (на странице термина только определение);
+//   .glossary-popover  — листаемое мини-окошко (на странице есть продолжение).
+//
+// Мини-окошко использует классы .popover/.popover-inner, поэтому размеры,
+// рамка, тень и прокрутка достаются из popover.scss без повторения. Ниже —
+// только отличия: заголовок статьи, разрешённое выделение текста и защита от
+// переполнения широким содержимым (таблицы, листинги).
+
+// Ссылка-термин не должна выглядеть ссылкой: в тексте пособия её роль —
+// незаметная сноска. Пунктир и курсор help — привычная метка «здесь есть
+// пояснение». Штатный вид a.internal (подложка --highlight, цвет --secondary)
+// перебиваем целиком.
+article a.internal.glossary-term,
+.glossary-demo {
+  color: inherit;
+  // Базовый стиль Quartz набирает все ссылки полужирным. В сплошном тексте
+  // пособия это выделяло бы термины сильнее заголовков.
+  font-weight: inherit;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--secondary);
+  cursor: help;
+}
+
+article a.internal.glossary-term:hover {
+  color: var(--secondary);
+  border-bottom-style: solid;
+}
+
+// Общее для обоих видов подсказки: слой над текстом, положение задаёт
+// floating-ui через transform. Внешний отступ — «мостик» под указателем:
+// без него подсказка захлопывается, когда мышь идёт к ней от термина.
+.glossary-hint {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  padding: 0.6rem;
+  will-change: transform;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+}
+
+@keyframes glossary-dropin {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  1% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.glossary-hint.active-hint {
+  animation: glossary-dropin 0.3s ease 0.2s forwards;
+}
+
+.glossary-hint > .glossary-hint-inner {
+  max-width: 30rem;
+  padding: 0.5rem 0.8rem;
+  font-family: var(--bodyFont);
+  font-size: 0.92rem;
+  font-weight: initial;
+  font-style: initial;
+  line-height: 1.45;
+  color: var(--darkgray);
+  background-color: var(--light);
+  border: 1px solid var(--lightgray);
+  border-left: 3px solid var(--secondary);
+  border-radius: 5px;
+  box-shadow: 4px 4px 24px 0 rgba(0, 0, 0, 0.2);
+  white-space: normal;
+
+  // Определение приходит из статьи целым абзацем: «**Термин** — пояснение».
+  code {
+    font-size: 0.9em;
+  }
+}
+
+// Статьи глоссария ссылаются друг на друга, и эти ссылки попадают внутрь
+// подсказки. Штатный вид a.internal — подложка и полужирное начертание — в
+// узком окне пестрит, поэтому здесь тот же спокойный пунктир, что и у
+// терминов в тексте работы, только цветом ссылки: в мини-окошке по ним можно
+// перейти, уведя туда указатель.
+.glossary-hint a.internal,
+.glossary-popover a.internal {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-weight: inherit;
+  color: var(--secondary);
+  border-bottom: 1px dashed currentcolor;
+}
+
+// Мини-окошко. Заголовок статьи плагин не отдаёт внутри article, его
+// подставляет скрипт — отсюда собственные отступы и линейка под ним.
+.glossary-popover > .popover-inner {
+  padding-top: 0.8rem;
+  user-select: text;
+
+  > h1 {
+    margin: 0 0 0.6rem;
+    padding-bottom: 0.4rem;
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  h2,
+  h3 {
+    font-size: 1rem;
+    margin-top: 0.9rem;
+  }
+
+  p,
+  ul,
+  ol {
+    margin: 0.5rem 0;
+  }
+
+  // Ширина окна фиксирована (30rem из popover.scss), поэтому широкое
+  // содержимое прокручивается внутри себя, а не растягивает окно.
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    font-size: 0.88rem;
+  }
+
+  pre {
+    overflow-x: auto;
+  }
+
+  figure[data-rehype-pretty-code-figure] figcaption {
+    display: none;
+  }
+}
+
+// Подсказки — приём для мыши, и зависят они не от размера окна, а от того,
+// есть ли наведение вообще: на сенсорном экране касание по термину открывает
+// страницу глоссария целиком. Раньше здесь стояла ширина 800px — она же
+// заодно прятала подсказки в узком окне на ПК и показывала их телефону,
+// повёрнутому набок.
+@media (hover: none) {
+  .glossary-hint {
+    display: none !important;
+  }
+}
+
+// Указатель терминов на странице глоссария написан в самой странице: он
+// сгруппирован по темам и отсортирован по алфавиту (список генерирует
+// tmp/make-glossary.py). Автоматический список вложенных страниц, который
+// плагин folder-page выводит под текстом, дублировал бы его — и сортировал бы
+// термины по имени файла, а не по названию. Классы из frontmatter
+// `cssclasses` плагин кладёт на <article>, а список — в соседний блок,
+// поэтому селектор соседний, а не вложенный.
+article.glossary-list + .page-listing {
+  display: none;
+}
+
+// В самом указателе термины — такие же подчёркнутые пунктиром ссылки, как в
+// текстах работ, поэтому подсказка работает и здесь. Список из полусотни
+// строк лучше читается в две-три колонки.
+article.glossary-list ul {
+  columns: 16rem 3;
+  padding-left: 1.2rem;
+
+  li {
+    break-inside: avoid;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10.1. Определения, вставленные из глоссария (транклюзия)
+// ---------------------------------------------------------------------------
+// Запись ![[glossary/cmsis#^def-cmsis]] в тексте работы подставляет абзац-
+// определение прямо из статьи глоссария: определение физически живёт в одном
+// месте и не может разойтись с текстом работы.
+//
+// Quartz оборачивает вставку в <blockquote class="transclude"> и дописывает
+// хвостом ссылку «Ссылка на оригинал». Для цитаты это уместно, для определения
+// внутри связного текста — нет: читатель должен видеть обычный абзац. Поэтому
+// снимаем оформление цитаты и прячем служебную ссылку — ведь сам термин в
+// определении и так остаётся ссылкой на статью.
+//
+// ВАЖНО: имя блока (^def-cmsis) обязано быть уникальным. Quartz переносит
+// разметку абзаца в страницу как есть, вместе с id="def-cmsis"; одинаковые
+// имена в разных статьях дали бы повторяющиеся id на одной странице.
+
+// Вокруг вставки remark оставляет пустые <p></p> — следы разобранного абзаца
+// с ![[...]]. Пустой абзац наследует вертикальные отступы из _typography.scss и добавляет
+// лишний воздух, а в начале пункта списка ещё и сдвигает текст относительно
+// номера. Убираем их.
+article p:empty {
+  display: none;
+}
+
+article blockquote.transclude {
+  margin: 0.6rem 0;
+  border-left: none;
+  padding-left: 0;
+
+  > p {
+    margin: 0.6rem 0;
+  }
+
+  > a.transclude-src {
+    display: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Кнопка «Назад» на статье глоссария
+// ---------------------------------------------------------------------------
+// Разметку даёт MkvsGlossaryBack.tsx — компонент верхней панели (header),
+// стоящий последним. Показывает кнопку mkvs-glossary.inline.ts, и только если
+// переход на статью был сделан внутри сайта.
+//
+// Панель закреплена у верхнего края окна (см. _layout.scss), поэтому кнопка доступна в
+// любой момент чтения — листать вверх не нужно.
+
+// Панель переводится в многострочную раскладку: обёртка кнопки занимает всю
+// ширину и потому переносится на вторую строку — ровно под кнопку Проводника
+// (справа на первой строке остаётся переключатель темы). Вертикальный зазор
+// между строками даёт тот же gap, что и между кнопками.
+.page > #quartz-body header {
+  flex-wrap: wrap;
+}
+
+.page > #quartz-body header .mkvs-glossary-back {
+  flex-basis: 100%;
+
+  // Обёртка растянута на всю ширину колонки текста, а под закреплённой панелью
+  // проезжает статья: без этого прозрачная полоса перехватывала бы клики и
+  // выделение текста. Правило header > * возвращает pointer-events всем прямым
+  // потомкам панели, поэтому здесь их снимаем повторно — и отдаём самой кнопке.
+  pointer-events: none;
+}
+
+.page > #quartz-body header .mkvs-glossary-back[hidden] {
+  display: none;
+}
+
+.page > #quartz-body header .mkvs-glossary-back > button {
+  pointer-events: auto;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2rem;
+  padding: 0 0.7rem 0 0.5rem;
+
+  font-family: var(--bodyFont);
+  font-size: 0.9rem;
+  line-height: 1;
+
+  cursor: pointer;
+  color: var(--secondary);
+  // Фон обязателен непрозрачный — под закреплённой панелью проезжает текст.
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+}
+
+.page > #quartz-body header .mkvs-glossary-back > button:hover {
+  color: var(--tertiary);
+  border-color: var(--secondary);
+}

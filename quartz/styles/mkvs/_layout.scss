@@ -1,0 +1,307 @@
+@use "breakpoints" as *;
+
+// ---------------------------------------------------------------------------
+// 6. Раскладка: режимы экрана, колонки и верхняя панель
+// ---------------------------------------------------------------------------
+
+// Тот же режим — скриптам. mkvs-mobile-bar.inline.ts раскладывает по режиму
+// переключатель темы и оглавление, и границы ему нужны те же самые. Прочитать
+// media-запрос из JS нельзя, поэтому режим отдаётся обычным свойством:
+// _breakpoints.scss остаётся единственным местом, где записаны границы.
+:root {
+  --mkvs-layout: "columns-3";
+}
+
+@media #{$columns-2} {
+  :root {
+    --mkvs-layout: "columns-2";
+  }
+}
+
+@media #{$compact} {
+  :root {
+    --mkvs-layout: "compact";
+  }
+}
+
+// Левая колонка шире штатной: в ней длинные названия лабораторных работ.
+@media #{$columns} {
+  .page > #quartz-body > .sidebar.left {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    min-width: 0;
+  }
+
+  // Плагин поиска ограничивает свою строку 14rem (224px) — она рассчитана на
+  // штатную колонку Quartz. В колонке на 380px такая строка обрывается
+  // заметно левее названий работ под ней. Ограничение снимаем: ширину задаёт
+  // колонка. Селектор тяжёлый намеренно — CSS плагинов подключается ПОСЛЕ
+  // index.css, и правило .search { max-width: 14rem } перебило бы простое.
+  .page > #quartz-body > .sidebar.left > .search {
+    max-width: none;
+  }
+}
+
+@media #{$columns-2} {
+  .page > #quartz-body {
+    grid-template-columns: 380px minmax(0, 1fr);
+  }
+}
+
+@media #{$columns-3} {
+  .page {
+    max-width: 1560px;
+  }
+
+  .page > #quartz-body {
+    grid-template-columns: 380px minmax(0, 1fr) 320px;
+  }
+}
+
+// --- компактный режим: колонок нет -----------------------------------------
+// base.scss переключает сетку по своим границам, и низкий, но широкий экран
+// получает от него раскладку планшета или ПК — с колонкой на 380px, в которой
+// нечего показать. Повторяем здесь мобильную сетку (styles/variables.scss,
+// $mobileGrid) уже по общему условию.
+//
+// Утяжелять селекторы не нужно: index.css собирается как
+// «@layer quartz-base { тема + base.scss } + этот файл», то есть правила
+// custom.scss лежат ВНЕ слоя и перебивают и base.scss, и CSS плагинов
+// независимо от специфичности.
+@media #{$compact} {
+  .page > #quartz-body {
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto auto auto;
+    grid-template-areas:
+      "grid-sidebar-left"
+      "grid-header"
+      "grid-center"
+      "grid-sidebar-right"
+      "grid-footer";
+
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  // Правая колонка (обратные ссылки) — полоса под текстом. Оглавление из неё
+  // к этому моменту уже уехало в панель, см. _compact.scss.
+  .page > #quartz-body > .sidebar.right {
+    position: static;
+    height: auto;
+    width: 100%;
+    flex-direction: row;
+    padding: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .page > #quartz-body > .center,
+  .page > #quartz-body > footer {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  // Распорка между «гамбургером» и правыми кнопками панели приходит из
+  // раскладки с классом mobile-only (spacer в quartz.config.yaml).
+  .desktop-only {
+    display: none;
+
+    &.flex-component {
+      display: none;
+    }
+  }
+
+  .mobile-only {
+    display: contents;
+
+    &.flex-component {
+      display: flex;
+    }
+  }
+}
+
+// Свёрнутая левая колонка. Атрибут на <html> ставит
+// mkvs-sidebar-state.inline.ts ещё до отрисовки, поэтому при загрузке
+// страницы колонка не мигает. В компактном режиме колонки нет — там её место
+// занимает верхняя панель, и сворачивать нечего.
+@media #{$columns} {
+  :root[data-left-sidebar="collapsed"] .page > #quartz-body > .sidebar.left {
+    display: none;
+  }
+
+  // ОБЯЗАТЕЛЬНО вместе с display: none выше. У .center в Quartz нет своего
+  // grid-area (он есть только у .center > article, где уже бесполезен, потому
+  // что article — не элемент сетки), поэтому .center размещается
+  // автоматически. Скрытая левая колонка выпадает из сетки, её ячейка
+  // освобождается, и .center уезжает в первый столбец — а он нулевой ширины.
+  // Вместе с min-width: 100% это давало колонку текста в одну букву.
+  // Ставим столбец текста явно; в компактном режиме столбец один, поэтому
+  // правило живёт внутри media-запроса.
+  .page > #quartz-body > .center {
+    grid-column: 2;
+  }
+}
+
+@media #{$columns-2} {
+  :root[data-left-sidebar="collapsed"] .page > #quartz-body {
+    grid-template-columns: 0 minmax(0, 1fr);
+  }
+}
+
+@media #{$columns-3} {
+  :root[data-left-sidebar="collapsed"] .page > #quartz-body {
+    grid-template-columns: 0 minmax(0, 1fr) 320px;
+  }
+}
+
+// Верхняя панель области текста: слева кнопка сворачивания Проводника, справа
+// переключатель темы (его отодвигает margin-left: auto; порядок кнопок задан
+// в quartz.ts). В режимах с колонками панель — сплошная полоса у верхнего
+// края окна (блок $columns ниже), в компактном — прозрачная строка под
+// панелью телефона (_compact.scss).
+//
+// Почему .page-header получает display: contents: панель должна оставаться
+// прижатой, пока читается вся статья. Для position: sticky это значит, что
+// ограничивающим блоком должен быть .center высотой во всю статью, а не
+// короткий .page-header. display: contents убирает бокс .page-header, и
+// <header> становится прямым потоковым потомком .center. Заодно панель
+// автоматически получает ширину колонки текста — и когда Проводник открыт, и
+// когда свёрнут, без пересчёта отступов.
+//
+// Ещё два подвоха:
+//   1. CSS компонента Header в сборку НЕ попадает: DefaultFrame импортирует
+//      Header напрямую, минуя раскладку, поэтому collectComponents его не
+//      видит и его css никто не собирает. Из-за этого <header> не был
+//      flex-контейнером и margin-left: auto не работал — display: flex и все
+//      отступы задаём здесь сами.
+//   2. Прозрачная панель занимает всю ширину колонки, то есть перехватывала
+//      бы клики и выделение текста под собой. Отключаем у неё pointer-events
+//      и возвращаем их кнопкам. Сплошной полосе это не нужно — под ней ничего
+//      не видно, и в блоке $columns pointer-events возвращаются ей целиком.
+.page > #quartz-body .center > .page-header {
+  display: contents;
+}
+
+.page > #quartz-body header {
+  position: sticky;
+  z-index: 3;
+  // У самого верха окна: в режимах с колонками панель и есть верхняя полоса.
+  // Компактный режим сдвигает её ниже — там верх окна занят панелью телефона
+  // (_compact.scss).
+  top: 0;
+
+  // Поля панели задаются по режимам ниже: в режимах с колонками она сплошная
+  // полоса и сама держит отступ текста сверху ($topSpacing = 6rem у Quartz,
+  // тот самый, что раньше задавал .page-header), в компактном — прижата под
+  // панель телефона и полей не имеет (_compact.scss).
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  pointer-events: none;
+}
+
+.page > #quartz-body header > * {
+  pointer-events: auto;
+}
+
+// Кнопка темы: тот же размер и фон, что у кнопки сворачивания. Фон обязателен
+// непрозрачный — под прижатой панелью проезжает текст статьи.
+.page > #quartz-body header .darkmode {
+  margin-left: auto;
+
+  box-sizing: border-box;
+  width: 2rem;
+  height: 2rem;
+
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+  background: var(--light);
+}
+
+// Иконку плагин позиционирует абсолютно и центрирует только по вертикали.
+.page > #quartz-body header .darkmode svg {
+  left: calc(50% - 10px);
+}
+
+// Кнопка сворачивания левой колонки: тот же размер и фон, что у кнопки темы,
+// иконка — штатный «гамбургер» Quartz.
+.page > #quartz-body header .mkvs-sidebar-toggle {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+
+  cursor: pointer;
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+  background: var(--light);
+  color: var(--darkgray);
+}
+
+.page > #quartz-body header .mkvs-sidebar-toggle:hover {
+  color: var(--secondary);
+}
+
+// --- режимы с колонками: сплошная полоса вместо двух висящих кнопок ---------
+// В компактном режиме панель — сплошная строка у верхнего края окна (ею
+// служит левая колонка, _compact.scss). На широком экране такой полосы не было:
+// <header> оставался прозрачным, и две кнопки с непрозрачным фоном висели
+// прямо над текстом. Статья проезжала вплотную к ним и между ними, то есть
+// буквы наезжали на рамки кнопок — при том, что сами кнопки закрывали текст.
+//
+// Полоса снимает это разом: непрозрачный фон прячет под собой всё, что мимо
+// неё проезжает. Ширину задавать не нужно — панель является потоковым
+// потомком .center (display: contents выше), поэтому её ширина всегда равна
+// ширине статьи: и при открытом Проводнике, и при свёрнутом.
+//
+// Верхнее поле снято: полоса начинается у самого верха колонки. Прежние 6rem
+// ($topSpacing) целиком отданы её нижнему полю — 3rem высоты полосы плюс 3rem
+// зазора, — поэтому «хлебные крошки» и заголовок статьи встают ровно на той
+// высоте, где стоят название сайта слева и «Оглавление» справа: обе колонки
+// sticky с padding-top: 6rem. Раньше эти 6rem были верхним полем панели и
+// текст начинался на 3,5rem ниже колонок.
+@media #{$columns} {
+  .page > #quartz-body header {
+    margin: 0 0 3rem;
+
+    box-sizing: border-box;
+    min-height: 3rem;
+    padding: 0.5rem 0;
+
+    background: var(--light);
+    border-bottom: 1px solid var(--lightgray);
+
+    // Не height: на статьях глоссария панель переносит кнопку «Назад» на
+    // вторую строку (_glossary.scss) и должна стать выше. align-content держит строки
+    // по центру полосы, пока она выше своего содержимого.
+    align-content: center;
+
+    // Под сплошной полосой ничего не видно — значит, и проваливаться сквозь
+    // неё нечему (подвох 2 выше).
+    pointer-events: auto;
+  }
+
+  // Переход по ссылке-якорю не должен оставлять заголовок под полосой.
+  html {
+    scroll-padding-top: 4rem;
+  }
+}
+
+@media #{$compact} {
+  .page > #quartz-body header {
+    margin: 1rem 0;
+  }
+
+  // В компактном режиме левая колонка — верхняя панель, и сворачивает её
+  // штатная кнопка Quartz (.mobile-explorer) в самой панели. Вторая такая же
+  // кнопка в панели над текстом была бы дублем и всё равно не работала бы:
+  // правила data-left-sidebar живут только в режимах с колонками.
+  .page > #quartz-body header .mkvs-sidebar-toggle {
+    display: none;
+  }
+}

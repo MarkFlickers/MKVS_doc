@@ -1,5 +1,6 @@
 // Клик по кнопке сворачивания левой колонки. Само состояние — атрибут
-// data-left-sidebar на <html>; раскладку по нему перестраивает custom.scss.
+// data-left-sidebar на <html>; раскладку по нему перестраивает
+// styles/mkvs/_layout.scss.
 // Первичное значение атрибута ставит mkvs-sidebar-state.inline.ts до отрисовки.
 
 const STORAGE_KEY = "mkvs-left-sidebar"

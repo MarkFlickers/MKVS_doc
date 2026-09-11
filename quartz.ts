@@ -70,7 +70,7 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
 // альбомной ориентации — примерно 890x400) не получал ни выезжающего дерева
 // Проводника, ни мобильного окна поиска: по ширине он «планшет».
 //
-// Сайт же считает такой экран компактным (custom.scss, п.6 — граница по
+// Сайт же считает такой экран компактным (mkvs/_breakpoints.scss — граница по
 // ширине ИЛИ по высоте). Приводим CSS плагинов к тому же условию: подменяем
 // в нём ровно ту строку, которой записан мобильный @media-запрос.
 //
@@ -86,7 +86,7 @@ const PLUGIN_MOBILE = "@media all and (max-width: 800px)"
 const PLUGIN_NOT_MOBILE = "@media all and not (max-width: 800px)"
 
 // Числа границ здесь НЕ повторяются, а читаются из самих стилей: иначе правка
-// в custom.scss молча разошлась бы с CSS плагинов, и низкий экран вёл бы себя
+// в стилях молча разошлась бы с CSS плагинов, и низкий экран вёл бы себя
 // по-разному в разных его частях.
 function breakpoint(styles: string, name: string): string {
   const prefix = "$" + name + ":"
@@ -95,9 +95,9 @@ function breakpoint(styles: string, name: string): string {
 
   if (!value) {
     throw new Error(
-      `[mkvs] В quartz/styles/custom.scss нет границы раскладки ${prefix.slice(0, -1)}. ` +
+      `[mkvs] В quartz/styles/mkvs/_breakpoints.scss нет границы раскладки ${prefix.slice(0, -1)}. ` +
         "Её читает quartz.ts, чтобы перевести CSS плагинов на то же условие, " +
-        "что и стили сайта (см. п.6 custom.scss). Верните переменную или " +
+        "что и стили сайта. Верните переменную или " +
         "поправьте имя здесь.",
     )
   }
@@ -109,14 +109,14 @@ function breakpoint(styles: string, name: string): string {
 // перекладывается в quartz/.quartz-cache/transpiled-build.mjs, и относительные
 // пути «от себя» ведут не туда. Сборка Quartz и так работает от корня — по
 // нему же находится и папка content.
-const stylesPath = join(process.cwd(), "quartz", "styles", "custom.scss")
+const stylesPath = join(process.cwd(), "quartz", "styles", "mkvs", "_breakpoints.scss")
 const customStyles = readFileSync(stylesPath, "utf8")
 
 const narrow = breakpoint(customStyles, "mkvs-narrow")
 const short = breakpoint(customStyles, "mkvs-short")
 
 // Граница задана «включительно», поэтому обратное условие начинается со
-// следующего пикселя — ровно как $columns в custom.scss.
+// следующего пикселя — ровно как $columns в mkvs/_breakpoints.scss.
 const next = (value: string) => `${Number.parseInt(value, 10) + 1}px`
 
 const SITE_COMPACT = `@media (max-width: ${narrow}), (max-height: ${short})`

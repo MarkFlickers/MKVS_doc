@@ -1,0 +1,247 @@
+@use "breakpoints" as *;
+
+// ---------------------------------------------------------------------------
+// 8. Оглавление справа: сворачивание разделов и текущий раздел
+// ---------------------------------------------------------------------------
+// Разметку готовит mkvs-toc-collapse.inline.ts поверх штатного оглавления:
+// пунктам с подпунктами добавляется кнопка .mkvs-toc-toggle, остальным —
+// распорка .mkvs-toc-spacer той же ширины (иначе ссылки «поедут» по левому
+// краю). Отступ уровня задаёт сам Quartz правилом .depth-N { padding-left }.
+
+ul.toc-content > li.mkvs-toc-item {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 0.15rem;
+}
+
+// Важно: .mkvs-toc-item имеет display:flex, поэтому одного атрибута hidden
+// здесь было бы недостаточно.
+ul.toc-content > li.mkvs-toc-hidden {
+  display: none;
+}
+
+// Тот же принцип, что в Проводнике: строки внутри пункта плотно, между
+// пунктами — заметный зазор.
+.toc > ul.toc-content > li + li {
+  margin-top: var(--mkvs-toc-gap);
+}
+
+.mkvs-toc-toggle,
+.mkvs-toc-spacer {
+  box-sizing: border-box;
+  flex: 0 0 0.9rem;
+  width: 0.9rem;
+
+  // Высота строки пункта — чтобы стрелка встала ровно к первой строке.
+  height: calc(var(--mkvs-toc-size) * var(--mkvs-nav-leading));
+}
+
+.mkvs-toc-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+
+  border: 0;
+  background: transparent;
+  color: var(--dark);
+  opacity: 0.5;
+
+  cursor: pointer;
+
+  transition: opacity 0.3s ease;
+}
+
+// Стрелка рисуется двумя границами квадрата, повёрнутого на 45°.
+.mkvs-toc-toggle::before {
+  content: "";
+
+  width: 0.35rem;
+  height: 0.35rem;
+
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+
+  // Развёрнутый раздел — стрелка вниз.
+  transform: rotate(45deg);
+
+  transition: transform 0.15s ease;
+}
+
+// Свёрнутый раздел — стрелка вправо.
+li.mkvs-toc-collapsed > .mkvs-toc-toggle::before {
+  transform: rotate(-45deg);
+}
+
+.mkvs-toc-toggle:hover {
+  color: var(--secondary);
+  opacity: 1;
+}
+
+.mkvs-toc-toggle:focus-visible {
+  outline: 1px solid var(--secondary);
+  outline-offset: 1px;
+  opacity: 1;
+}
+
+// --- текущий раздел ---------------------------------------------------------
+// Штатный плагин через IntersectionObserver помечает классом in-view все
+// заголовки выше линии сгиба, из-за чего прочитанная часть оглавления
+// постепенно «выцветает». Для книжной навигации нужнее ровный список с одним
+// выделенным пунктом, поэтому градиент прозрачности отключаем: одинаковая
+// приглушённость у всех, цвет и насыщенность — только у текущего раздела и
+// его родителя. Классы mkvs-toc-active* ставит mkvs-toc-collapse.inline.ts.
+//
+// Ссылка здесь — flex-элемент, то есть уже блочная: перенос строк не рвёт ни
+// активную область, ни выделение.
+
+.toc > ul.toc-content.overflow > li > a,
+.toc > ul.toc-content.overflow > li > a.in-view {
+  opacity: 1;
+  color: var(--darkgray);
+
+  font-size: var(--mkvs-toc-size);
+  font-weight: 400;
+  line-height: var(--mkvs-nav-leading);
+
+  transition: color 0.2s ease;
+}
+
+.toc > ul.toc-content.overflow > li > a:hover {
+  color: var(--secondary);
+}
+
+.toc > ul.toc-content.overflow > li > a.mkvs-toc-active-parent {
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.toc > ul.toc-content.overflow > li > a.mkvs-toc-active {
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+// ---------------------------------------------------------------------------
+// 8.1. Оглавление кнопкой: общий вид для панели телефона и шапки текста
+// ---------------------------------------------------------------------------
+// Колонкой оглавление стоит только в режиме columns-3 (_layout.scss). В двух других
+// режимах места для колонки нет, и оглавление становится кнопкой с выпадающим
+// списком — единственная альтернатива тому, чтобы оно просто пропало, как это
+// делает Quartz ниже 1200px.
+//
+// Хозяин кнопки зависит от режима, и это не прихоть, а следствие разметки:
+//
+//   compact   — верхняя панель, то есть левая колонка (_compact.scss). Именно в ней
+//               лежит «гамбургер» Проводника, а он привязан к своему дереву и
+//               переехать не может — значит, панелью может быть только она;
+//   columns-2 — панель над текстом (<header>), потому что левая колонка в
+//               этом режиме занята Проводником во всю высоту окна.
+//
+// Сам узел .toc между колонкой, панелью и шапкой переносит
+// mkvs-mobile-bar.inline.ts. Ниже — то, что у обоих «кнопочных» мест общее;
+// отличаются только рамка и положение списка, их задаёт место вызова.
+
+// Штатный .toc — колонка с заголовком и списком, свёрнутое состояние он
+// изображает сжатием по высоте. Кнопке нужны и другая раскладка, и другой
+// способ скрытия, поэтому оба задаются заново.
+@mixin mkvs-toc-button {
+  position: static;
+  display: block;
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: visible;
+
+  > .toc-header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    flex-shrink: 0;
+
+    > h3,
+    > .fold {
+      display: none;
+    }
+
+    // Иконка-«список» вместо заголовка «Оглавление». Рисуется маской, чтобы
+    // цвет брался из темы и не пришлось вставлять svg скриптом.
+    &::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      background-color: var(--darkgray);
+      $toc-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'/%3E%3C/svg%3E");
+      -webkit-mask: $toc-icon center / contain no-repeat;
+      mask: $toc-icon center / contain no-repeat;
+    }
+  }
+
+  > .toc-content.collapsed {
+    display: none;
+  }
+}
+
+// Выпадающий список. Общее — вид, отступы и собственная прокрутка (список
+// длиннее экрана обязан листаться, а не обрезаться); положение и рамку задаёт
+// место вызова: под панелью телефона список во всю ширину экрана, под шапкой
+// текста — плашка под кнопкой.
+@mixin mkvs-toc-dropdown {
+  position: absolute;
+  z-index: 100;
+
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 0.8rem 1rem 1rem;
+
+  background: var(--light);
+  box-shadow: 0 8px 16px rgb(0 0 0 / 12%);
+}
+
+// --- режим columns-2: кнопка в панели над текстом ---------------------------
+// Панель закреплена у верхнего края окна (_layout.scss), поэтому кнопка под рукой на
+// любой высоте прокрутки. Она же — containing block для списка: position:
+// sticky делает <header> позиционированным элементом.
+@media #{$columns-2} {
+  .page > #quartz-body header > .toc {
+    @include mkvs-toc-button;
+
+    // Кнопка стоит в одном ряду с кнопками Проводника и темы (_layout.scss) и
+    // повторяет их вид: рамка и непрозрачный фон — под закреплённой панелью
+    // проезжает текст статьи.
+    > .toc-header {
+      cursor: pointer;
+      color: var(--darkgray);
+      border: 1px solid var(--lightgray);
+      border-radius: 4px;
+      background: var(--light);
+    }
+
+    > .toc-header:hover::before {
+      background-color: var(--secondary);
+    }
+
+    > .toc-content {
+      @include mkvs-toc-dropdown;
+
+      // Список выпадает из-под полосы (её высота — 3rem, см. _layout.scss) и прижат к
+      // правому краю колонки текста: кнопка стоит справа, а слева от неё —
+      // кнопки Проводника и темы.
+      top: 3rem;
+      right: 0;
+      left: auto;
+
+      width: min(26rem, 100%);
+      max-height: calc(100dvh - 6rem);
+
+      border: 1px solid var(--lightgray);
+      border-radius: 4px;
+    }
+  }
+}

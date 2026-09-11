@@ -1,0 +1,26 @@
+// ---------------------------------------------------------------------------
+// 4. Таблицы (таблица параметров platformio.ini и т.п.)
+// ---------------------------------------------------------------------------
+
+article table {
+  // Множитель от кегля колонки, а не rem от корня: таблица должна ехать за
+  // --mkvs-text-size (см. _typography.scss).
+  font-size: calc(var(--mkvs-table-scale) * 1em);
+
+  th {
+    background: var(--lightgray);
+    text-align: left;
+  }
+
+  td,
+  th {
+    vertical-align: top;
+    border: 1px solid var(--lightgray);
+    padding: 0.4rem 0.55rem;
+  }
+
+  code {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}

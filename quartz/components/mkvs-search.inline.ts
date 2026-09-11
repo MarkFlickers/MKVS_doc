@@ -7,7 +7,7 @@
 //   • в карточке результата показывает только заголовок страницы и ОДИН
 //     фрагмент: окно в 60 слов вокруг самого плотного скопления совпадений
 //     (на широком экране этот фрагмент вдобавок спрятан его собственным CSS —
-//     display: none, см. п.9 custom.scss);
+//     display: none, см. styles/mkvs/_search.scss);
 //   • в превью справа подсвечивает ВСЕ совпадения, но прокручивает окно к
 //     самому длинному из них и никак не показывает, сколько их всего;
 //   • по клику кладёт запрос в sessionStorage['search-term'], а на открытой
@@ -298,7 +298,7 @@ function center(container: HTMLElement, target: HTMLElement) {
   // Считаем через getBoundingClientRect, а не через offsetTop: результат не
   // зависит от того, какие предки позиционированы. (Сам плагин суммирует
   // offsetTop по цепочке offsetParent и промахивается — правило
-  // position: relative в п.9 custom.scss лечит его арифметику.)
+  // position: relative в styles/mkvs/_search.scss лечит его арифметику.)
   const box = container.getBoundingClientRect()
   const mark = target.getBoundingClientRect()
   const delta = mark.top - box.top - (box.height - mark.height) / 2

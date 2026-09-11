@@ -1,0 +1,279 @@
+@use "breakpoints" as *;
+// Миксины кнопки-оглавления: вид у неё общий для панели телефона
+// и для шапки текста в columns-2, поэтому описан один раз в _toc.scss.
+@use "toc" as *;
+
+// ---------------------------------------------------------------------------
+// 12. Компактный режим: закреплённая верхняя панель
+// ---------------------------------------------------------------------------
+// В компактном режиме (_layout.scss — узкий ИЛИ низкий экран) левая колонка Quartz
+// превращается в строку над текстом. Здесь она закрепляется у верхнего края
+// окна и собирает все четыре кнопки:
+//
+//   [☰ Проводник]  ···  [тема] [поиск] [оглавление]
+//
+// Переключатель темы и оглавление приезжают сюда из других мест разметки —
+// узлы переносит mkvs-mobile-bar.inline.ts, см. MkvsMobileBar.tsx.
+
+@media #{$compact} {
+  // :has(.explorer) — чтобы правило не задело раскладки без Проводника
+  // (страница 404). :root ничего не меняет и оставлен как есть: приоритет над
+  // CSS плагина даёт каскадный слой, а не длина селектора (см. _explorer.scss).
+  :root .page > #quartz-body > .sidebar.left:has(.explorer) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    // Выше выезжающего дерева Проводника (.explorer-content, z-index 100),
+    // чтобы «гамбургер» оставался нажимаемым и при открытом дереве.
+    z-index: 101;
+
+    box-sizing: border-box;
+    height: 3rem;
+    margin: 0;
+    padding: 0 1rem;
+    gap: 0.6rem;
+    align-items: center;
+
+    background: var(--light);
+    border-bottom: 1px solid var(--lightgray);
+
+    // Строкой колонку делает base.scss — но по своей границе (max-width:
+    // 800px), поэтому на низком и широком экране она осталась бы столбцом.
+    flex-direction: row;
+  }
+
+  // Колонка ушла из потока — её место в сетке освободилось, и текст встал бы
+  // под панель. Возвращаем отступ странице; scroll-padding нужен, чтобы
+  // переход по якорю не прятал заголовок под панелью.
+  .page > #quartz-body {
+    padding-top: 4rem;
+  }
+
+  html {
+    scroll-padding-top: 4rem;
+  }
+
+  // Панель над текстом (кнопка «Назад» глоссария) прижимается уже под верхней.
+  // Отступы держит сама кнопка: переключатель темы уехал наверх, и на всех
+  // страницах, кроме статей глоссария, панель пустая — её поля были бы
+  // ничем не занятой полосой над текстом.
+  .page > #quartz-body header {
+    top: 3.4rem;
+    margin: 0;
+  }
+
+  .page > #quartz-body header .mkvs-glossary-back {
+    margin: 0.6rem 0;
+  }
+
+  // Название сайта в панели не помещается и не нужно: на главную ведут
+  // «хлебные крошки» и Проводник.
+  .page > #quartz-body > .sidebar.left > .page-title {
+    display: none;
+  }
+
+  // Порядок кнопок. Распорка (.spacer, order 0) остаётся между Проводником и
+  // остальными и разводит их по краям панели.
+  .page > #quartz-body > .sidebar.left > .darkmode {
+    order: 1;
+  }
+
+  .page > #quartz-body > .sidebar.left > .search {
+    order: 2;
+  }
+
+  .page > #quartz-body > .sidebar.left > .toc {
+    order: 3;
+  }
+
+  // --- кнопки панели --------------------------------------------------------
+
+  // Все три правые кнопки — одного размера, удобного для пальца.
+  .page > #quartz-body > .sidebar.left > .darkmode,
+  .page > #quartz-body > .sidebar.left > .search > .search-button,
+  .page > #quartz-body > .sidebar.left > .toc > .toc-header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  // Иконку плагин позиционирует абсолютно и центрирует только по вертикали.
+  .page > #quartz-body > .sidebar.left > .darkmode svg {
+    left: calc(50% - 10px);
+  }
+
+  // Поиск в панели — только лупа: подпись «Поиск» съела бы всю строку.
+  .page > #quartz-body > .sidebar.left > .search {
+    min-width: 0;
+    max-width: none;
+    flex: 0 0 auto;
+  }
+
+  .page > #quartz-body > .sidebar.left > .search > .search-button > p {
+    display: none;
+  }
+
+  // Рамка кнопки поиска в панели лишняя: рядом стоят такие же по размеру
+  // кнопки темы и оглавления, и они рисуются одной иконкой.
+  .page > #quartz-body > .sidebar.left > .search > .search-button {
+    border: none;
+  }
+
+  .page > #quartz-body > .sidebar.left > .search > .search-button svg {
+    margin: 0;
+  }
+
+  // --- оглавление -----------------------------------------------------------
+  // Вид кнопки и выпадающего списка общий с режимом columns-2 — см. _toc.scss.
+  // Здесь только то, чем панель телефона отличается от панели над текстом.
+  .page > #quartz-body > .sidebar.left > .toc {
+    @include mkvs-toc-button;
+
+    > .toc-content {
+      @include mkvs-toc-dropdown;
+
+      // Список выпадает из-под панели во всю ширину экрана: containing block —
+      // сама панель (она position: fixed), поэтому top отсчитывается от её
+      // верхнего края.
+      top: 3rem;
+      left: 0;
+      right: 0;
+
+      max-height: calc(100dvh - 4.5rem);
+
+      border-bottom: 1px solid var(--lightgray);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 13. Без третьей колонки: правая полоса не должна перехватывать прокрутку
+// ---------------------------------------------------------------------------
+// Вне режима columns-3 (_layout.scss) правая колонка перестаёт быть колонкой и встаёт
+// полосой под текстом: ей задаётся max-height: 24rem, а
+// список внутри — ul.overflow — остаётся собственным блоком прокрутки с
+// overscroll-behavior: contain. Прокручивать в нём нечего (список короче
+// ограничения), а contain не даёт жесту уйти дальше, наверх к странице — палец
+// или колесо над блоком обратных ссылок просто не работали.
+//
+// В колонке ограничение по высоте осмысленно: там список конкурирует за экран
+// с оглавлением. Полосе под текстом расти некуда мешать, поэтому здесь блок
+// прокрутки убирается совсем.
+
+@media #{$not-columns-3} {
+  .page > #quartz-body > .sidebar.right > * {
+    max-height: none;
+  }
+
+  .page > #quartz-body > .sidebar.right div:has(> .overflow) {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .page > #quartz-body > .sidebar.right ul.overflow {
+    max-height: none;
+    overflow-y: visible;
+    overscroll-behavior: auto;
+  }
+
+  // Затенение нижнего края список получает скриптом, когда его конец не виден
+  // в окне. Сам он больше не прокручивается, и маска только съедала бы
+  // последние строки.
+  .page > #quartz-body > .sidebar.right ul.overflow.gradient-active {
+    mask-image: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 14. Компактный режим: выезжающее дерево Проводника
+// ---------------------------------------------------------------------------
+// Плагин раскрывает дерево во всю ширину экрана и БЕЗ боковых полей:
+//
+//   .explorer .explorer-content { width: 100vw; padding: 4rem 0 2rem 0 }
+//
+// Стрелка сворачивания идёт первым элементом строки, поэтому упирается прямо в
+// край дисплея — целиться в неё неудобно, а на экранах со скруглёнными углами
+// она ещё и попадает в срез. Возвращаем поля по той же сетке, что у верхней
+// панели (у неё padding: 0 1rem), чтобы дерево вставало с ней вровень.
+//
+// Вторая беда той же стрелки — размер: в разметке это svg 12x12, вчетверо
+// меньше рекомендованных для пальца 44px. Растим область нажатия полями
+// самого svg, а отрицательными полями возвращаем иконку на место — визуально
+// не меняется ничего, но промахнуться уже трудно. box-sizing задаём явно:
+// ширину svg берёт из атрибута width="12", и при border-box поля съели бы её
+// целиком, а иконка схлопнулась бы в точку.
+
+@media #{$compact} {
+  :root .explorer > .explorer-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    // Дерево обязано листаться: плагин задаёт ему height: 100dvh и
+    // overflow: hidden, и на низком экране (телефон в альбомной ориентации —
+    // около 400px, из них 6rem съедают поля) список работ просто обрезался бы.
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .explorer .folder-container > svg.folder-icon {
+    box-sizing: content-box;
+    width: 12px;
+    height: 12px;
+    padding: 16px;
+
+    // Слева область нажатия уходит под поле панели, к самому краю экрана:
+    // мимо стрелки уже не промахнёшься. Справа сохраняем штатный зазор до
+    // названия в 5px, снизу гасим поле полностью.
+    margin-left: -16px;
+    margin-right: -11px;
+    margin-bottom: -16px;
+    // Выравнивание по первой строке названия (см. _explorer.scss) за вычетом поля.
+    margin-top: calc(
+      -16px + 0.2rem + (var(--mkvs-nav-lab-size) * var(--mkvs-nav-leading) - 12px) / 2
+    );
+  }
+}
+
+// --- ссылка на титульную страницу -------------------------------------------
+// Разметку добавляет mkvs-explorer-home.inline.ts: в дереве Проводника корневой
+// content/index.md не показывается, а на телефоне название сайта убрано из
+// верхней панели, и вернуться на титульную было неоткуда.
+//
+// В режимах с колонкой ссылка не нужна: там над деревом стоит название сайта
+// и ведёт ровно туда же.
+.explorer > .explorer-content > .mkvs-explorer-home {
+  display: none;
+}
+
+@media #{$compact} {
+  .explorer > .explorer-content > .mkvs-explorer-home {
+    display: block;
+    margin-bottom: var(--mkvs-nav-lab-gap);
+    padding-bottom: var(--mkvs-nav-lab-gap);
+
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  .explorer > .explorer-content > .mkvs-explorer-home > a {
+    display: block;
+
+    // Текст вровень с названиями работ: у них слева стрелка (12px) со своим
+    // отступом (5px), а сама плашка добавляет 0.4rem из --mkvs-nav-pad.
+    padding: var(--mkvs-nav-pad);
+    padding-left: calc(0.4rem + 17px);
+
+    font-family: var(--headerFont);
+    font-size: var(--mkvs-nav-lab-size);
+    font-weight: 600;
+    line-height: var(--mkvs-nav-leading);
+    color: var(--secondary);
+
+    border-radius: 4px;
+  }
+}

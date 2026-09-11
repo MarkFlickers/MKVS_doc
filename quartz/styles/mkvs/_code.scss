@@ -1,0 +1,168 @@
+// ---------------------------------------------------------------------------
+// 2. Блоки кода: заголовок-«шапка» с именем файла и кнопкой копирования
+// ---------------------------------------------------------------------------
+// Плагин @quartz-community/syntax-highlighting:
+//   * рендерит <figure> с <figcaption> из title="..." ;
+//   * скриптом clipboard.inline.ts вставляет <button class="clipboard-button">
+//     первым потомком <pre>.
+// Два нюанса, из-за которых стили ниже выглядят именно так:
+//   1. Собственный clipboard.scss плагина в npm-сборку не попадает — весь вид
+//      кнопки описываем здесь.
+//   2. Базовый стиль Quartz задаёт pre{position:relative}, из-за чего кнопка
+//      липнет к углу кода. Возвращаем pre{position:static}, тогда её
+//      containing block — <figure>, и кнопка попадает в шапку блока.
+// Итог: шапка вида «lib/dynlist/dynlist.c            [копировать]».
+
+figure[data-rehype-pretty-code-figure] {
+  position: relative;
+  margin: 1rem 0 1.4rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+  overflow: hidden;
+
+  figcaption[data-rehype-pretty-code-title] {
+    font-family: var(--codeFont);
+    // Чуть мельче самого кода, но от того же кегля (см. _typography.scss): <figcaption>
+    // лежит вне <pre>, поэтому em здесь не от кода, а от корня — нужен calc.
+    font-size: calc(var(--mkvs-code-size) * 0.96);
+    line-height: 1.4;
+    padding: 0.5rem 3rem 0.5rem 0.8rem; // справа — место под кнопку
+    background: var(--lightgray);
+    color: var(--darkgray);
+  }
+
+  pre {
+    position: static; // см. _code.scss выше
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  button.clipboard-button {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.4rem;
+    z-index: 1;
+    // Кнопка видна всегда, а не только при наведении на блок. Собственный
+    // стиль плагина (.clipboard-button{opacity:0} + pre:hover{opacity:1})
+    // прячет её до наведения, а нам наличие кнопки нужно как главный видимый
+    // признак режима «скопировать» — см. _code.scss ниже.
+    opacity: 1;
+    display: flex;
+    padding: 0.3rem;
+    color: var(--darkgray);
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: 4px;
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+
+    & > svg {
+      fill: currentColor;
+    }
+
+    &:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    &:focus {
+      outline: 0;
+      border-color: var(--secondary);
+    }
+  }
+
+  // Блок кода без title: шапки нет, кнопка ложится на первую строку —
+  // отодвигаем код, чтобы она ничего не перекрывала.
+  &:not(:has(figcaption)) pre {
+    padding-top: 1.6rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2.1. Два режима блока кода: «скопировать» и «перепечатать»
+// ---------------------------------------------------------------------------
+// Указание «перепечатать / скопировать» несёт сам вид блока, а не подпись над
+// ним. Раньше каждый листинг был обёрнут в callout, заголовок которого 37 раз
+// повторял одну и ту же фразу, а рамка callout'а рисовала вторую коробку
+// вокруг коробки с кодом — отсюда и лишний воздух, и шум в повествовании.
+//
+//   обычный блок кода — «скопировать»: сплошная рамка, кнопка копирования,
+//                       выделение работает;
+//   блок внутри <div class="mkvs-retype"> — «перепечатать»: пунктирная рамка,
+//                       кнопки нет, выделение мышью и клавиатурой заблокировано,
+//                       в углу вместо кнопки пиктограмма клавиатуры.
+//
+// Режим «скопировать» — поведение по умолчанию, поэтому обёртка нужна только
+// блокам, которые набирают руками. В markdown это выглядит так:
+//
+//   <div class="mkvs-retype">
+//
+//   ```c title="src/main.c"
+//   ...
+//   ```
+//
+//   </div>
+//
+// Пустые строки вокруг фенса обязательны: без них remark не разберёт код как
+// markdown и блок останется сырым HTML.
+//
+// Кнопку нельзя отключить в разметке: скрипт плагина (clipboard.inline.ts)
+// вставляет её в КАЖДЫЙ <pre> уже в браузере. Поэтому убираем её стилем.
+//
+// Оговорка: это заслон от бездумного копипаста, а не защита. Текст программы
+// остаётся в DOM и достаётся через «Просмотр кода страницы» или отключение
+// стилей. Цель — сделать копирование заметно менее удобным, чем набор руками.
+
+.mkvs-retype {
+  // Та же пиктограмма, что раньше стояла у callout'а [!example].
+  --mkvs-icon-keyboard: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"%3E%3Crect x="2" y="5" width="20" height="14" rx="2"/%3E%3Cpath d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10"/%3E%3C/svg%3E');
+
+  > figure[data-rehype-pretty-code-figure] {
+    border-style: dashed;
+    border-color: var(--gray);
+
+    // Не выделяется ни код, ни имя файла в шапке. Курсор — обычная стрелка, а
+    // не «текстовый»: иначе отсутствие выделения читается как поломка страницы.
+    user-select: none;
+    cursor: default;
+
+    button.clipboard-button {
+      display: none;
+    }
+
+    figcaption[data-rehype-pretty-code-title] {
+      padding-right: 2.2rem; // под пиктограмму, а не под кнопку — она у́же
+    }
+
+    // Блок без шапки: место в правом верхнем углу нужно только под
+    // пиктограмму, поэтому полоса вдвое у́же зарезервированной под кнопку
+    // в _code.scss (1.6rem). Иначе четверть невысокого блока уходит в пустоту.
+    &:not(:has(figcaption)) pre {
+      padding-top: 0.85rem;
+    }
+
+    // Пиктограмма встаёт туда же, где в режиме «скопировать» стоит кнопка.
+    // Не кликается, не выделяется, в поток не вмешивается.
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0.62rem; // по центру полосы с именем файла
+      right: 0.81rem;
+      width: 0.9rem;
+      height: 0.9rem;
+      pointer-events: none;
+      background-color: var(--gray);
+      mask-image: var(--mkvs-icon-keyboard);
+      mask-size: contain;
+      mask-position: center;
+      mask-repeat: no-repeat;
+    }
+
+    &:not(:has(figcaption))::after {
+      top: 0.3rem;
+    }
+  }
+}

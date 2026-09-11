@@ -6,7 +6,8 @@
 // помечается комментарием-якорем, поэтому вернуть узел обратно можно и после
 // того, как соседи вокруг него изменились.
 
-// Режим вычисляет CSS (custom.scss, п.6) и отдаёт его готовым свойством. Так границы
+// Режим вычисляет CSS (styles/mkvs/_layout.scss) и отдаёт его готовым
+// свойством. Так границы
 // раскладки записаны РОВНО В ОДНОМ месте: скрипт не повторяет ни ширины, ни
 // высоты и не может разойтись со стилями.
 type Mode = "compact" | "columns-2" | "columns-3"
@@ -38,7 +39,7 @@ const PLAN: { home: string; hostFor: (mode: Mode) => HTMLElement | null }[] = [
   },
   {
     // Оглавление: колонкой оно стоит только в columns-3, в остальных режимах
-    // для колонки нет места и оглавление становится кнопкой (custom.scss, п.8.1).
+    // для колонки нет места и оглавление становится кнопкой (styles/mkvs/_toc.scss).
     home: ".right.sidebar .toc",
     hostFor: (mode) => (mode === "compact" ? bar() : mode === "columns-2" ? textHeader() : null),
   },
@@ -69,7 +70,7 @@ function setTocCollapsed(toc: HTMLElement, collapsed: boolean) {
 function place(item: Managed, host: HTMLElement | null) {
   if (host) {
     // Кнопка «Назад» глоссария занимает в панели над текстом отдельную строку
-    // (custom.scss, п.11), поэтому вставляем перед ней, а не в конец.
+    // (styles/mkvs/_glossary.scss), поэтому вставляем перед ней, а не в конец.
     const tail = host.querySelector<HTMLElement>(":scope > .mkvs-glossary-back")
     host.insertBefore(item.node, tail)
     return

@@ -1,0 +1,17 @@
+// ---------------------------------------------------------------------------
+// 5. Печать: страница должна выводиться близко к исходному PDF
+// ---------------------------------------------------------------------------
+
+@media print {
+  .sidebar,
+  .page > #quartz-body > .left,
+  .page > #quartz-body > .right,
+  .page > #quartz-body header,
+  footer {
+    display: none !important;
+  }
+
+  article {
+    max-width: 100%;
+  }
+}
