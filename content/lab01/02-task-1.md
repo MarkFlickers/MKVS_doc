@@ -1,6 +1,13 @@
 ---
 title: "2. Практическое задание №1 (обязательное)"
 lab: 1
+tags:
+  - лабораторная-работа
+  - platformio
+  - vscode
+  - unity
+  - misra
+  - cppcheck
 ---
 
 ## Вариант №1

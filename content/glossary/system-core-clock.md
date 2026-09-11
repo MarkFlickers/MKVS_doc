@@ -1,6 +1,5 @@
 ---
 title: SystemCoreClock
-date: 2026-09-09
 tags:
   - глоссарий
 ---

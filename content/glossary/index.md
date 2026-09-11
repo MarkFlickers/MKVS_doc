@@ -1,6 +1,5 @@
 ---
 title: Глоссарий
-date: 2026-09-09
 cssclasses:
   - glossary-list
 tags:

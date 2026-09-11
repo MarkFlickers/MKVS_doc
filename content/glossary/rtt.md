@@ -1,6 +1,5 @@
 ---
 title: Real Time Transfer (RTT)
-date: 2026-09-09
 tags:
   - глоссарий
 ---

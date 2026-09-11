@@ -1,6 +1,5 @@
 ---
 title: MISRA C
-date: 2026-09-09
 tags:
   - глоссарий
 ---

@@ -1,6 +1,5 @@
 ---
 title: HSE, HSI, CSI
-date: 2026-09-09
 tags:
   - глоссарий
 ---
