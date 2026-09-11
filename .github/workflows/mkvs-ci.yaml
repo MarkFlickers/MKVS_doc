@@ -1,0 +1,50 @@
+# Проверка форка. Штатные workflow Quartz (ci.yaml, build-preview.yaml,
+# deploy-preview.yaml, deploy-v5.yaml, docker-build-push.yaml) на форке не
+# выполняются: каждый из них закрыт условием
+# `if: github.repository == 'jackyzha0/quartz'`. Из-за этого тип-чек, формат и
+# тесты не запускались ни разу. Этот workflow — свой, без такого условия.
+#
+# Почему чужие workflow не удалены — см. README.md, раздел «Проверки и CI».
+name: MKVS CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - v5
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Плагины @quartz-community/* нужны и сборке, и тип-чеку: свои
+      # компоненты ссылаются на их разметку и типы.
+      - name: Install Quartz plugins
+        run: npx quartz plugin install
+
+      - name: Check types and style
+        run: npm run check
+
+      - name: Test
+        run: npm test
+
+      # Сборка ловит то, чего не видит tsc: ошибки загрузчика inline-скриптов,
+      # разбор границ раскладки в quartz.ts и предупреждения [mkvs].
+      - name: Build site
+        run: npx quartz build
