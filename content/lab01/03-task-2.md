@@ -1,10 +1,6 @@
 ---
 title: "3. Практическое задание №2*"
 lab: 1
-source: "МКВС.26 ЛР1 - r3.pdf"
-revision: r3
-author: "Симонов Сергей Борисович, доцент МПСУ МИЭТ, к.т.н."
-year: 2026
 ---
 
 1. Настройте [[glossary/static-analysis\|статический анализатор]] [[glossary/cppcheck\|cppcheck]] для проверки правил стандарта MISRA C:2012.

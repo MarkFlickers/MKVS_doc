@@ -11,6 +11,7 @@ import Glossary from "./quartz/components/MkvsGlossary"
 import GlossaryBack from "./quartz/components/MkvsGlossaryBack"
 import MobileBar from "./quartz/components/MkvsMobileBar"
 import PrevNext from "./quartz/components/MkvsPrevNext"
+import Imprint from "./quartz/components/MkvsImprint"
 
 const config = await loadQuartzConfig()
 export default config
@@ -48,6 +49,14 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
   // разделительной чертой в подвале статьи (components/frames/DefaultFrame.tsx).
   if (!pageLayout.afterBody?.includes(PrevNext)) {
     pageLayout.afterBody = [PrevNext, ...(pageLayout.afterBody ?? [])]
+  }
+
+  // Выходные данные пособия — следом за кнопками, самой последней видимой
+  // строкой страницы. На страницах без этих полей компонент ничего не рисует.
+  if (!pageLayout.afterBody?.includes(Imprint)) {
+    const after = pageLayout.afterBody ?? []
+    const at = after.indexOf(PrevNext)
+    pageLayout.afterBody = [...after.slice(0, at + 1), Imprint, ...after.slice(at + 1)]
   }
 
   // Подсказки к терминам глоссария. Скрипт нужен в теле любой страницы, а не
