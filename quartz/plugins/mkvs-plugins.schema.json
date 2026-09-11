@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MKVS Quartz Configuration Schema",
+  "description": "Схема конфига сайта МКВС: схема upstream плюс свои дополнения. Нужна ТОЛЬКО языковому серверу YAML (подсказки и проверка в редакторе) — на сборку не влияет, никакой код её не читает. Подключается первой строкой quartz.config.yaml.\n\nЗачем отдельный файл: раньше дополнения правились прямо в quartz-plugins.schema.json, то есть в файле upstream, и при `git rebase upstream/v5` молча терялись бы. Здесь всё, что не меняется, берётся из схемы upstream через $ref, а расписано только то, что действительно отличается.\n\nПочему не allOf: дополнения РАСШИРЯЮТ схему upstream (там `typography` — это `additionalProperties: false` и три строковых поля), а allOf — пересечение, оно может только сузить. Поэтому ветка `configuration` пересобрана, а всё остальное — ссылки.\n\nЧто станет неверным при обновлении upstream: если upstream добавит новый ключ в `configuration` или в `theme`, редактор подчеркнёт его как лишний — списки свойств этих двух объектов повторены здесь. Это и есть сигнал дописать ключ сюда. Всё остальное (плагины, раскладка, цвета) подтягивается из upstream само.\n\nИзвестное расхождение, которое здесь НЕ лечится: в схеме upstream перечень plugins[].layout.position неполный — в нём нет ни header, ни footer, хотя обе позиции рабочие и используются в конфиге (darkmode в header, footer в footer). Редактор подчёркивает эти две строки — это ложная тревога. Исправить её оверлеем нельзя: $ref только сужает, а чтобы расширить перечень, пришлось бы переписать всю ветку plugins целиком — ту, что чаще всего меняется в upstream. Цена выше пользы.",
+  "type": "object",
+  "required": ["configuration", "plugins"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "$ref": "./quartz-plugins.schema.json#/properties/$schema" },
+    "plugins": { "$ref": "./quartz-plugins.schema.json#/properties/plugins" },
+    "layout": { "$ref": "./quartz-plugins.schema.json#/properties/layout" },
+    "configuration": {
+      "type": "object",
+      "required": ["pageTitle", "enableSPA", "locale", "theme"],
+      "additionalProperties": false,
+      "properties": {
+        "pageTitle": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/pageTitle"
+        },
+        "pageTitleSuffix": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/pageTitleSuffix"
+        },
+        "enableSPA": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/enableSPA"
+        },
+        "enablePopovers": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/enablePopovers"
+        },
+        "locale": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/locale"
+        },
+        "baseUrl": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/baseUrl"
+        },
+        "analytics": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/analytics"
+        },
+        "ignorePatterns": {
+          "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/ignorePatterns"
+        },
+        "theme": {
+          "type": "object",
+          "required": ["fontOrigin", "cdnCaching", "typography", "colors"],
+          "additionalProperties": false,
+          "properties": {
+            "fontOrigin": {
+              "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/theme/properties/fontOrigin"
+            },
+            "cdnCaching": {
+              "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/theme/properties/cdnCaching"
+            },
+            "colors": {
+              "$ref": "./quartz-plugins.schema.json#/properties/configuration/properties/theme/properties/colors"
+            },
+            "typography": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Шрифтовые семейства. Отличие от upstream: добавлено семейство title и у каждого семейства разрешена объектная форма с явными весами.",
+              "properties": {
+                "title": {
+                  "$ref": "#/$defs/fontFamily",
+                  "description": "Font family for the site title (defaults to the header font)."
+                },
+                "header": {
+                  "$ref": "#/$defs/fontFamily",
+                  "description": "Font family for headers."
+                },
+                "body": {
+                  "$ref": "#/$defs/fontFamily",
+                  "description": "Font family for body text."
+                },
+                "code": {
+                  "$ref": "#/$defs/fontFamily",
+                  "description": "Font family for code."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "fontFamily": {
+      "description": "Either a family name, or an object with explicit weights and italic control.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "required": ["name"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Google Fonts family name."
+            },
+            "weights": {
+              "type": "array",
+              "items": { "type": "integer" },
+              "description": "Weights to request. Google Fonts silently drops weights a family does not have, so list only real ones."
+            },
+            "includeItalic": {
+              "type": "boolean",
+              "description": "Also request italic faces."
+            }
+          }
+        }
+      ]
+    }
+  }
+}

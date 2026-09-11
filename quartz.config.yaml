@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+# yaml-language-server: $schema=./quartz/plugins/mkvs-plugins.schema.json
 #
 # Конфигурация Quartz v5 для сайта «МКВС - лабораторные работы».
 # Репозиторий — форк Quartz; этот файл лежит в его корне, рядом с content/.

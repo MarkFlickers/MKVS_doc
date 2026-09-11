@@ -57,125 +57,17 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "title": {
-                  "description": "Font family for the site title (defaults to the header font): either a family name, or an object with explicit weights and italic control.",
-                  "oneOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "object",
-                      "required": ["name"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Google Fonts family name."
-                        },
-                        "weights": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          },
-                          "description": "Weights to request. Google Fonts silently drops weights a family does not have, so list only real ones."
-                        },
-                        "includeItalic": {
-                          "type": "boolean",
-                          "description": "Also request italic faces."
-                        }
-                      }
-                    }
-                  ]
-                },
                 "header": {
-                  "description": "Font family for headers: either a family name, or an object with explicit weights and italic control.",
-                  "oneOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "object",
-                      "required": ["name"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Google Fonts family name."
-                        },
-                        "weights": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          },
-                          "description": "Weights to request. Google Fonts silently drops weights a family does not have, so list only real ones."
-                        },
-                        "includeItalic": {
-                          "type": "boolean",
-                          "description": "Also request italic faces."
-                        }
-                      }
-                    }
-                  ]
+                  "type": "string",
+                  "description": "Font family for headers"
                 },
                 "body": {
-                  "description": "Font family for body text: either a family name, or an object with explicit weights and italic control.",
-                  "oneOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "object",
-                      "required": ["name"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Google Fonts family name."
-                        },
-                        "weights": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          },
-                          "description": "Weights to request. Google Fonts silently drops weights a family does not have, so list only real ones."
-                        },
-                        "includeItalic": {
-                          "type": "boolean",
-                          "description": "Also request italic faces."
-                        }
-                      }
-                    }
-                  ]
+                  "type": "string",
+                  "description": "Font family for body text"
                 },
                 "code": {
-                  "description": "Font family for code: either a family name, or an object with explicit weights and italic control.",
-                  "oneOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "object",
-                      "required": ["name"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "Google Fonts family name."
-                        },
-                        "weights": {
-                          "type": "array",
-                          "items": {
-                            "type": "integer"
-                          },
-                          "description": "Weights to request. Google Fonts silently drops weights a family does not have, so list only real ones."
-                        },
-                        "includeItalic": {
-                          "type": "boolean",
-                          "description": "Also request italic faces."
-                        }
-                      }
-                    }
-                  ]
+                  "type": "string",
+                  "description": "Font family for code"
                 }
               }
             },
@@ -274,13 +166,8 @@
         },
         "analytics": {
           "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "object",
-              "description": "Analytics configuration"
-            }
+            { "type": "null" },
+            { "type": "object", "description": "Analytics configuration" }
           ],
           "description": "Analytics configuration (null to disable)"
         },
