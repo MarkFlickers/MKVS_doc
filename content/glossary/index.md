@@ -85,6 +85,12 @@ tags:
 - [[glossary/hal-ll\|Библиотеки HAL и LL]]
 
 
+## Внешние устройства и сигналы
+
+- [[glossary/debounce\|Дребезг контактов]]
+- [[glossary/rotary-encoder\|Поворотный энкодер]]
+
+
 ## Таймеры и многозадачность
 
 - [[glossary/cooperative-scheduler\|Кооперативный планировщик]]
@@ -98,6 +104,7 @@ tags:
 
 ## Исключения, прерывания и загрузка
 
+- [[glossary/exti\|EXTI]]
 - [[glossary/isr\|ISR]]
 - [[glossary/nvic\|NVIC]]
 - [[glossary/scb\|SCB]]
@@ -137,6 +144,7 @@ tags:
 | DSP | Digital Signal Processing | цифровая обработка сигналов |
 | [[glossary/dwt\|DWT]] | Data Watchpoint and Trace | блок точек останова по данным и трассировки |
 | [[glossary/elf\|ELF]] | Executable and Linkable Format | формат исполняемых и объектных файлов |
+| [[glossary/exti\|EXTI]] | Extended Interrupt and Event Controller | контроллер внешних прерываний и событий |
 | [[glossary/gcc\|GCC]] | GNU Compiler Collection | набор компиляторов GNU |
 | [[glossary/gdb\|GDB]] | GNU Debugger | отладчик GNU |
 | [[glossary/gpio\|GPIO]] | General-Purpose Input/Output | порты ввода-вывода общего назначения |
@@ -172,6 +180,7 @@ tags:
 | SWD | Serial Wire Debug | двухпроводной интерфейс отладки |
 | SWO | Serial Wire Output | линия вывода трассировки интерфейса SWD |
 | [[glossary/swv\|SWV]] | Serial Wire View | трассировка по линии SWO |
+| SYSCFG | System Configuration Controller | блок системной конфигурации |
 | UART | Universal Asynchronous Receiver-Transmitter | универсальный асинхронный приёмопередатчик |
 | [[glossary/ub\|UB]] | Undefined Behavior | неопределённое поведение |
 | [[glossary/usart\|USART]] | Universal Synchronous/Asynchronous Receiver-Transmitter | универсальный синхронно-асинхронный приёмопередатчик |

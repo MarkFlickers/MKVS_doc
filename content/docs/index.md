@@ -20,9 +20,9 @@ tags:
 
 Архитектура микроконтроллера, карта памяти, описание всех периферийных блоков и их регистров. Основной документ при программировании периферии: именно здесь смотрят назначение битовых полей.
 
-Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047)
+Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [13 System configuration controller (SYSCFG)](docs/rm0399-stm32h745.pdf#page=586) · [13.3.2 SYSCFG_EXTICR1](docs/rm0399-stm32h745.pdf#page=589) · [21 Extended interrupt and event controller (EXTI)](docs/rm0399-stm32h745.pdf#page=797) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047)
 
-Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]]
+Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]]
 
 > [!warning] Документ имеет большой размер
 > Его веб-версия может долго открываться.<br>
@@ -52,7 +52,7 @@ tags:
 
 Быстрый переход: [2 The Cortex-M7 processor](docs/pm0253-cortex-m7.pdf#page=19) · [2.4 Exception model](docs/pm0253-cortex-m7.pdf#page=39) · [2.5 Fault handling](docs/pm0253-cortex-m7.pdf#page=47) · [2.6 Power management](docs/pm0253-cortex-m7.pdf#page=50) · [3 The Cortex-M7 instruction set](docs/pm0253-cortex-m7.pdf#page=52) · [3.2 CMSIS functions](docs/pm0253-cortex-m7.pdf#page=62) · [4 Cortex-M7 peripherals](docs/pm0253-cortex-m7.pdf#page=183) · [4.2 NVIC](docs/pm0253-cortex-m7.pdf#page=184) · [4.3 System control block](docs/pm0253-cortex-m7.pdf#page=192) · [4.4 System timer, SysTick](docs/pm0253-cortex-m7.pdf#page=212)
 
-Применяется в: [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]]
+Применяется в: [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]]
 
 ### PM0214 — Programming Manual, Cortex-M4
 
@@ -112,7 +112,7 @@ tags:
 
 Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15) · [5 Overview of low-layer drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=45) · [110 LL GPIO](docs/um2217-stm32h7-ll-drivers.pdf#page=2712) · [114 LL IWDG](docs/um2217-stm32h7-ll-drivers.pdf#page=3046)
 
-Применяется в: [[lab04/index\|ЛР4]]
+Применяется в: [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]]
 
 ### AN5033 — примеры STM32Cube для STM32H7
 
