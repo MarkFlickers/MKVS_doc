@@ -22,6 +22,7 @@
 | `quartz/styles/custom.scss`               | Индекс своих стилей                                          |
 | `quartz/styles/mkvs/`                     | Сами стили, по разделам                                      |
 | `quartz/plugins/mkvs-plugins.schema.json` | Своё расширение JSON-схемы конфига (только для редактора)    |
+| `quartz/plugins/transformers/mkvs-*.ts`   | Свои плагины обработки разметки                              |
 | `tools/pack-resources.ps1`                | Сборка ZIP-архивов с файлами работ                           |
 
 Всё остальное — код upstream. Правки в нём сведены к минимуму (см. «Связь с
@@ -43,7 +44,6 @@ upstream»).
 | `MkvsSidebarToggle` | `mkvs-sidebar-toggle.inline.ts` + `mkvs-sidebar-state.inline.ts` | Сворачивание левой колонки на ПК                                                               |
 | `MkvsMobileBar`     | `mkvs-mobile-bar.inline.ts`                                      | Перенос кнопок по режиму экрана                                                                |
 | `MkvsPrevNext`      | —                                                                | Кнопки «Предыдущее/Следующее» (серверный компонент)                                            |
-| `MkvsDownload`      | —                                                                | Кнопка «Скачать файлы работы» с размером архива                                                |
 | `MkvsImprint`       | —                                                                | Выходные данные пособия под текстом титульной страницы работы                                  |
 
 Общие модули для скриптов лежат в `quartz/components/scripts/`:
@@ -264,8 +264,11 @@ upstream правит часто, поэтому конфликт верояте
 pwsh -File tools/pack-resources.ps1
 ```
 
-Размер архива в тексте страницы руками не пишется: его подставляет на сборке
-компонент `MkvsDownload`.
+Размер архива в тексте страницы руками не пишется. В markdown стоит обычная
+ссылка на архив — `[Скачать файлы работы](labNN/resources/….zip)`, а класс,
+служебные атрибуты и размер добавляет на сборке плагин
+`quartz/plugins/transformers/mkvs-download.ts`. Если архива нет на диске, сборка
+выводит предупреждение `[mkvs]`.
 
 ---
 

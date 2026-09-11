@@ -3,6 +3,7 @@ import { readFileSync } from "fs"
 import { join } from "path"
 import type { QuartzComponent } from "./quartz/components/types"
 import { PageTypeDispatcher } from "./quartz/plugins/pageTypes/dispatcher"
+import { MkvsDownload } from "./quartz/plugins/transformers/mkvs-download"
 import TocCollapse from "./quartz/components/MkvsTocCollapse"
 import Explorer from "./quartz/components/MkvsExplorer"
 import Search from "./quartz/components/MkvsSearch"
@@ -186,6 +187,11 @@ for (const [query, count] of patched) {
       "quartz.ts с тем, что отдают плагины.",
   )
 }
+
+// Кнопка «Скачать файлы работы»: служебные атрибуты и размер архива,
+// прочитанный с диска. Добавляется последним: к этому моменту crawl-links уже
+// переписал href в относительный, и плагин не спорит с ним за атрибуты.
+config.plugins.transformers = [...config.plugins.transformers, MkvsDownload()]
 
 // loadQuartzConfig() уже создал диспетчер по YAML-раскладке. Подменяем его,
 // чтобы и HTML страниц, и ресурсы компонентов собирались по изменённой.

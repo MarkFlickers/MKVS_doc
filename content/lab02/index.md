@@ -49,7 +49,7 @@ tags:
 
 Исходники, которые понадобятся в проекте, собраны в архиве. Документы к работе скачивать не нужно: они открываются прямо в браузере на странице [[docs/index\|Документация]].
 
-<a class="mkvs-download" href="lab02/resources/mkvs-26-lr2-resources.zip" download data-router-ignore data-no-popover="true">Скачать файлы работы — ZIP, 3 КБ</a>
+[Скачать файлы работы](lab02/resources/mkvs-26-lr2-resources.zip)
 
 В архиве:
 
