@@ -192,7 +192,5 @@ function installGlossaryBack() {
 document.addEventListener("nav", installGlossary)
 document.addEventListener("nav", installGlossaryBack)
 
-// Строка ниже нужна только компилятору — как и в mkvs-search.inline.ts.
-// Загрузчик inline-script-loader (quartz/cli/handlers.js) вырезает её перед
-// сборкой простым поиском подстроки, поэтому упоминать её текстом выше нельзя.
+// Про строку ниже — README.md, раздел «Инлайн-скрипты».
 export default ""
