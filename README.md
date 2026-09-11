@@ -98,6 +98,30 @@ npx quartz build --serve   # сборка с локальным сервером
 выполняются, а удаление дало бы конфликт при каждом обновлении upstream —
 цена выше пользы. Решение записано здесь, чтобы не приниматься заново.
 
+### TypeScript держится на 5.x
+
+`package.json` пинит `typescript` к `^5.9.3` — той же версии, что у upstream.
+Поднимать до 7.x **нельзя без правки `tsconfig.json`**: в TypeScript 7 удалена
+опция `moduleResolution: node10`, а `tsconfig.json` (файл upstream) использует
+её псевдоним `"node"`. Тип-чек падает сразу:
+
+```
+tsconfig.json(7,25): error TS5108: Option 'moduleResolution=node10' has been removed.
+```
+
+Это уже случалось: dependabot-мердж в этом форке поднял TypeScript с `^5.9.3`
+до `^7.0.2`, и так как CI на форке был отключён, PR влился зелёным, а поломка
+вылезла только когда появился свой workflow.
+
+Перевод на 7.x потребует `moduleResolution: "bundler"` в `tsconfig.json` и
+починки двух импортов upstream, которые `bundler` отвергает (он, в отличие от
+`node10`, уважает `exports` в `package.json`): `micromorph` и
+`remark-parse/lib`. Это дополнительное расхождение с upstream, и до тех пор,
+пока upstream сам не перейдёт на TypeScript 7, смысла в нём нет.
+
+**Если dependabot снова предложит мажорный бамп TypeScript — не мержить, пока
+`npm run check` не станет зелёным.**
+
 ### Что не форматируется
 
 `content/` внесён в `.prettierignore`. Разметка работ рассчитана на плагин
