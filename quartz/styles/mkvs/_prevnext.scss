@@ -123,10 +123,3 @@
     font-size: 0.85rem;
   }
 }
-
-// В печатной версии переходы по сайту бессмысленны.
-@media print {
-  .mkvs-prevnext {
-    display: none;
-  }
-}

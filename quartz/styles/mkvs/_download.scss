@@ -59,13 +59,3 @@
     transform: translateY(1px);
   }
 }
-
-// В печатной версии плашка ни к чему: остаётся подчёркнутая подпись.
-@media print {
-  .mkvs-download {
-    padding: 0;
-    color: var(--dark);
-    background: none;
-    text-decoration: underline;
-  }
-}

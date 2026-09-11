@@ -102,18 +102,3 @@
   border: 1px solid var(--lightgray);
   border-left: 4px solid var(--color);
 }
-
-// Печать (_print.scss): браузер по умолчанию не выводит фоновые заливки, и шапка на
-// бумаге стала бы неотличима от текста — просим печатать её как есть. Тень,
-// наоборот, на бумаге не нужна, а разрыв плашки между страницами нежелателен.
-@media print {
-  .callout {
-    box-shadow: none;
-    break-inside: avoid;
-  }
-
-  .callout-title {
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
-}

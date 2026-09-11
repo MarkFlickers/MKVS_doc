@@ -13,12 +13,11 @@
 // котором эти стили писались.
 //
 // mkvs/breakpoints подключать отдельно не нужно: его берут те разделы,
-// которым нужны границы раскладки.
+// которым нужны границы раскладки. CSS он не порождает.
 @use "mkvs/typography";
 @use "mkvs/code";
 @use "mkvs/callouts";
 @use "mkvs/tables";
-@use "mkvs/print";
 @use "mkvs/layout";
 @use "mkvs/explorer";
 @use "mkvs/toc";
@@ -27,3 +26,8 @@
 @use "mkvs/compact";
 @use "mkvs/download";
 @use "mkvs/prevnext";
+
+// _print подключается ПОСЛЕДНИМ намеренно: правила печати перекрывают
+// обычные, а при равной специфичности выигрывает объявленное позже.
+// Подробности — в самом файле.
+@use "mkvs/print";
