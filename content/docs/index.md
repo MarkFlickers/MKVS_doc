@@ -140,13 +140,35 @@ tags:
 
 Применяется в: [[lab07/index\|ЛР7]]
 
+### Mastering the FreeRTOS Real Time Kernel — учебное руководство
+
+[Открыть PDF](docs/mastering-the-freertos-kernel.pdf) · издание от 04.12.2016 · 399 с. · 4,4 МБ
+
+Книга Ричарда Барри, автора [[glossary/freertos\|FreeRTOS]], — основное пособие по ядру системы: как устроены задачи, очереди, семафоры и мьютексы, как распределяется память и как обрабатываются прерывания. Каждая тема разобрана на работающих примерах, поэтому книга читается как учебник, а не как справочник.
+
+Быстрый переход: [1 The FreeRTOS Distribution](docs/mastering-the-freertos-kernel.pdf#page=35) · [2 Heap Memory Management](docs/mastering-the-freertos-kernel.pdf#page=51) · [2.2 Example Memory Allocation Schemes](docs/mastering-the-freertos-kernel.pdf#page=55) · [3 Task Management](docs/mastering-the-freertos-kernel.pdf#page=70) · [3.12 Scheduling Algorithms](docs/mastering-the-freertos-kernel.pdf#page=117) · [4 Queue Management](docs/mastering-the-freertos-kernel.pdf#page=128) · [6 Interrupt Management](docs/mastering-the-freertos-kernel.pdf#page=208) · [6.3 Deferred Interrupt Processing](docs/mastering-the-freertos-kernel.pdf#page=216) · [7 Resource Management](docs/mastering-the-freertos-kernel.pdf#page=260) · [7.2 Critical Sections](docs/mastering-the-freertos-kernel.pdf#page=265) · [7.3 Mutexes](docs/mastering-the-freertos-kernel.pdf#page=270)
+
+Применяется в: [[lab08/index\|ЛР8]]
+
+### The FreeRTOS Reference Manual — справочник по API
+
+[Открыть PDF](docs/freertos-reference-manual-v10.pdf) · V10.0.0 · 400 с. · 2,4 МБ
+
+Описание всех функций программного интерфейса FreeRTOS: назначение, параметры, возвращаемые значения и пример вызова. Сюда обращаются, когда нужная функция уже известна из учебного руководства и требуются подробности.
+
+Быстрый переход: [2 Task and Scheduler API](docs/freertos-reference-manual-v10.pdf#page=22) · [3 Queue API](docs/freertos-reference-manual-v10.pdf#page=157) · [4 Semaphore API](docs/freertos-reference-manual-v10.pdf#page=208) · [5 Software Timer API](docs/freertos-reference-manual-v10.pdf#page=253) · [7 Kernel Configuration](docs/freertos-reference-manual-v10.pdf#page=323)
+
+Применяется в: [[lab08/index\|ЛР8]]
+
 ## Модули расширения
 
 ### MSP3520 — TFT-дисплей 3,5" с интерфейсом SPI
 
 [Открыть PDF](docs/msp3520-display-user-manual.pdf) · Rev 1.0 · 23 с. · 1,8 МБ
 
-Руководство LCDWIKI на дисплейный модуль MSP3520: назначение выводов, схема подключения по SPI, работа с контроллером дисплея и тачскрином.
+Руководство LCDWIKI на дисплейный модуль MSP3520: назначение выводов, схема подключения по [[glossary/spi\|SPI]], работа с контроллером дисплея [[glossary/ili9488\|ILI9488]] и тачскрином.
+
+Применяется в: [[lab08/index\|ЛР8]]
 
 ### HC-SR04 — ультразвуковой дальномер
 

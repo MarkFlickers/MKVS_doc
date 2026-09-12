@@ -73,6 +73,7 @@ tags:
 - [[glossary/cortex-m\|Cortex-M]]
 - [[glossary/dma\|DMA]]
 - [[glossary/dwt\|DWT]]
+- [[glossary/fpu\|FPU]]
 - [[glossary/gpio\|GPIO]]
 - [[glossary/hse\|HSE, HSI, CSI]]
 - [[glossary/msp\|MSP]]
@@ -80,6 +81,7 @@ tags:
 - [[glossary/nucleo-h745\|NUCLEO-H745ZI-Q]]
 - [[glossary/push-pull\|Push-Pull и Open Drain]]
 - [[glossary/rcc\|RCC]]
+- [[glossary/spi\|SPI]]
 - [[glossary/st-link\|ST-Link V3]]
 - [[glossary/stm32h745\|STM32H745ZI-Q]]
 - [[glossary/system-core-clock\|SystemCoreClock]]
@@ -90,6 +92,7 @@ tags:
 ## Внешние устройства и сигналы
 
 - [[glossary/hc-sr04\|HC-SR04]]
+- [[glossary/ili9488\|ILI9488]]
 - [[glossary/pwm\|ШИМ]]
 - [[glossary/debounce\|Дребезг контактов]]
 - [[glossary/rotary-encoder\|Поворотный энкодер]]
@@ -109,6 +112,23 @@ tags:
 - [[glossary/superloop\|Суперцикл]]
 
 
+## Операционные системы реального времени
+
+- [[glossary/cmsis-rtos\|CMSIS-RTOS]]
+- [[glossary/freertos\|FreeRTOS]]
+- [[glossary/tcb\|Блок управления потоком (TCB)]]
+- [[glossary/preemptive-scheduler\|Вытесняющий планировщик]]
+- [[glossary/critical-section\|Критическая секция]]
+- [[glossary/heap\|Куча]]
+- [[glossary/mutex\|Мьютекс]]
+- [[glossary/rtos\|ОСРВ]]
+- [[glossary/deferred-interrupt\|Отложенная обработка прерываний]]
+- [[glossary/message-queue\|Очередь сообщений]]
+- [[glossary/context-switch\|Переключение контекста]]
+- [[glossary/semaphore\|Семафор]]
+- [[glossary/race-condition\|Состояние гонки]]
+
+
 ## Исключения, прерывания и загрузка
 
 - [[glossary/exti\|EXTI]]
@@ -122,6 +142,7 @@ tags:
 - [[glossary/exception-frame\|Кадр исключения]]
 - [[glossary/interrupt-masking\|Маскирование прерываний]]
 - [[glossary/interrupt\|Прерывание]]
+- [[glossary/reentrancy\|Реентерабельность]]
 
 
 ## Семихостинг и ввод-вывод
@@ -151,8 +172,10 @@ tags:
 | [[glossary/dma\|DMA]] | Direct Memory Access | прямой доступ к памяти |
 | DSP | Digital Signal Processing | цифровая обработка сигналов |
 | [[glossary/dwt\|DWT]] | Data Watchpoint and Trace | блок точек останова по данным и трассировки |
+| EABI | Embedded Application Binary Interface | двоичный интерфейс приложений для встраиваемых систем |
 | [[glossary/elf\|ELF]] | Executable and Linkable Format | формат исполняемых и объектных файлов |
 | [[glossary/exti\|EXTI]] | Extended Interrupt and Event Controller | контроллер внешних прерываний и событий |
+| [[glossary/fpu\|FPU]] | Floating Point Unit | блок операций с плавающей точкой |
 | [[glossary/gcc\|GCC]] | GNU Compiler Collection | набор компиляторов GNU |
 | [[glossary/gdb\|GDB]] | GNU Debugger | отладчик GNU |
 | [[glossary/gpio\|GPIO]] | General-Purpose Input/Output | порты ввода-вывода общего назначения |
@@ -179,18 +202,20 @@ tags:
 | [[glossary/pwm\|PWM]] | Pulse-Width Modulation | широтно-импульсная модуляция (ШИМ) |
 | RAM | Random Access Memory | оперативная память |
 | [[glossary/rcc\|RCC]] | Reset and Clock Control | блок сброса и тактирования |
-| RTOS | Real-Time Operating System | операционная система реального времени (ОСРВ) |
+| [[glossary/rtos\|RTOS]] | Real-Time Operating System | операционная система реального времени (ОСРВ) |
 | [[glossary/rtt\|RTT]] | Real Time Transfer | обмен данными с хост-компьютером через буферы в ОЗУ |
 | [[glossary/scb\|SCB]] | System Control Block | блок управления системой |
 | SDK | Software Development Kit | комплект средств разработки |
 | SIMD | Single Instruction, Multiple Data | «одна инструкция — много данных» |
 | SP | Stack Pointer | указатель стека |
+| [[glossary/spi\|SPI]] | Serial Peripheral Interface | последовательный периферийный интерфейс |
 | SRAM | Static Random Access Memory | статическая оперативная память |
 | SVD | System View Description | машиночитаемое описание периферии |
 | SWD | Serial Wire Debug | двухпроводной интерфейс отладки |
 | SWO | Serial Wire Output | линия вывода трассировки интерфейса SWD |
 | [[glossary/swv\|SWV]] | Serial Wire View | трассировка по линии SWO |
 | SYSCFG | System Configuration Controller | блок системной конфигурации |
+| [[glossary/tcb\|TCB]] | Thread Control Block | блок управления потоком |
 | UART | Universal Asynchronous Receiver-Transmitter | универсальный асинхронный приёмопередатчик |
 | [[glossary/ub\|UB]] | Undefined Behavior | неопределённое поведение |
 | [[glossary/usart\|USART]] | Universal Synchronous/Asynchronous Receiver-Transmitter | универсальный синхронно-асинхронный приёмопередатчик |
