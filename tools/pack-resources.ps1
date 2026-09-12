@@ -12,6 +12,13 @@
 # Добавляя PDF в Resources, положите его копию в content/docs/ и опишите на
 # той странице; в архиве работы остаются только файлы для проекта.
 #
+# Не попадает в архив и то, что PlatformIO с редактором создают заново у
+# каждого пользователя, — см. $generatedPatterns ниже. Такие файлы появляются
+# в исходной папке Resources, стоит один раз собрать оттуда проект, и попадать
+# в архив им незачем: каталог сборки .pio весит больше самого шаблона, а в
+# автогенерируемой конфигурации VS Code остаются абсолютные пути с машины
+# автора пособия, из-за которых у студента ломается навигация по коду.
+#
 # Запуск (из любой папки):
 #   powershell -ExecutionPolicy Bypass -File tools/pack-resources.ps1
 #
@@ -46,6 +53,20 @@ if (-not $labDirs) {
     return
 }
 
+# Регулярные выражения по пути файла внутри Resources (разделитель — «/»).
+# Совпадение означает, что файл сгенерирован и в архив не идёт.
+#
+# Список .pio и .vscode повторяет тот, что PlatformIO сам кладёт в .gitignore
+# нового проекта: extensions.json там остаётся, поэтому остаётся и здесь — он
+# не генерируется заново и советует студенту поставить нужное расширение.
+$generatedPatterns = @(
+    '(^|/)\.pio/'                                                        # каталог сборки PlatformIO
+    '(^|/)\.vscode/(c_cpp_properties\.json|launch\.json|ipch/|\.browse\.c_cpp\.db)'  # автогенерируемая конфигурация VS Code
+    '(^|/)(__pycache__|\.git|node_modules)/'                             # кеши и служебные каталоги
+    '\.pyc$'
+    '(^|/)(\.DS_Store|Thumbs\.db|desktop\.ini)$'                         # мусор файловых менеджеров
+)
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 foreach ($labDir in $labDirs) {
@@ -70,9 +91,26 @@ foreach ($labDir in $labDirs) {
         Where-Object { $_.Extension -ne '.pdf' } |
         Sort-Object FullName
 
+    # Путь файла внутри Resources считаем один раз: он же нужен для отсева
+    # сгенерированных файлов и для имени элемента в архиве.
+    $skipped = 0
+    $entries = foreach ($file in $files) {
+        $relative = $file.FullName.Substring($sourceDir.Length).
+            TrimStart([System.IO.Path]::DirectorySeparatorChar).
+            Replace([System.IO.Path]::DirectorySeparatorChar, '/')
+
+        if ($generatedPatterns | Where-Object { $relative -match $_ }) {
+            $skipped++
+            Write-Verbose "$($labDir.Name): пропущен сгенерированный файл $relative"
+            continue
+        }
+
+        [pscustomobject]@{ FullName = $file.FullName; Relative = $relative }
+    }
+
     if (Test-Path -LiteralPath $archive) { Remove-Item -LiteralPath $archive -Force }
-    if (-not $files) {
-        Write-Host "$($labDir.Name): кроме PDF в Resources ничего нет - архив не нужен."
+    if (-not $entries) {
+        Write-Host "$($labDir.Name): файлов для архива в Resources нет - архив не нужен."
         continue
     }
 
@@ -88,11 +126,10 @@ foreach ($labDir in $labDirs) {
     # спецификации ZIP - он открывается и в Windows, и в Linux, и в macOS.
     $zip = [System.IO.Compression.ZipFile]::Open($archive, 'Create')
     try {
-        foreach ($file in $files) {
-            $relative = $file.FullName.Substring($sourceDir.Length).TrimStart([System.IO.Path]::DirectorySeparatorChar)
-            $entryName = $entryRoot + '/' + $relative.Replace([System.IO.Path]::DirectorySeparatorChar, '/')
+        foreach ($entry in $entries) {
+            $entryName = $entryRoot + '/' + $entry.Relative
             $null = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-                $zip, $file.FullName, $entryName, [System.IO.Compression.CompressionLevel]::Optimal)
+                $zip, $entry.FullName, $entryName, [System.IO.Compression.CompressionLevel]::Optimal)
         }
     }
     finally {
@@ -100,5 +137,6 @@ foreach ($labDir in $labDirs) {
     }
 
     $sizeKb = [math]::Round((Get-Item -LiteralPath $archive).Length / 1KB)
-    Write-Host ("{0}: {1} файлов -> {2} ({3} КБ)" -f $labDir.Name, @($files).Count, $archive, $sizeKb)
+    $skippedNote = if ($skipped) { " (пропущено сгенерированных: $skipped)" } else { '' }
+    Write-Host ("{0}: {1} файлов -> {2} ({3} КБ){4}" -f $labDir.Name, @($entries).Count, $archive, $sizeKb, $skippedNote)
 }
