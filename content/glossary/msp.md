@@ -1,7 +1,5 @@
 ---
 title: MSP
-tags:
-  - глоссарий
 ---
 
 **MSP** (Main Stack Pointer) — основной указатель стека ядра [[glossary/cortex-m\|Cortex-M]]. После сброса процессор загружает в него первое слово [[glossary/isr-vector\|таблицы векторов прерываний]] — адрес базы стека. ^def-msp

@@ -1,7 +1,5 @@
 ---
 title: Исключения ошибок
-tags:
-  - глоссарий
 ---
 
 **Исключения ошибок** (fault exceptions) — [[glossary/exception\|исключения]] `HardFault`, `MemManageFault`, `BusFault` и `UsageFault`, которые возникают при аварийной ситуации в работе программы или шины. ^def-fault

@@ -5,8 +5,8 @@ import type { FontSpecification, Theme } from "../util/theme"
 //
 // Копия разметки по умолчанию из @quartz-community/og-image
 // (node_modules/@quartz-community/og-image/dist/index.js, defaultImage), но без
-// строки с датой изменения и временем чтения. С самих страниц эти сведения тоже
-// убраны (плагин content-meta выключен): студенту они ни о чём не говорят.
+// нижней строки с датой изменения, временем чтения и тегами. С самих страниц
+// эти сведения тоже убраны: студенту они ни о чём не говорят.
 //
 // Копия, а не настройка: отключить эту строку плагин не даёт, а свою разметку
 // принимает только целиком, опцией imageStructure. Подключается в quartz.ts.
@@ -20,7 +20,7 @@ function fontName(spec: FontSpecification): string {
   return typeof spec === "string" ? spec : spec.name
 }
 
-const OgImage: ImageStructure = ({ cfg, userOpts, title, description, fileData, iconBase64 }) => {
+const OgImage: ImageStructure = ({ cfg, userOpts, title, description, iconBase64 }) => {
   // Конфигурация приходит тем же объектом, что и везде в сборке, но в типах
   // плагина (@quartz-community/types) поле theme объявлено как unknown. Тип
   // темы — собственный, из util/theme.ts.
@@ -28,7 +28,6 @@ const OgImage: ImageStructure = ({ cfg, userOpts, title, description, fileData, 
   const colors = theme.colors[userOpts.colorScheme]
   const bodyFont = fontName(theme.typography.body)
   const headerFont = fontName(theme.typography.header)
-  const tags = fileData.frontmatter?.tags ?? []
 
   return (
     <div
@@ -85,37 +84,6 @@ const OgImage: ImageStructure = ({ cfg, userOpts, title, description, fileData, 
           {description}
         </p>
       </div>
-
-      {/* Нижняя строка по умолчанию делилась на дату со временем чтения слева
-          и теги справа. Остались только теги, у страниц без тегов строки нет. */}
-      {tags.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            flexWrap: "wrap",
-            gap: "0.5rem",
-            marginTop: "2rem",
-            paddingTop: "2rem",
-            borderTop: `1px solid ${colors.lightgray}`,
-          }}
-        >
-          {tags.slice(0, 3).map((tag) => (
-            <div
-              style={{
-                display: "flex",
-                padding: "0.5rem 1rem",
-                backgroundColor: colors.highlight,
-                color: colors.secondary,
-                borderRadius: "10px",
-                fontSize: 24,
-              }}
-            >
-              #{tag}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

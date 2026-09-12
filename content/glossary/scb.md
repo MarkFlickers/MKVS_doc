@@ -1,7 +1,5 @@
 ---
 title: SCB
-tags:
-  - глоссарий
 ---
 
 **SCB** (System Control Block) — блок управления системой ядра [[glossary/cortex-m\|Cortex-M]]: отвечает за конфигурацию [[glossary/exception\|исключений]], хранит их приоритеты, флаги ожидания обработки и состояние ошибок, а также адрес [[glossary/isr-vector\|таблицы векторов прерываний]]. ^def-scb

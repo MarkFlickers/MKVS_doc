@@ -1,7 +1,5 @@
 ---
 title: ISR
-tags:
-  - глоссарий
 ---
 
 **ISR** (Interrupt Service Routine) — функция-обработчик [[glossary/exception\|исключения]] или [[glossary/interrupt\|прерывания]]. Она не имеет ни входных, ни выходных параметров, а её адрес — «вектор» — хранится в [[glossary/isr-vector\|таблице векторов прерываний]]. ^def-isr

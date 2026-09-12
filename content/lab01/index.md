@@ -1,12 +1,5 @@
 ---
 title: "Лабораторная работа 01. Интегрированная среда разработки PlatformIO и Visual Studio Code"
-tags:
-  - лабораторная-работа
-  - platformio
-  - vscode
-  - unity
-  - misra
-  - cppcheck
 ---
 
 ## Введение

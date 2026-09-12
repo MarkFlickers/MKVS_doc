@@ -128,7 +128,7 @@ plugins:
       renderEngine: katex
     order: 80
 
-  # ВНИМАНИЕ: именно этот плагин парсит frontmatter (`title:`, `tags:` и т.д.)
+  # ВНИМАНИЕ: именно этот плагин парсит frontmatter (`title:`, `cssclasses:` и т.д.)
   # и кладёт его в file.data.frontmatter. Без него заголовки страниц теряются,
   # а блок `---` рендерится в текст. Отключать нельзя.
   # hidePropertiesView прячет саму таблицу свойств над текстом (лишний шум
@@ -139,7 +139,6 @@ plugins:
       includeAll: false
       includedProperties:
         - description
-        - tags
         - aliases
       excludedProperties: []
       hidePropertiesView: true
@@ -167,8 +166,11 @@ plugins:
     enabled: true
     options:
       showFolderCount: false
+  # Тегов на сайте нет: читатель идёт по Проводнику, поиску и ссылкам из
+  # текста, а подборки «все страницы с #gpio» ему ни к чему. Во frontmatter
+  # поле tags не ставится, страницы tags/… не собираются.
   - source: "@quartz-community/tag-page"
-    enabled: true
+    enabled: false
   - source: "@quartz-community/canvas-page"
     enabled: true
   - source: "@quartz-community/bases-page"

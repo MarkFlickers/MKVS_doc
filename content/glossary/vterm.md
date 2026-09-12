@@ -1,7 +1,5 @@
 ---
 title: Библиотека vterm
-tags:
-  - глоссарий
 ---
 
 **vterm** — учебная библиотека, которая инициализирует блок [[glossary/usart\|USART3]] и переопределяет системные функции [[glossary/newlib\|Newlib]] так, что стандартные `printf`, `putchar`, `getchar` начинают работать с терминалом [[glossary/host-target\|хост-компьютера]].

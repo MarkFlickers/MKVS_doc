@@ -1,13 +1,6 @@
 ---
 title: "1. Основная часть"
 lab: 1
-tags:
-  - лабораторная-работа
-  - platformio
-  - vscode
-  - unity
-  - misra
-  - cppcheck
 ---
 
 ## Часть 1. Основные элементы редактора Visual Studio Code

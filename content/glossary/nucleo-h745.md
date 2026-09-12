@@ -1,7 +1,5 @@
 ---
 title: NUCLEO-H745ZI-Q
-tags:
-  - глоссарий
 ---
 
 **ST NUCLEO-H745ZI-Q** — отладочная плата STMicroelectronics с микроконтроллером [[glossary/stm32h745\|STM32H745ZI-Q]] и встроенным программатором [[glossary/st-link\|ST-Link V3]].

@@ -1,7 +1,5 @@
 ---
 title: CMSIS-RTOS
-tags:
-  - глоссарий
 ---
 
 **CMSIS-RTOS** (Cortex Microcontroller Software Interface Standard — Real-Time Operating System) — разработанный ARM стандартный программный интерфейс к [[glossary/rtos\|операционным системам реального времени]], часть [[glossary/cmsis\|CMSIS]]. ^def-cmsis-rtos

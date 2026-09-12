@@ -1,7 +1,5 @@
 ---
 title: GCC
-tags:
-  - глоссарий
 ---
 
 **GCC** (GNU Compiler Collection) — свободный набор компиляторов; для микроконтроллеров [[glossary/cortex-m\|Cortex-M]] применяется его сборка `arm-none-eabi-gcc`, а для программ [[glossary/host-target\|хост-компьютера]] — обычный `gcc`.

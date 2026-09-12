@@ -1,7 +1,5 @@
 ---
 title: CMSIS
-tags:
-  - глоссарий
 ---
 
 **CMSIS** (Cortex Microcontroller Software Interface Standard) — стандарт программного интерфейса для микроконтроллеров с ядром [[glossary/cortex-m\|Cortex-M]], разработанный компанией ARM. ^def-cmsis
