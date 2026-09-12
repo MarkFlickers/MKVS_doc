@@ -103,7 +103,7 @@ build_src_filter = +<blinker/*.c>
 #define APP_SRAM_OFFSET 0x24000000
 #define NUM_COMMANDS 6
 #if NUM_COMMANDS > 9
-#error NUM_COMMANDS must be less then 10 or change read_handler_index()
+#error NUM_COMMANDS must be less than 10 or change read_handler_index()
 #endif
 
 extern void HardFault_Handler();
@@ -161,7 +161,7 @@ int main() {
 
 void do_BootSRAM() {
 
-  printf("\nJumping to SRAM app at %08lx....\n", APP_SRAM_OFFSET);
+  printf("\nJumping to SRAM app at %08lx....\n", (unsigned long)APP_SRAM_OFFSET);
 
   // 1) Определить ТВП приложения, адреса начала стека и точки входа приложения
   const uint32_t *app_IV = (uint32_t *)(APP_SRAM_OFFSET);
@@ -178,7 +178,7 @@ void do_BootSRAM() {
   __set_MSP(app_end_stack);
 
   // 4) Задать новый адрес таблицы векторов прерываний
-  SCB->VTOR = app_IV;
+  SCB->VTOR = (uint32_t)app_IV;
 
   // Доп. 2) Заменяем обработчик HardFault в ТВП на собственный
   NVIC_SetVector(HardFault_IRQn, (uint32_t)HardFault_Handler);

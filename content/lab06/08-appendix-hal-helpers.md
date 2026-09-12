@@ -17,7 +17,7 @@ tags:
 - `error_state()` — аварийное завершение программы: остановка в цикле мигания красным светодиодом с предварительным сообщением в терминал;
 - `__assert_func()` — обработчик нарушения проверки `assert()` из стандартной библиотеки; на него же выведен и макрос `assert_param` библиотек HAL и LL;
 - функции преобразования кодов возврата HAL в строки — с ними сообщение об ошибке читается глазами, а не расшифровывается по таблице;
-- макрос `ASSERT_HAL_SATUS()` — проверка кода возврата функции HAL с аварийным завершением, если код отличен от `HAL_OK`.
+- макрос `ASSERT_HAL_STATUS()` — проверка кода возврата функции HAL с аварийным завершением, если код отличен от `HAL_OK`.
 
 Файлы библиотеки лежат в архиве с [[lab06/index#Файлы к работе\|файлами работы]]; здесь они приведены целиком. Там же, в `lib/nuc745_utils`, лежит и функция `boot_guard()` из [[lab05/index\|ЛР5]] — её листинги приведены в [[lab05/02-main\|основной части ЛР5]].
 
@@ -77,7 +77,7 @@ void __assert_func(const char* file, int line, const char* func, const char* fai
 
 #include <stm32h7xx_hal.h>
 
-#define ASSERT_HAL_SATUS(STATUS) assert_hal_status((STATUS), __FILE__, __LINE__)
+#define ASSERT_HAL_STATUS(STATUS) assert_hal_status((STATUS), __FILE__, __LINE__)
 
 /** Проверка статуса HAL с аварийным завершением в случае ошибки */
 void assert_hal_status(HAL_StatusTypeDef status, const char* file, int line);
@@ -100,7 +100,7 @@ const char* hal_uart_error_to_string(uint32_t error);
 
 void assert_hal_status(HAL_StatusTypeDef status, const char* file, int line) {
     if (status != HAL_OK) {
-        printf("\n\rHAL SATUS ERROR ON %s:%d: %s", file, line, hal_status_to_string(status));
+        printf("\n\rHAL STATUS ERROR ON %s:%d: %s", file, line, hal_status_to_string(status));
         error_state(NULL);
     }
 }
@@ -108,7 +108,7 @@ void assert_hal_status(HAL_StatusTypeDef status, const char* file, int line) {
 #define CASE(VAL) \
     case VAL:     \
         return #VAL
-#define DEFUALT() \
+#define DEFAULT() \
     default:      \
         return "UNKNOWN"
 
@@ -118,7 +118,7 @@ const char* hal_status_to_string(HAL_StatusTypeDef status) {
         CASE(HAL_TIMEOUT);
         CASE(HAL_BUSY);
         CASE(HAL_ERROR);
-        DEFUALT();
+        DEFAULT();
     }
 }
 
@@ -132,7 +132,7 @@ const char* hal_uart_state_to_string(HAL_UART_StateTypeDef state) {
         CASE(HAL_UART_STATE_BUSY_TX_RX);
         CASE(HAL_UART_STATE_TIMEOUT);
         CASE(HAL_UART_STATE_ERROR);
-        DEFUALT();
+        DEFAULT();
     }
 }
 
@@ -145,10 +145,7 @@ const char* hal_uart_error_to_string(uint32_t error) {
         CASE(HAL_UART_ERROR_ORE);
         CASE(HAL_UART_ERROR_DMA);
         CASE(HAL_UART_ERROR_RTO);
-        DEFUALT();
+        DEFAULT();
     }
 }
 ```
-
-> [!note] Об именах в этой библиотеке
-> Макрос называется `ASSERT_HAL_SATUS`, а не `ASSERT_HAL_STATUS` — это опечатка автора библиотеки. Здесь имя приведено ровно таким, какое оно в архиве с файлами работы: иначе код из пособия не собрался бы с библиотекой из шаблона проекта.

@@ -11,7 +11,7 @@ tags:
   - platformio
 ---
 
-Библиотека [`vterm`](../glossary/vterm) позволяет программе, работающей на плате [[glossary/nucleo-h745\|Nucleo H745]], выводить символы на терминал [[glossary/host-target\|хост-компьютера]] и считывать их оттуда с помощью функций стандартного ввода-вывода. Библиотека состоит из двух файлов, которые следует разместить в папке `lib/vterm` проекта. Перед использованием функций ввода-вывода необходимо вызвать `vterm_init()`.
+Библиотека [[glossary/vterm\|vterm]] позволяет программе, работающей на плате [[glossary/nucleo-h745\|Nucleo H745]], выводить символы на терминал [[glossary/host-target\|хост-компьютера]] и считывать их оттуда с помощью функций стандартного ввода-вывода. Библиотека состоит из двух файлов, которые следует разместить в папке `lib/vterm` проекта. Перед использованием функций ввода-вывода необходимо вызвать `vterm_init()`.
 
 > [!note] Важное примечание
 > Файлы библиотеки (`vterm.h` и `vterm.c`) лежат в [[lab02/index#Файлы к работе\|архиве файлов работы]].
@@ -21,9 +21,9 @@ tags:
 **Листинг 8: lib/vterm/vterm.h**
 
 ```c title="lib/vterm/vterm.h" showLineNumbers
-/** @brief Vterm library for Nucleo STM32H75ZI-Q
+/** @brief Vterm library for Nucleo STM32H745ZI-Q
  *  Предназначена для ввода/вывода на хост-терминал через StlinkV3.
- *  @version 0.3
+ *  @version 0.4
  *  @author ssbdex@yandex.ru
  * */
 
@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 /**
- *@brief Инициализация семихостинга по StLinkV3 (UART3). */
+ *@brief Инициализация семихостинга по StLinkV3 (USART3). */
 void vterm_init(int baudrate);
 
 /********* Функции вывода в терминал ********************/
@@ -60,13 +60,11 @@ void vterm_write(char *ptr, int len);
  * @param echo - если не 0, то выводить все принимаемые символы
  * @return длина считанной строки или -1 (ошибка)
  */
-int vterm_gets(char* buf, int len, int echo);
+int vterm_gets(char *buf, int size, int echo);
 
 // Также доступна <stdio.h>: getchar
 
 // Также доступна <stdio.h>: getc
-
-// Также доступна <stdio.h>: gets
 
 /**
  * @brief Проверяет (без блокировки), не был ли получен символ

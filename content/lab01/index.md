@@ -62,6 +62,12 @@ PlatformIO и VS Code – это свободно распространяемы
 
 - `misra/` — аддон MISRA для [[glossary/cppcheck\|Cppcheck]]: настройка `misra.json` и тексты правил `misra-rules.txt`. Понадобится в задании 2.
 
+> [!note] О текстах правил
+> В `misra-rules.txt` лежат формулировки из MISRA C:2023 — это консолидированная
+> редакция MISRA C:2012 вместе с поправками. Нумерация правил в обеих редакциях
+> одна и та же, поэтому найденное анализатором правило ищется в
+> [MISRA C:2012 Guidelines](docs/misra-c-2012-guidelines.pdf) по его номеру.
+
 ## Литература и внешние ресурсы
 
 > [!info] Изучить документы во время подготовки к лабораторной работе
@@ -75,4 +81,5 @@ PlatformIO и VS Code – это свободно распространяемы
 > 8. 10 правил, которые позволяют NASA писать миллионы строк кода с минимальными ошибками
 > 9. [MISRA C:2012 Guidelines](docs/misra-c-2012-guidelines.pdf).
 > 10. [Руководство Cppcheck Manual](docs/cppcheck-manual.pdf).
-> 11. Unity — начало работы.
+> 11. Unity — начало работы; [таблица макросов проверок](docs/unity-assertion-table.pdf).
+> 12. [Using the GNU Compiler Collection](docs/gcc-7.5-manual.pdf) — руководство по компилятору GCC.

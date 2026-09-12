@@ -62,7 +62,7 @@ tags:
 - `lib/nuc745_utils/` — вспомогательная библиотека: аварийное завершение `error_state()`, обработчик `assert()` из стандартной библиотеки, преобразование кодов возврата HAL в строки и функция `boot_guard()`, защищающая от мгновенного засыпания после сброса;
 - `src/bootloader/` — [[glossary/bootloader\|загрузчик]] из ЛР3, дополненный командой запуска ядра Cortex-M4;
 - `src/cm7app/` — заготовка приложения для ядра Cortex-M7;
-- `src/cm4app/` — пустая папка для программы ядра Cortex-M4;
+- `src/cm4app/` — папка для программы ядра Cortex-M4, пока в ней только `README`;
 - `system/` — [[glossary/startup-file\|startup-файл]], [[glossary/system-file\|system-файл]] и [[glossary/linker-script\|скрипты компоновщика]];
 - `test/target/` — обвязка для запуска модульных тестов [[glossary/unity\|Unity]] на целевом устройстве.
 

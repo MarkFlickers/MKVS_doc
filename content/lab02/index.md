@@ -64,3 +64,6 @@ tags:
 > 4. Don't Repeat Yourself: как правильно использовать принцип DRY в разработке ПО.
 > 5. «The GNU linker».
 > 6. The Red Hat newlib C Library.
+> 7. [Understanding CMSIS](docs/understanding-cmsis.pdf) — обзор состава библиотеки от ARM.
+> 8. [Unity — таблица макросов проверок](docs/unity-assertion-table.pdf).
+> 9. [Using the GNU Compiler Collection](docs/gcc-7.5-manual.pdf) — руководство по компилятору GCC.

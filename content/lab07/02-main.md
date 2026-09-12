@@ -87,7 +87,7 @@ void Key_Button_EXTI_Init(void) {
 
 Нетрудно заметить, что этот модуль похож на примитивную библиотеку: он конфигурируется статически, во время компиляции, и поддерживает всего одну сущность — сигнал одной кнопки. Этим он и отличается от драйверов библиотеки HAL, которые поддерживают произвольное число сущностей и настраиваются во время выполнения.
 
-4. Отдельный модуль обработки ошибок создавать не нужно: всё необходимое уже есть в библиотеке `lib/nuc745_utils` из шаблона проекта. Нам понадобятся функция аварийного завершения `error_state()` и макрос `ASSERT_HAL_SATUS()`, который проверяет код возврата функции HAL и, если он отличен от `HAL_OK`, выводит в терминал имя файла, номер строки и расшифровку кода, после чего останавливает программу. Полные листинги библиотеки приведены в [[lab06/08-appendix-hal-helpers\|приложении 2 к ЛР6]].
+4. Отдельный модуль обработки ошибок создавать не нужно: всё необходимое уже есть в библиотеке `lib/nuc745_utils` из шаблона проекта. Нам понадобятся функция аварийного завершения `error_state()` и макрос `ASSERT_HAL_STATUS()`, который проверяет код возврата функции HAL и, если он отличен от `HAL_OK`, выводит в терминал имя файла, номер строки и расшифровку кода, после чего останавливает программу. Полные листинги библиотеки приведены в [[lab06/08-appendix-hal-helpers\|приложении 2 к ЛР6]].
 
 5. Добавьте в проект файлы с функциями инициализации, запуска, остановки и деинициализации таймера, который будет генерировать импульс.
 
@@ -149,28 +149,28 @@ void Tim_Pulse_Init(void) {
     hTimPulse.Init.Period = TIMp_PERIOD;
     hTimPulse.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     hTimPulse.Init.CounterMode = TIM_COUNTERMODE_UP;
-    ASSERT_HAL_SATUS(HAL_TIM_PWM_Init(&hTimPulse));  // вызывает HAL_TIM_PWM_MspInit()
+    ASSERT_HAL_STATUS(HAL_TIM_PWM_Init(&hTimPulse));  // вызывает HAL_TIM_PWM_MspInit()
 
     // Конфигурация канала таймера
     TIM_OC_InitTypeDef sOCConfig = {0};
     sOCConfig.OCMode = TIM_OCMODE_PWM2;
     sOCConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
     sOCConfig.Pulse = 0;  // в режиме PWM2 нулевой Pulse даёт D = 100 %
-    ASSERT_HAL_SATUS(HAL_TIM_PWM_ConfigChannel(&hTimPulse, &sOCConfig, TIMp_CHANNEL));
+    ASSERT_HAL_STATUS(HAL_TIM_PWM_ConfigChannel(&hTimPulse, &sOCConfig, TIMp_CHANNEL));
 }
 
 void Tim_Pulse_Start(void) {
     if (HAL_TIM_GetChannelState(&hTimPulse, TIMp_CHANNEL) == HAL_TIM_CHANNEL_STATE_READY) {
-        ASSERT_HAL_SATUS(HAL_TIM_PWM_Start_IT(&hTimPulse, TIMp_CHANNEL));
+        ASSERT_HAL_STATUS(HAL_TIM_PWM_Start_IT(&hTimPulse, TIMp_CHANNEL));
     }
 }
 
 void Tim_Pulse_Stop(void) {
-    ASSERT_HAL_SATUS(HAL_TIM_PWM_Stop_IT(&hTimPulse, TIMp_CHANNEL));
+    ASSERT_HAL_STATUS(HAL_TIM_PWM_Stop_IT(&hTimPulse, TIMp_CHANNEL));
 }
 
 void Tim_Pulse_DeInit(void) {
-    ASSERT_HAL_SATUS(HAL_TIM_PWM_DeInit(&hTimPulse));  // вызывает HAL_TIM_PWM_MspDeInit()
+    ASSERT_HAL_STATUS(HAL_TIM_PWM_DeInit(&hTimPulse));  // вызывает HAL_TIM_PWM_MspDeInit()
 }
 
 /**** Функции обратного вызова библиотеки HAL *******************************/
@@ -258,7 +258,7 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* htim) {
 
 int main(void) {
     __enable_irq();
-    ASSERT_HAL_SATUS(HAL_Init());  // вызывает HAL_MspInit()
+    ASSERT_HAL_STATUS(HAL_Init());  // вызывает HAL_MspInit()
     printf("\r\nStart...\r\n");
 
     Key_Button_EXTI_Init();
@@ -341,7 +341,7 @@ void TIMp_IRQHandler(void) {
 
 2. Отключите отладочную плату от компьютера и установите перемычку согласно рисунку 9.
 
-![Перемычка между контактом 1 разъёма CN8 и контактом 18 разъёма CN9 отладочной платы](img/fig-09-pc8-pe5-jumper.png)
+![Перемычка между контактом 2 разъёма CN8 и контактом 18 разъёма CN9 отладочной платы](img/fig-09-pc8-pe5-jumper.png)
 
 *Рисунок 9 – Соединение вывода PC8 (канал TIM3:3) с выводом PE5 (канал TIM15:1) на отладочной плате ST Nucleo H745ZI-Q.*
 
@@ -424,7 +424,7 @@ void Tim_Measure_Init(void) {
     hTimMeasure.Init.Period = TIMm_PERIOD;
     hTimMeasure.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     hTimMeasure.Init.CounterMode = TIM_COUNTERMODE_UP;
-    ASSERT_HAL_SATUS(HAL_TIM_IC_Init(&hTimMeasure));  // вызывает HAL_TIM_IC_MspInit()
+    ASSERT_HAL_STATUS(HAL_TIM_IC_Init(&hTimMeasure));  // вызывает HAL_TIM_IC_MspInit()
 
     // Конфигурация входного канала: захват по обоим фронтам сигнала
     TIM_IC_InitTypeDef sICConfig = {0};
@@ -432,20 +432,20 @@ void Tim_Measure_Init(void) {
     sICConfig.ICSelection = TIM_ICSELECTION_DIRECTTI;
     sICConfig.ICPrescaler = TIM_ICPSC_DIV1;
     sICConfig.ICFilter = 0;
-    ASSERT_HAL_SATUS(HAL_TIM_IC_ConfigChannel(&hTimMeasure, &sICConfig, TIMm_CHANNEL));
+    ASSERT_HAL_STATUS(HAL_TIM_IC_ConfigChannel(&hTimMeasure, &sICConfig, TIMm_CHANNEL));
 }
 
 void Tim_Measure_DeInit(void) {
-    ASSERT_HAL_SATUS(HAL_TIM_IC_DeInit(&hTimMeasure));
+    ASSERT_HAL_STATUS(HAL_TIM_IC_DeInit(&hTimMeasure));
 }
 
 void Tim_Measure_Start(void) {
     capture_done = 0;
-    ASSERT_HAL_SATUS(HAL_TIM_IC_Start_DMA(&hTimMeasure, TIMm_CHANNEL, (uint32_t*)captures, 2));
+    ASSERT_HAL_STATUS(HAL_TIM_IC_Start_DMA(&hTimMeasure, TIMm_CHANNEL, (uint32_t*)captures, 2));
 }
 
 void Tim_Measure_Stop(void) {
-    ASSERT_HAL_SATUS(HAL_TIM_IC_Stop_DMA(&hTimMeasure, TIMm_CHANNEL));
+    ASSERT_HAL_STATUS(HAL_TIM_IC_Stop_DMA(&hTimMeasure, TIMm_CHANNEL));
 }
 
 uint16_t Tim_Measure_GetDiff(void) {
@@ -515,7 +515,7 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef* htim) {
     /* Дескриптор потока DMA связывается с дескриптором таймера: драйвер
        обращается к потоку через массив hdma[] дескриптора устройства */
     __HAL_LINKDMA(htim, hdma[TIMm_DMA_ID], hdma_tim);
-    ASSERT_HAL_SATUS(HAL_DMA_Init(htim->hdma[TIMm_DMA_ID]));
+    ASSERT_HAL_STATUS(HAL_DMA_Init(htim->hdma[TIMm_DMA_ID]));
 
     HAL_NVIC_SetPriority(TIMm_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(TIMm_IRQn);
@@ -576,7 +576,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim) {
 ```c title="src/cm7app/main.c" showLineNumbers
 int main(void) {
     __enable_irq();
-    ASSERT_HAL_SATUS(HAL_Init());  // вызывает HAL_MspInit()
+    ASSERT_HAL_STATUS(HAL_Init());  // вызывает HAL_MspInit()
     printf("\r\nStart...\r\n");
 
     Key_Button_EXTI_Init();
@@ -613,7 +613,7 @@ int main(void) {
 
 ![[glossary/hc-sr04#^def-hc-sr04]]
 
-2. Схема работы датчика показана на рисунках 10 и 11. Чтобы измерить расстояние до объекта, на вход `Trig` датчика необходимо подать импульс длительностью не менее 10 мкс. В ответ на выводе `Echo` датчик сформирует импульс длительностью от 100 мкс до 18 мс. Если препятствия нет, длительность ответного импульса составляет около 36 мс.
+2. Схема работы датчика показана на рисунках 10 и 11. Чтобы измерить расстояние до объекта, на вход `Trig` датчика необходимо подать импульс длительностью не менее 10 мкс. В ответ на выводе `Echo` датчик сформирует импульс длительностью от 100 мкс до 23 мс — это соответствует рабочему диапазону от 2 см до 4 м при 58 мкс на сантиметр. Если препятствие не обнаружено, импульс заметно длиннее — около 38 мс.
 
 ![Датчик излучает ультразвуковую волну, она отражается от препятствия и возвращается к приёмнику](img/fig-10-hcsr04-principle.png)
 

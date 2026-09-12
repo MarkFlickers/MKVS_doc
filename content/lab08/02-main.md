@@ -162,7 +162,7 @@ int main(void) {
     boot_guard();
     vterm_init(VTERM_SPEED);
     led_enable(led_all);
-    ASSERT_HAL_SATUS(HAL_Init());  // вызывает HAL_InitTick(), а та запускает TIM2
+    ASSERT_HAL_STATUS(HAL_Init());  // вызывает HAL_InitTick(), а та запускает TIM2
 
     while (1) {
         led_toggle(led_green);
@@ -213,7 +213,7 @@ int main(void) {
     boot_guard();
     vterm_init(VTERM_SPEED);
     led_enable(led_all);
-    ASSERT_HAL_SATUS(HAL_Init());
+    ASSERT_HAL_STATUS(HAL_Init());
 
     display_init();  // только после инициализации HAL: драйвер вызывает HAL_Delay()
 
@@ -375,7 +375,7 @@ int main(void) {
     boot_guard();
     vterm_init(VTERM_SPEED);
     led_enable(led_all);
-    ASSERT_HAL_SATUS(HAL_Init());
+    ASSERT_HAL_STATUS(HAL_Init());
 
     // Инициализация драйвера и очистка экрана
     display_init();
@@ -995,7 +995,7 @@ int main(void) {
     boot_guard();
     vterm_init(VTERM_SPEED);
     led_enable(led_all);
-    ASSERT_HAL_SATUS(HAL_Init());  // вызывает HAL_MspInit()
+    ASSERT_HAL_STATUS(HAL_Init());  // вызывает HAL_MspInit()
 
     // Инициализация драйвера и очистка экрана
     display_init();
