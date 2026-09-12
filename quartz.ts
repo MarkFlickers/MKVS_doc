@@ -17,6 +17,7 @@ import MobileBar from "./quartz/components/MkvsMobileBar"
 import PrevNext from "./quartz/components/MkvsPrevNext"
 import MkvsFooter from "./quartz/components/MkvsFooter"
 import OgImage from "./quartz/components/MkvsOgImage"
+import FolderContent from "./quartz/components/MkvsFolderContent"
 
 const config = await loadQuartzConfig()
 export default config
@@ -231,3 +232,24 @@ config.plugins.emitters = config.plugins.emitters.map((emitter) =>
     ? CustomOgImages({ imageStructure: OgImage })
     : emitter,
 )
+
+// Список разделов под текстом работы — только названия, в порядке Проводника
+// (MkvsFolderContent.tsx). Штатный выводил у строк дату изменения и теги и
+// сортировал строки по дате; убрать это плагин не даёт, поэтому подменяется
+// тело folder-страницы. Опции плагина из quartz.config.yaml к телу больше не
+// относятся. Не найдись плагин — сайт соберётся со штатным списком, с датами,
+// и об этом скажет предупреждение.
+let folderPageFound = false
+config.plugins.pageTypes = config.plugins.pageTypes?.map((pageType) => {
+  if (pageType.name !== "FolderPage") return pageType
+  folderPageFound = true
+  return { ...pageType, body: FolderContent }
+})
+
+if (!folderPageFound) {
+  console.warn(
+    "[mkvs] Тип страницы FolderPage не найден — список разделов под текстом " +
+      "работы соберётся штатным, с датами изменения. Сверьте имя в quartz.ts " +
+      "с тем, что отдаёт @quartz-community/folder-page.",
+  )
+}
