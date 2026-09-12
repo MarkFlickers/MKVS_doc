@@ -71,10 +71,12 @@ tags:
 - [[glossary/axi-sram\|AXI-SRAM]]
 - [[glossary/cmsis\|CMSIS]]
 - [[glossary/cortex-m\|Cortex-M]]
+- [[glossary/dma\|DMA]]
 - [[glossary/dwt\|DWT]]
 - [[glossary/gpio\|GPIO]]
 - [[glossary/hse\|HSE, HSI, CSI]]
 - [[glossary/msp\|MSP]]
+- [[glossary/hal-msp\|MSP в библиотеке HAL]]
 - [[glossary/nucleo-h745\|NUCLEO-H745ZI-Q]]
 - [[glossary/push-pull\|Push-Pull и Open Drain]]
 - [[glossary/rcc\|RCC]]
@@ -141,6 +143,7 @@ tags:
 | [[glossary/cmsis\|CMSIS]] | Cortex Microcontroller Software Interface Standard | стандарт программного интерфейса микроконтроллеров Cortex-M |
 | CRC | Cyclic Redundancy Check | циклический избыточный код (контрольная сумма) |
 | DRY | Don't Repeat Yourself | «не повторяйся» — принцип разработки |
+| [[glossary/dma\|DMA]] | Direct Memory Access | прямой доступ к памяти |
 | DSP | Digital Signal Processing | цифровая обработка сигналов |
 | [[glossary/dwt\|DWT]] | Data Watchpoint and Trace | блок точек останова по данным и трассировки |
 | [[glossary/elf\|ELF]] | Executable and Linkable Format | формат исполняемых и объектных файлов |
@@ -162,6 +165,7 @@ tags:
 | [[glossary/misra-c\|MISRA]] | Motor Industry Software Reliability Association | объединение, выпустившее стандарт MISRA C |
 | MPU | Memory Protection Unit | блок защиты памяти |
 | [[glossary/msp\|MSP]] | Main Stack Pointer | основной указатель стека |
+| [[glossary/hal-msp\|MSP]] | MCU Support Package | слой низкоуровневой инициализации ресурсов в HAL |
 | NMI | Non-Maskable Interrupt | немаскируемое прерывание |
 | NN | Neural Network | нейронная сеть |
 | [[glossary/nvic\|NVIC]] | Nested Vectored Interrupt Controller | контроллер вложенных векторных прерываний |

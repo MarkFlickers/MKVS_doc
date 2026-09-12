@@ -20,9 +20,9 @@ tags:
 
 Архитектура микроконтроллера, карта памяти, описание всех периферийных блоков и их регистров. Основной документ при программировании периферии: именно здесь смотрят назначение битовых полей.
 
-Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [13 System configuration controller (SYSCFG)](docs/rm0399-stm32h745.pdf#page=586) · [13.3.2 SYSCFG_EXTICR1](docs/rm0399-stm32h745.pdf#page=589) · [21 Extended interrupt and event controller (EXTI)](docs/rm0399-stm32h745.pdf#page=797) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047)
+Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [13 System configuration controller (SYSCFG)](docs/rm0399-stm32h745.pdf#page=586) · [13.3.2 SYSCFG_EXTICR1](docs/rm0399-stm32h745.pdf#page=589) · [16 Direct memory access controller (DMA)](docs/rm0399-stm32h745.pdf#page=674) · [21 Extended interrupt and event controller (EXTI)](docs/rm0399-stm32h745.pdf#page=797) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047) · [51 USART/UART](docs/rm0399-stm32h745.pdf#page=2170)
 
-Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]]
+Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]] · [[lab06/index\|ЛР6]]
 
 > [!warning] Документ имеет большой размер
 > Его веб-версия может долго открываться.<br>
@@ -34,7 +34,9 @@ tags:
 
 Общие сведения о микроконтроллере STM32H745xI/G: состав периферии, назначение выводов, корпуса, электрические и временные характеристики. Документ, с которого начинают выбор и подключение МК.
 
-Быстрый переход: [2 Description](docs/ds12923-stm32h745zi.pdf#page=14) · [3 Functional overview](docs/ds12923-stm32h745zi.pdf#page=21) · [4 Memory mapping](docs/ds12923-stm32h745zi.pdf#page=53) · [5 Pin descriptions](docs/ds12923-stm32h745zi.pdf#page=54) · [6 Electrical characteristics](docs/ds12923-stm32h745zi.pdf#page=103)
+Быстрый переход: [2 Description](docs/ds12923-stm32h745zi.pdf#page=14) · [3 Functional overview](docs/ds12923-stm32h745zi.pdf#page=21) · [4 Memory mapping](docs/ds12923-stm32h745zi.pdf#page=53) · [5 Pin descriptions](docs/ds12923-stm32h745zi.pdf#page=54) · [Таблицы 9—19 Alternate functions](docs/ds12923-stm32h745zi.pdf#page=87) · [6 Electrical characteristics](docs/ds12923-stm32h745zi.pdf#page=103)
+
+Применяется в: [[lab06/index\|ЛР6]]
 
 ### ES0445 — Errata Sheet
 
@@ -110,9 +112,9 @@ tags:
 
 Справочник по функциям библиотек HAL и Low-Layer из пакета STM32CubeH7: назначение, параметры и возвращаемые значения каждой функции.
 
-Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15) · [5 Overview of low-layer drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=45) · [110 LL GPIO](docs/um2217-stm32h7-ll-drivers.pdf#page=2712) · [114 LL IWDG](docs/um2217-stm32h7-ll-drivers.pdf#page=3046)
+Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15) · [5 Overview of low-layer drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=45) · [7 HAL System Driver](docs/um2217-stm32h7-ll-drivers.pdf#page=52) · [23 HAL DMA](docs/um2217-stm32h7-ll-drivers.pdf#page=338) · [90 HAL UART](docs/um2217-stm32h7-ll-drivers.pdf#page=1863) · [110 LL GPIO](docs/um2217-stm32h7-ll-drivers.pdf#page=2712) · [114 LL IWDG](docs/um2217-stm32h7-ll-drivers.pdf#page=3046)
 
-Применяется в: [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]]
+Применяется в: [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]] · [[lab06/index\|ЛР6]]
 
 ### AN5033 — примеры STM32Cube для STM32H7
 
