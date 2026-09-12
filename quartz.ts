@@ -4,6 +4,7 @@ import { join } from "path"
 import type { QuartzComponent } from "./quartz/components/types"
 import { PageTypeDispatcher } from "./quartz/plugins/pageTypes/dispatcher"
 import { MkvsDownload } from "./quartz/plugins/transformers/mkvs-download"
+import { MkvsResources } from "./quartz/plugins/emitters/mkvs-resources"
 import TocCollapse from "./quartz/components/MkvsTocCollapse"
 import Explorer from "./quartz/components/MkvsExplorer"
 import Search from "./quartz/components/MkvsSearch"
@@ -198,3 +199,9 @@ config.plugins.transformers = [...config.plugins.transformers, MkvsDownload()]
 config.plugins.emitters = config.plugins.emitters.map((emitter) =>
   emitter.name === "PageTypeDispatcher" ? PageTypeDispatcher(layout) : emitter,
 )
+
+// Архивы с файлами работ: собираются из resources/labNN на каждой сборке и
+// пишутся прямо в public/ (quartz/util/mkvs-resources.ts). В репозитории их
+// нет, поэтому эмиттер обязателен — без него на сайте окажется страница с
+// кнопкой, ведущей в никуда.
+config.plugins.emitters = [...config.plugins.emitters, MkvsResources()]

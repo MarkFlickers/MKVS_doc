@@ -1,7 +1,6 @@
-import { statSync } from "fs"
-import { join } from "path"
 import { visit } from "unist-util-visit"
 import type { Root, Element } from "hast"
+import { archiveBytes } from "../../util/mkvs-resources"
 import type { QuartzTransformerPlugin } from "../types"
 
 // Кнопка «Скачать файлы работы»: размер архива подставляется на сборке.
@@ -12,30 +11,29 @@ import type { QuartzTransformerPlugin } from "../types"
 //   <a class="mkvs-download" href="lab01/resources/…zip" download
 //      data-router-ignore data-no-popover="true">Скачать файлы работы — ZIP, 7 КБ</a>
 //
-// При каждом перезапуске tools/pack-resources.ps1 архив меняется, а число в
-// markdown остаётся старым — и заметить это можно только глазами.
+// Архив пересобирается при каждой сборке сайта, а число в markdown оставалось
+// старым — и заметить это можно было только глазами.
 //
 // Теперь в markdown обычная ссылка на архив, а всё остальное делает этот
 // плагин: ставит класс и три атрибута, без которых архив «открывается» вместо
-// того, чтобы скачиваться, и дописывает размер, прочитанный с диска.
+// того, чтобы скачиваться, и дописывает размер того самого архива, который
+// эмиттер MkvsResources положит в public/ (util/mkvs-resources.ts отдаёт им
+// обоим одни и те же байты).
 //
 // Плагин добавляется в quartz.ts последним, поэтому к его приходу
 // @quartz-community/crawl-links уже переписал href в относительный
-// («../lab01/resources/…»). Поэтому путь к файлу восстанавливается срезанием
+// («../lab01/resources/…»). Поэтому путь к архиву восстанавливается срезанием
 // ведущих «../» — так плагин не зависит от того, где стоит в цепочке.
 
 const DOWNLOAD_CLASS = "mkvs-download"
 
 function sizeKb(href: string): number | null {
   // «../../lab01/resources/x.zip» -> «lab01/resources/x.zip»
-  const relative = href.replace(/^(?:\.\.?\/)+/, "")
-  try {
-    const bytes = statSync(join(process.cwd(), "content", decodeURIComponent(relative))).size
-    // Ниже килобайта округление до нуля выглядело бы как ошибка.
-    return Math.max(1, Math.round(bytes / 1024))
-  } catch {
-    return null
-  }
+  const publicPath = decodeURIComponent(href.replace(/^(?:\.\.?\/)+/, ""))
+  const archive = archiveBytes(publicPath)
+  if (!archive) return null
+  // Ниже килобайта округление до нуля выглядело бы как ошибка.
+  return Math.max(1, Math.round(archive.length / 1024))
 }
 
 export const MkvsDownload: QuartzTransformerPlugin = () => ({
@@ -63,9 +61,11 @@ export const MkvsDownload: QuartzTransformerPlugin = () => ({
           const kb = sizeKb(href)
           if (kb === null) {
             console.warn(
-              `[mkvs] Архив ${href} не найден на диске — размер в кнопке ` +
-                "«Скачать файлы работы» не подставлен. Запустите " +
-                "tools/pack-resources.ps1.",
+              `[mkvs] Архив ${href} собрать не из чего — размер в кнопке ` +
+                "«Скачать файлы работы» не подставлен, а на сайте её ссылка " +
+                "приведёт в никуда. Проверьте, что файлы работы лежат в " +
+                "resources/labNN и что имя архива в ссылке совпадает с именем " +
+                "папки работы.",
             )
             return
           }
