@@ -26,7 +26,8 @@
 @use "mkvs/compact";
 @use "mkvs/download";
 @use "mkvs/prevnext";
-@use "mkvs/imprint";
+@use "mkvs/status";
+@use "mkvs/footer";
 
 // _print подключается ПОСЛЕДНИМ намеренно: правила печати перекрывают
 // обычные, а при равной специфичности выигрывает объявленное позже.

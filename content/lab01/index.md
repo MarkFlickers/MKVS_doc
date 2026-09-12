@@ -1,10 +1,5 @@
 ---
 title: "Лабораторная работа 01. Интегрированная среда разработки PlatformIO и Visual Studio Code"
-lab: 1
-source: "МКВС.26 ЛР1 - r3.pdf"
-revision: r3
-author: "Симонов Сергей Борисович, доцент МПСУ МИЭТ, к.т.н."
-year: 2026
 tags:
   - лабораторная-работа
   - platformio

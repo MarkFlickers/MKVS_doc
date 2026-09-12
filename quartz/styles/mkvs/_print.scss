@@ -51,6 +51,13 @@
     text-decoration: underline;
   }
 
+  // Статус работы различается цветом подложки, а её браузер при печати
+  // выбрасывает — все четыре статуса вышли бы одинаковыми.
+  .mkvs-status {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
   // Навигация по соседним страницам на бумаге бессмысленна.
   .mkvs-prevnext {
     display: none;

@@ -249,8 +249,11 @@ plugins:
     layout:
       position: beforeBody
       priority: 10
+  # Дата изменения и время чтения над заголовком. Студенту дата правки
+  # страницы ни о чём не говорит — выключено. Сама дата при этом никуда не
+  # делась: created-modified-date по-прежнему отдаёт её в sitemap.xml.
   - source: "@quartz-community/content-meta"
-    enabled: true
+    enabled: false
     layout:
       position: beforeBody
       priority: 20
@@ -270,14 +273,11 @@ plugins:
   - source: "@quartz-community/graph"
     enabled: false
 
+  # Подвал свой — MkvsFooter, подключается в quartz.ts вместе с годом, версией
+  # сайта и ссылкой на репозиторий. Штатный пишет «Создано с помощью Quartz» и
+  # версию Quartz, и настроить эту строку нельзя.
   - source: "@quartz-community/footer"
-    enabled: true
-    options:
-      links:
-        Репозиторий: https://github.com/MarkFlickers/MKVS_doc
-    layout:
-      position: footer
-      priority: 50
+    enabled: false
 
   - source: "@quartz-community/comments"
     enabled: false

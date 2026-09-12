@@ -4,6 +4,7 @@ import { join } from "path"
 import type { QuartzComponent } from "./quartz/components/types"
 import { PageTypeDispatcher } from "./quartz/plugins/pageTypes/dispatcher"
 import { MkvsDownload } from "./quartz/plugins/transformers/mkvs-download"
+import { MkvsStatus } from "./quartz/plugins/transformers/mkvs-status"
 import { MkvsResources } from "./quartz/plugins/emitters/mkvs-resources"
 import TocCollapse from "./quartz/components/MkvsTocCollapse"
 import Explorer from "./quartz/components/MkvsExplorer"
@@ -13,11 +14,19 @@ import Glossary from "./quartz/components/MkvsGlossary"
 import GlossaryBack from "./quartz/components/MkvsGlossaryBack"
 import MobileBar from "./quartz/components/MkvsMobileBar"
 import PrevNext from "./quartz/components/MkvsPrevNext"
-import Imprint from "./quartz/components/MkvsImprint"
+import MkvsFooter from "./quartz/components/MkvsFooter"
 
 const config = await loadQuartzConfig()
 export default config
 export const layout = await loadQuartzLayout()
+
+// Подвал: год и версия сайта рядом со ссылкой на репозиторий (MkvsFooter.tsx).
+// Обе цифры правятся здесь и вместе — при выпуске новой редакции пособий.
+const Footer = MkvsFooter({
+  year: 2026,
+  version: "1.0",
+  links: { Репозиторий: "https://github.com/MarkFlickers/MKVS_doc" },
+})
 
 // Штатные компоненты Quartz дополняются своими надстройками.
 // Все они ничего не меняют в самих плагинах — только добавляют поведение
@@ -53,12 +62,12 @@ for (const pageLayout of [layout.defaults, ...Object.values(layout.byPageType)])
     pageLayout.afterBody = [PrevNext, ...(pageLayout.afterBody ?? [])]
   }
 
-  // Выходные данные пособия — следом за кнопками, самой последней видимой
-  // строкой страницы. На страницах без этих полей компонент ничего не рисует.
-  if (!pageLayout.afterBody?.includes(Imprint)) {
-    const after = pageLayout.afterBody ?? []
-    const at = after.indexOf(PrevNext)
-    pageLayout.afterBody = [...after.slice(0, at + 1), Imprint, ...after.slice(at + 1)]
+  // Подвал — свой вместо штатного (плагин выключен в quartz.config.yaml).
+  // Массив не дополняется на месте, а собирается заново: типы страниц делят с
+  // раскладкой по умолчанию один и тот же массив footer (config-loader.ts), и
+  // push в него добавил бы подвал по разу на каждый тип.
+  if (!pageLayout.footer?.includes(Footer)) {
+    pageLayout.footer = [...(pageLayout.footer ?? []), Footer]
   }
 
   // Подсказки к терминам глоссария. Скрипт нужен в теле любой страницы, а не
@@ -193,6 +202,10 @@ for (const [query, count] of patched) {
 // прочитанный с диска. Добавляется последним: к этому моменту crawl-links уже
 // переписал href в относительный, и плагин не спорит с ним за атрибуты.
 config.plugins.transformers = [...config.plugins.transformers, MkvsDownload()]
+
+// Цветные плашки статусов в таблице работ на титульной странице. Плагину
+// нужна только готовая таблица, поэтому его место в цепочке не важно.
+config.plugins.transformers = [...config.plugins.transformers, MkvsStatus()]
 
 // loadQuartzConfig() уже создал диспетчер по YAML-раскладке. Подменяем его,
 // чтобы и HTML страниц, и ресурсы компонентов собирались по изменённой.
