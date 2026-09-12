@@ -1,6 +1,7 @@
 import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/config-loader"
 import { readFileSync } from "fs"
 import { join } from "path"
+import { CustomOgImages, CustomOgImagesEmitterName } from "@quartz-community/og-image"
 import type { QuartzComponent } from "./quartz/components/types"
 import { PageTypeDispatcher } from "./quartz/plugins/pageTypes/dispatcher"
 import { MkvsDownload } from "./quartz/plugins/transformers/mkvs-download"
@@ -15,6 +16,7 @@ import GlossaryBack from "./quartz/components/MkvsGlossaryBack"
 import MobileBar from "./quartz/components/MkvsMobileBar"
 import PrevNext from "./quartz/components/MkvsPrevNext"
 import MkvsFooter from "./quartz/components/MkvsFooter"
+import OgImage from "./quartz/components/MkvsOgImage"
 
 const config = await loadQuartzConfig()
 export default config
@@ -218,3 +220,14 @@ config.plugins.emitters = config.plugins.emitters.map((emitter) =>
 // нет, поэтому эмиттер обязателен — без него на сайте окажется страница с
 // кнопкой, ведущей в никуда.
 config.plugins.emitters = [...config.plugins.emitters, MkvsResources()]
+
+// Картинки-превью страниц — без даты и времени чтения (MkvsOgImage.tsx). Убрать
+// эту строку плагин не даёт, а свою разметку принимает только целиком, поэтому
+// эмиттер пересоздаётся. Опции из quartz.config.yaml он при этом теряет: сейчас
+// их там нет, а понадобятся — задавать здесь, рядом с imageStructure. Если
+// плагин в конфиге выключат, заменять будет нечего, и он не включится сам.
+config.plugins.emitters = config.plugins.emitters.map((emitter) =>
+  emitter.name === CustomOgImagesEmitterName
+    ? CustomOgImages({ imageStructure: OgImage })
+    : emitter,
+)
