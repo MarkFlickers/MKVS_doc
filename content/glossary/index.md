@@ -89,15 +89,20 @@ tags:
 
 ## Внешние устройства и сигналы
 
+- [[glossary/hc-sr04\|HC-SR04]]
+- [[glossary/pwm\|ШИМ]]
 - [[glossary/debounce\|Дребезг контактов]]
 - [[glossary/rotary-encoder\|Поворотный энкодер]]
 
 
 ## Таймеры и многозадачность
 
+- [[glossary/hardware-timer\|Аппаратный таймер]]
 - [[glossary/cooperative-scheduler\|Кооперативный планировщик]]
 - [[glossary/software-timer\|Программный таймер]]
 - [[glossary/profiling\|Профилирование]]
+- [[glossary/input-capture\|Режим захвата]]
+- [[glossary/output-compare\|Режим сравнения-вывода]]
 - [[glossary/sleep-mode\|Режимы сна и инструкции WFI, WFE]]
 - [[glossary/systick\|Системный таймер SysTick]]
 - [[glossary/iwdg\|Сторожевой таймер IWDG]]
@@ -171,6 +176,7 @@ tags:
 | [[glossary/nvic\|NVIC]] | Nested Vectored Interrupt Controller | контроллер вложенных векторных прерываний |
 | PC | Program Counter | счётчик команд |
 | PSR | Program Status Register | регистр состояния программы |
+| [[glossary/pwm\|PWM]] | Pulse-Width Modulation | широтно-импульсная модуляция (ШИМ) |
 | RAM | Random Access Memory | оперативная память |
 | [[glossary/rcc\|RCC]] | Reset and Clock Control | блок сброса и тактирования |
 | RTOS | Real-Time Operating System | операционная система реального времени (ОСРВ) |

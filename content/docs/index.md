@@ -20,9 +20,9 @@ tags:
 
 Архитектура микроконтроллера, карта памяти, описание всех периферийных блоков и их регистров. Основной документ при программировании периферии: именно здесь смотрят назначение битовых полей.
 
-Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [13 System configuration controller (SYSCFG)](docs/rm0399-stm32h745.pdf#page=586) · [13.3.2 SYSCFG_EXTICR1](docs/rm0399-stm32h745.pdf#page=589) · [16 Direct memory access controller (DMA)](docs/rm0399-stm32h745.pdf#page=674) · [21 Extended interrupt and event controller (EXTI)](docs/rm0399-stm32h745.pdf#page=797) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047) · [51 USART/UART](docs/rm0399-stm32h745.pdf#page=2170)
+Быстрый переход: [2 Memory and bus architecture](docs/rm0399-stm32h745.pdf#page=108) · [2.3 Memory organization](docs/rm0399-stm32h745.pdf#page=134) · [2.4 Embedded SRAM](docs/rm0399-stm32h745.pdf#page=142) · [4 Embedded flash memory](docs/rm0399-stm32h745.pdf#page=154) · [7 Power control (PWR)](docs/rm0399-stm32h745.pdf#page=268) · [9 Reset and Clock Control (RCC)](docs/rm0399-stm32h745.pdf#page=351) · [9.7 RCC registers](docs/rm0399-stm32h745.pdf#page=414) · [12 General-purpose I/Os (GPIO)](docs/rm0399-stm32h745.pdf#page=568) · [12.4 GPIO registers](docs/rm0399-stm32h745.pdf#page=578) · [13 System configuration controller (SYSCFG)](docs/rm0399-stm32h745.pdf#page=586) · [13.3.2 SYSCFG_EXTICR1](docs/rm0399-stm32h745.pdf#page=589) · [16 Direct memory access controller (DMA)](docs/rm0399-stm32h745.pdf#page=674) · [21 Extended interrupt and event controller (EXTI)](docs/rm0399-stm32h745.pdf#page=797) · [41 General-purpose timers (TIM2/TIM3/TIM4/TIM5)](docs/rm0399-stm32h745.pdf#page=1781) · [43 General-purpose timers (TIM15/TIM16/TIM17)](docs/rm0399-stm32h745.pdf#page=1911) · [48 Independent watchdog (IWDG)](docs/rm0399-stm32h745.pdf#page=2047) · [51 USART/UART](docs/rm0399-stm32h745.pdf#page=2170)
 
-Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]] · [[lab06/index\|ЛР6]]
+Применяется в: [[lab02/index\|ЛР2]] · [[lab03/index\|ЛР3]] · [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]] · [[lab06/index\|ЛР6]] · [[lab07/index\|ЛР7]]
 
 > [!warning] Документ имеет большой размер
 > Его веб-версия может долго открываться.<br>
@@ -36,7 +36,7 @@ tags:
 
 Быстрый переход: [2 Description](docs/ds12923-stm32h745zi.pdf#page=14) · [3 Functional overview](docs/ds12923-stm32h745zi.pdf#page=21) · [4 Memory mapping](docs/ds12923-stm32h745zi.pdf#page=53) · [5 Pin descriptions](docs/ds12923-stm32h745zi.pdf#page=54) · [Таблицы 9—19 Alternate functions](docs/ds12923-stm32h745zi.pdf#page=87) · [6 Electrical characteristics](docs/ds12923-stm32h745zi.pdf#page=103)
 
-Применяется в: [[lab06/index\|ЛР6]]
+Применяется в: [[lab06/index\|ЛР6]] · [[lab07/index\|ЛР7]]
 
 ### ES0445 — Errata Sheet
 
@@ -112,9 +112,9 @@ tags:
 
 Справочник по функциям библиотек HAL и Low-Layer из пакета STM32CubeH7: назначение, параметры и возвращаемые значения каждой функции.
 
-Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15) · [5 Overview of low-layer drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=45) · [7 HAL System Driver](docs/um2217-stm32h7-ll-drivers.pdf#page=52) · [23 HAL DMA](docs/um2217-stm32h7-ll-drivers.pdf#page=338) · [90 HAL UART](docs/um2217-stm32h7-ll-drivers.pdf#page=1863) · [110 LL GPIO](docs/um2217-stm32h7-ll-drivers.pdf#page=2712) · [114 LL IWDG](docs/um2217-stm32h7-ll-drivers.pdf#page=3046)
+Быстрый переход: [3 Support of dual-core architectures](docs/um2217-stm32h7-ll-drivers.pdf#page=7) · [4 Overview of HAL drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=10) · [4.3 API classification](docs/um2217-stm32h7-ll-drivers.pdf#page=15) · [5 Overview of low-layer drivers](docs/um2217-stm32h7-ll-drivers.pdf#page=45) · [7 HAL System Driver](docs/um2217-stm32h7-ll-drivers.pdf#page=52) · [23 HAL DMA](docs/um2217-stm32h7-ll-drivers.pdf#page=338) · [88 HAL TIM](docs/um2217-stm32h7-ll-drivers.pdf#page=1754) · [89 HAL TIM Extension](docs/um2217-stm32h7-ll-drivers.pdf#page=1834) · [90 HAL UART](docs/um2217-stm32h7-ll-drivers.pdf#page=1863) · [110 LL GPIO](docs/um2217-stm32h7-ll-drivers.pdf#page=2712) · [114 LL IWDG](docs/um2217-stm32h7-ll-drivers.pdf#page=3046)
 
-Применяется в: [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]] · [[lab06/index\|ЛР6]]
+Применяется в: [[lab04/index\|ЛР4]] · [[lab05/index\|ЛР5]] · [[lab06/index\|ЛР6]] · [[lab07/index\|ЛР7]]
 
 ### AN5033 — примеры STM32Cube для STM32H7
 
@@ -130,6 +130,16 @@ tags:
 
 Быстрый переход: [4 GPIO functional description](docs/an4899-gpio-low-power.pdf#page=8) · [6 GPIO hardware guideline](docs/an4899-gpio-low-power.pdf#page=23) · [8 GPIO selection guide and configuration](docs/an4899-gpio-low-power.pdf#page=28)
 
+### AN4013 — таймеры в микроконтроллерах STM32
+
+[Открыть PDF](docs/an4013-timers-intro.pdf) · Rev 11 · 46 с. · 0,7 МБ
+
+Обзор [[glossary/hardware-timer\|таймеров]] всех серий STM32: виды таймеров и их возможности, источники тактирования, режимы работы каналов, синхронизация таймеров между собой. Документ объясняет режимы на временных диаграммах и формулах и потому читается легче соответствующих глав RM0399.
+
+Быстрый переход: [1 Overview](docs/an4013-timers-intro.pdf#page=6) · [2 General-purpose timer modes](docs/an4013-timers-intro.pdf#page=10) · [2.3 Timer input capture mode](docs/an4013-timers-intro.pdf#page=13) · [2.4 Timer in output compare mode](docs/an4013-timers-intro.pdf#page=14) · [2.5 Timer in PWM mode](docs/an4013-timers-intro.pdf#page=15) · [2.6 Timer in one pulse mode](docs/an4013-timers-intro.pdf#page=16) · [3 Timer synchronization](docs/an4013-timers-intro.pdf#page=24)
+
+Применяется в: [[lab07/index\|ЛР7]]
+
 ## Модули расширения
 
 ### MSP3520 — TFT-дисплей 3,5" с интерфейсом SPI
@@ -137,6 +147,16 @@ tags:
 [Открыть PDF](docs/msp3520-display-user-manual.pdf) · Rev 1.0 · 23 с. · 1,8 МБ
 
 Руководство LCDWIKI на дисплейный модуль MSP3520: назначение выводов, схема подключения по SPI, работа с контроллером дисплея и тачскрином.
+
+### HC-SR04 — ультразвуковой дальномер
+
+[Открыть PDF](docs/hc-sr04-ultrasonic.pdf) · V1.0 · 12 с. · 0,9 МБ
+
+Руководство Handson Technology на модуль [[glossary/hc-sr04\|HC-SR04]]: характеристики, назначение выводов, временная диаграмма обмена и пример расчёта расстояния по длительности ответного импульса.
+
+Быстрый переход: [4.1 Pin assignment](docs/hc-sr04-ultrasonic.pdf#page=6) · [4.3 Timing diagram](docs/hc-sr04-ultrasonic.pdf#page=7)
+
+Применяется в: [[lab07/index\|ЛР7]]
 
 ## Инструменты разработки и качество кода
 
