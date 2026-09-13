@@ -32,3 +32,37 @@ export function normalizePath(pathname: string, base: string): string {
 export function onHomePage(base: string): boolean {
   return normalizePath(window.location.pathname, base) === ""
 }
+
+// --- путь до страницы -------------------------------------------------------
+// Функции ниже работают со slug, а не с адресом в браузере, и окружения не
+// касаются. Поэтому ими пользуется не только скрипт поиска (строка пути в
+// карточке результата, mkvs-search-cards.ts), но и серверный компонент кнопок
+// «Предыдущее/Следующее» (MkvsPrevNext.tsx): путь до страницы в обоих местах
+// должен читаться одинаково.
+
+const PATH_SEPARATOR = " › "
+
+// «lab02/02-main» -> ["lab02/index"]: папки, в которые входит страница, сверху
+// вниз. Для самой страницы работы (labNN/index) родитель — корень сайта, и
+// путь не нужен: название сайта уже стоит над Проводником.
+export function parentSlugs(slug: string): string[] {
+  const parts = slug.split("/")
+  parts.pop()
+  if (slug.endsWith("/index")) parts.pop()
+
+  const chain: string[] = []
+  for (let i = 0; i < parts.length; i++) {
+    chain.push(parts.slice(0, i + 1).join("/") + "/index")
+  }
+  return chain
+}
+
+// «lab02/02-main» -> «Лабораторная работа 02. CMSIS. …». Названия папок
+// поставляет вызывающий: в браузере они берутся из contentIndex.json, при
+// сборке — из дерева страниц. Папку без названия подписывает её сегмент
+// адреса. У страниц верхнего уровня путь — пустая строка.
+export function pagePath(slug: string, titleOf: (parent: string) => string | undefined): string {
+  return parentSlugs(slug)
+    .map((parent, depth) => titleOf(parent) ?? parent.split("/")[depth])
+    .join(PATH_SEPARATOR)
+}

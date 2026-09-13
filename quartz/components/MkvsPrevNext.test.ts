@@ -213,3 +213,24 @@ describe("buildChain", () => {
     assert.ok(!slugs.some((slug) => slug.startsWith("tags/")))
   })
 })
+
+// --- путь до страницы -------------------------------------------------------
+
+describe("путь до страницы в кнопках", () => {
+  const sections = new Map(
+    buildChain(CONTENT).map((entry) => [entry.slug as string, entry.section]),
+  )
+
+  test("у страницы внутри работы — название работы", () => {
+    // Ради этого путь и выводится: разделы в разных работах называются
+    // одинаково, и без пути на стыке работ не понять, куда ведёт кнопка.
+    assert.strictEqual(sections.get("lab01/01-main"), "Лабораторная работа 01")
+    assert.strictEqual(sections.get("lab02/01-theory"), "Лабораторная работа 02")
+  })
+
+  test("у страниц верхнего уровня пути нет", () => {
+    for (const slug of ["index", "lab01/index", "glossary/index", "docs/index"]) {
+      assert.strictEqual(sections.get(slug), "", slug)
+    }
+  })
+})

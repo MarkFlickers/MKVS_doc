@@ -1,5 +1,6 @@
 import { matcher } from "./mkvs-search-query"
 import { countIn, textsFor } from "./mkvs-search-matches"
+import { pagePath } from "./mkvs-path"
 
 // ---------------------------------------------------------------------------
 // Карточка результата: путь и число совпадений
@@ -14,27 +15,12 @@ function plural(count: number): string {
   return "совпадений"
 }
 
-// «lab02/02-main» -> ["lab02/index"]: цепочка страниц-родителей. Для самой
-// страницы работы (labNN/index) родитель — корень сайта, и путь не нужен:
-// название сайта уже стоит над Проводником.
-function parentSlugs(slug: string): string[] {
-  const parts = slug.split("/")
-  parts.pop()
-  if (slug.endsWith("/index")) parts.pop()
-
-  const chain: string[] = []
-  for (let i = 0; i < parts.length; i++) {
-    chain.push(parts.slice(0, i + 1).join("/") + "/index")
-  }
-  return chain
-}
-
+// Путь строится общей функцией: тот же путь стоит над названием в кнопках
+// «Предыдущее/Следующее» (MkvsPrevNext.tsx).
 async function pathOf(slug: string): Promise<string> {
   const index = await fetchData
   const titles = index as unknown as Record<string, { title?: string } | undefined>
-  return parentSlugs(slug)
-    .map((parent, depth) => titles[parent]?.title ?? parent.split("/")[depth])
-    .join(" › ")
+  return pagePath(slug, (parent) => titles[parent]?.title)
 }
 
 export function decorateCards(container: HTMLElement, term: string) {

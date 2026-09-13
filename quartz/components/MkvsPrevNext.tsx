@@ -2,6 +2,7 @@ import { FileTrieNode } from "../util/fileTrie"
 import type { BuildTimeTrieData } from "../util/ctx"
 import type { QuartzPluginData } from "../plugins/vfile"
 import { resolveRelative, type FullSlug } from "../util/path"
+import { pagePath } from "./scripts/mkvs-path"
 import type { QuartzComponent, QuartzComponentProps } from "./types"
 
 // Кнопки «Предыдущее» и «Следующее» под текстом страницы.
@@ -25,6 +26,13 @@ import type { QuartzComponent, QuartzComponentProps } from "./types"
 // Поэтому в цепочке остаётся только сам указатель терминов, а на самих
 // статьях кнопок нет.
 //
+// Над названием соседней страницы стоит путь до неё — название работы, в
+// которую она входит. Разделы в работах называются одинаково («1.
+// Теоретический материал», «4. Вопросы для самостоятельной проверки»), и на
+// стыке двух работ без пути не понять, к какой из них ведёт кнопка. Путь
+// собирается той же функцией, что и в карточке результата поиска, — pagePath
+// из scripts/mkvs-path.ts, — поэтому в обоих местах читается одинаково.
+//
 // Компонент серверный: цепочка известна во время сборки, поэтому ссылки уже
 // стоят в HTML и работают без JavaScript.
 
@@ -38,6 +46,10 @@ const GLOSSARY_INDEX = "glossary/index"
 export interface ChainEntry {
   slug: FullSlug
   title: string
+  // Путь до страницы: названия работ, в которые она входит, через « › ».
+  // У страниц верхнего уровня — титульной, самих работ, указателя
+  // глоссария — пустая строка.
+  section: string
 }
 
 // Сортировка узлов дерева — копия sortFn по умолчанию из
@@ -92,10 +104,20 @@ export function buildChain(allFiles: QuartzPluginData[]): ChainEntry[] {
   // entries() обходит дерево сверху вниз: сначала сам узел, затем его потомки —
   // то есть ровно в том порядке, в каком строки идут в Проводнике. Узлы без
   // data — это папки без index.md: открывать в них нечего, в цепочку не идут.
+  //
+  // Название работы в пути берётся из того же дерева, что и название
+  // страницы, — ровно то, что читатель видит строкой папки в Проводнике.
   return trie
     .entries()
     .filter(([, node]) => node.data !== null)
-    .map(([, node]) => ({ slug: node.data!.slug as FullSlug, title: node.displayName }))
+    .map(([, node]) => {
+      const slug = node.data!.slug as FullSlug
+      return {
+        slug,
+        title: node.displayName,
+        section: pagePath(slug, (parent) => trie.findNode(parent.split("/"))?.displayName),
+      }
+    })
 }
 
 // Цепочка одинакова для всех страниц одной сборки, поэтому считается один раз.
@@ -130,6 +152,23 @@ function Arrow({ back }: { back: boolean }) {
   )
 }
 
+// Подпись кнопки: «Предыдущее» или «Следующее», путь до страницы и её название.
+// Путь длинный и в две строки помещается не всегда — стили обрезают его
+// многоточием, поэтому целиком он повторён во всплывающей подсказке.
+function Caption({ label, entry }: { label: string; entry: ChainEntry }) {
+  return (
+    <span class="mkvs-prevnext-text">
+      <span class="mkvs-prevnext-label">{label}</span>
+      {entry.section && (
+        <span class="mkvs-prevnext-section" title={entry.section}>
+          {entry.section}
+        </span>
+      )}
+      <span class="mkvs-prevnext-title">{entry.title}</span>
+    </span>
+  )
+}
+
 const PrevNext: QuartzComponent = ({ ctx, fileData, allFiles }: QuartzComponentProps) => {
   const slug = fileData.slug
   if (!slug) return null
@@ -149,18 +188,12 @@ const PrevNext: QuartzComponent = ({ ctx, fileData, allFiles }: QuartzComponentP
       {prev && (
         <a class="mkvs-prevnext-item mkvs-prevnext-prev" href={resolveRelative(slug, prev.slug)}>
           <Arrow back={true} />
-          <span class="mkvs-prevnext-text">
-            <span class="mkvs-prevnext-label">{PREV_LABEL}</span>
-            <span class="mkvs-prevnext-title">{prev.title}</span>
-          </span>
+          <Caption label={PREV_LABEL} entry={prev} />
         </a>
       )}
       {next && (
         <a class="mkvs-prevnext-item mkvs-prevnext-next" href={resolveRelative(slug, next.slug)}>
-          <span class="mkvs-prevnext-text">
-            <span class="mkvs-prevnext-label">{NEXT_LABEL}</span>
-            <span class="mkvs-prevnext-title">{next.title}</span>
-          </span>
+          <Caption label={NEXT_LABEL} entry={next} />
           <Arrow back={false} />
         </a>
       )}
